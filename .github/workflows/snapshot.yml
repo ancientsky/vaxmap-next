@@ -1,0 +1,52 @@
+# 每月把線上資料存一份回 repo：
+# 1) repo 內的備援快照不會太舊；2) 公開 repo 連續 60 天沒有活動時 GitHub 會停用排程，這個提交可避免。
+name: 每月快照存檔
+
+on:
+  schedule:
+    - cron: '0 18 1 * *'   # 每月 2 日 02:00（臺北時間）
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write   # 只為了最後一步 push
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          # 不把 token 寫進 .git/config：取回與檢查線上資料的步驟用不到它，只在 push 那一步提供
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: 取回線上資料並檢查
+        env:
+          SKIP_RAW_CROSSCHECK: '1'
+          PAGES_URL: ${{ vars.PAGES_URL }}   # 經 env 傳入，不直接內插到 shell
+        run: |
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          node scripts/keep-live-data.mjs "${PAGES_URL:-https://$OWNER.github.io/$REPO}"
+          node --test tests/data.test.mjs
+        # 使用自訂網域時，請在 repo 的 Settings → Secrets and variables → Actions → Variables 設定 PAGES_URL
+      - name: 提交（加上 [skip ci] 避免再觸發一次部署）
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- public/data/hospitals.json; then echo "資料沒有變動"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/hospitals.json
+          git commit -m "data: 每月快照存檔 [skip ci]"
+          # 只在這一步用 token；與 actions/checkout 相同的 extraheader 作法（token 不會出現在網址或 .git/config）
+          AUTH="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          echo "::add-mask::$AUTH"
+          git -c "http.${GITHUB_SERVER_URL}/.extraheader=AUTHORIZATION: basic $AUTH" push origin "HEAD:${GITHUB_REF_NAME}"

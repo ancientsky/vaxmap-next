@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://wmts.nlsc.gov.tw https://tile.openstreetmap.org; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; worker-src 'none'; require-trusted-types-for 'script'; trusted-types default">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#0b5d57">
+  <meta name="description" content="查詢附近今天可接種流感、新冠、肺炎鏈球菌疫苗及領取流感抗病毒藥劑的院所（概念原型）。">
+  <title>疫苗及流感藥劑地圖（非官方概念原型）</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="vendor/markercluster/MarkerCluster.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#search-input">跳到搜尋</a>
+  <a class="skip-link" href="#results-heading">跳到查詢結果</a>
+
+  <header class="app-header">
+    <div class="brand">
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M16 3c-5.5 0-10 4.3-10 9.7C6 20 16 29 16 29s10-9 10-16.3C26 7.3 21.5 3 16 3z" fill="currentColor"/>
+        <path d="M16 8.5v8.5M11.8 12.75h8.4" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1 class="brand__title">疫苗及流感藥劑地圖</h1>
+        <p class="brand__sub"><strong>非官方概念原型</strong>・資料取自疾管署公開網站</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="banner" id="banner" aria-label="公告" hidden>
+    <div class="banner__body">
+      <svg class="banner__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v6M12 16.5v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <ul class="banner__list">
+        <li><strong>10月1日起公費流感疫苗開打</strong></li>
+        <li id="banner-detail">看診時段資料來源為中央健康保險署，僅供參考，接種前建議先電洽院所。本站為非官方概念原型，資料可能延遲；正式資訊請見 <a href="https://vaxmap.cdc.gov.tw/" target="_blank" rel="noopener noreferrer">疾管署官方地圖</a>。</li>
+      </ul>
+    </div>
+    <button type="button" class="banner__more" id="banner-more" aria-expanded="false" aria-controls="banner-detail">詳情</button>
+    <button type="button" class="icon-btn banner__close" id="banner-close" aria-label="關閉公告">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </button>
+  </section>
+
+  <main class="layout" id="main">
+    <section class="filters" id="filters" aria-labelledby="filters-heading">
+      <h2 class="sr-only" id="filters-heading">搜尋與篩選</h2>
+
+      <div class="search-row">
+        <div class="search">
+          <label for="search-input" class="sr-only">搜尋院所名稱、地址或行政區</label>
+          <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5L20 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <input id="search-input" class="search__input" type="search" inputmode="search" enterkeyhint="search"
+                 autocomplete="off" spellcheck="false" maxlength="60" placeholder="院所、地址、行政區">
+          <button type="button" class="search__clear" id="search-clear" aria-label="清除搜尋文字" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <button type="button" class="btn btn--filter" id="filter-toggle" aria-expanded="false" aria-controls="filter-panel">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <span>篩選</span><span class="count-badge" id="filter-count" aria-hidden="true" hidden></span><span class="sr-only" id="filter-count-sr"></span>
+        </button>
+        <button type="button" class="btn btn--locate" id="locate-btn" aria-label="定位我的位置">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="btn__label-long">定位我的位置</span>
+        </button>
+      </div>
+      <p class="geo-msg" id="geo-msg" role="status" hidden></p>
+
+      <div class="group-chips" role="group" aria-label="品項（可複選）" id="group-chips"></div>
+
+      <div class="panel-wrap" id="panel-wrap">
+        <section class="panel" id="filter-panel" aria-labelledby="panel-title" hidden>
+          <div class="panel__inner">
+          <h3 class="sr-only" id="panel-title">更多篩選條件</h3>
+          <div class="panel__section" id="product-choices"></div>
+          <div class="panel__section">
+            <h4 class="panel__label" id="avail-label">看診與庫存</h4>
+            <div class="panel__row" role="group" aria-labelledby="avail-label">
+              <button type="button" class="opt" id="toggle-today" aria-pressed="false"><span class="opt__box" aria-hidden="true"></span>今日有看診</button>
+              <button type="button" class="opt" id="toggle-stock" aria-pressed="false"><span class="opt__box" aria-hidden="true"></span>只看有庫存</button>
+            </div>
+          </div>
+          <div class="panel__section">
+            <h4 class="panel__label">地區（縣市・行政區）</h4>
+            <div class="region-row">
+              <div class="field">
+                <label for="city-select" class="sr-only">縣市</label>
+                <select id="city-select"><option value="">全部縣市</option></select>
+              </div>
+              <div class="field">
+                <label for="dist-select" class="sr-only">行政區</label>
+                <select id="dist-select" disabled><option value="">全部行政區</option></select>
+              </div>
+            </div>
+          </div>
+          <div class="panel__footer">
+            <button type="button" class="btn btn--text" id="panel-clear">清除全部條件</button>
+            <button type="button" class="btn btn--primary" id="filter-done">完成</button>
+          </div>
+          </div>
+        </section>
+      </div>
+
+      <ul class="tokens" id="tokens" aria-label="已套用的篩選條件"></ul>
+    </section>
+
+    <div class="stage" id="stage">
+      <div class="map-wrap">
+        <div id="map" class="map" role="region" aria-label="院所地圖" aria-describedby="map-help"></div>
+        <p id="map-help" class="sr-only">地圖上的院所也列在查詢結果清單中，建議使用清單操作。</p>
+        <div class="map-status" id="map-status" hidden></div>
+        <p class="map-snapshot" id="snapshot-map"></p>
+        <details class="legend" id="legend">
+          <summary class="legend__summary">圖例</summary>
+          <ul class="legend__list">
+            <li><span class="mk mk--ok mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g">✓</span></span></span>今日有看診・有庫存</li>
+            <li><span class="mk mk--nostock mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g">–</span></span></span>今日有看診・無庫存</li>
+            <li><span class="mk mk--closed mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g">休</span></span></span>今日休診</li>
+            <li><span class="cl-sample" aria-hidden="true">12</span>院所群集（外圈比例為上述狀態）</li>
+          </ul>
+          <p class="legend__note">庫存依所選品項判定；未選品項時以任一品項判定。</p>
+        </details>
+      </div>
+
+      <section class="sheet" id="sheet" aria-labelledby="results-heading" data-state="peek">
+        <button type="button" class="sheet__handle" id="sheet-handle" aria-label="調整清單高度" aria-controls="sheet">
+          <span class="sheet__grip" aria-hidden="true"></span>
+        </button>
+
+        <div class="view view--list" id="view-list">
+          <div class="summary">
+            <div class="summary__main">
+              <h2 class="summary__count" id="results-heading" tabindex="-1">載入中…</h2>
+              <button type="button" class="btn btn--text" id="clear-btn" hidden>清除條件</button>
+            </div>
+            <p class="summary__scope" id="scope-line"></p>
+            <p class="summary__snapshot" id="snapshot"></p>
+          </div>
+          <div class="list-scroll" id="list-scroll">
+            <div class="notice" id="list-notice" hidden></div>
+            <ul class="results" id="results" aria-labelledby="results-heading"></ul>
+            <div class="list-footer" id="list-footer"></div>
+          </div>
+        </div>
+
+        <div class="view view--detail" id="view-detail" hidden>
+          <div class="detail-bar">
+            <button type="button" class="btn btn--back" id="back-btn">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              返回清單
+            </button>
+          </div>
+          <div class="detail-scroll" id="detail-scroll">
+            <article class="detail" id="detail" aria-labelledby="detail-name"></article>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <p class="sr-only" id="announcer" aria-live="polite" aria-atomic="true"></p>
+
+  <noscript><p class="noscript">此網站需要啟用 JavaScript 才能顯示地圖與院所清單。疫苗相關諮詢請撥 1922 防疫專線。</p></noscript>
+
+  <script src="js/trusted-types.js"></script>
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/markercluster/leaflet.markercluster.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

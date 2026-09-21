@@ -1,0 +1,9 @@
+node_modules/
+tests/screenshots/
+.DS_Store
+# 避免誤提交本機機密或記錄檔
+.env
+.env.*
+*.pem
+*.key
+npm-debug.log*

@@ -1,0 +1,24 @@
+{
+  "name": "vaxmap-next",
+  "version": "1.0.0",
+  "description": "疫苗及流感藥劑地圖 概念原型（靜態前端）",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev-server.mjs",
+    "harvest": "node scripts/harvest.mjs",
+    "normalize": "node scripts/normalize.mjs",
+    "verify-vendor": "node scripts/verify-vendor.mjs",
+    "update-data": "node scripts/harvest.mjs && node scripts/normalize.mjs && node --test tests/data.test.mjs",
+    "test": "node --test tests/logic.test.mjs tests/data.test.mjs tests/harvest.test.mjs tests/security.test.mjs",
+    "test:e2e": "node tests/e2e.spec.mjs",
+    "test:a11y": "node tests/a11y.spec.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3"
+  }
+}
