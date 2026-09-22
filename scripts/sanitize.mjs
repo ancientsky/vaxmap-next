@@ -134,7 +134,7 @@ export function sanitizeHospital(h, vaccineIds, warn = () => {}) {
       const q = h.stock[k];
       if (!Number.isSafeInteger(q)) { warn(`${tag} ${k} 庫存不是整數`); continue; }
       if (q > LIMITS.maxStock) { warn(`${tag} ${k} 庫存 ${q} 超過上限`); continue; }
-      stock[k] = Math.max(0, q);
+      stock[k] = q > 0 ? 1 : 0; // 只發布有（1）／無（0），原始數量一律不放進公開檔案
     }
   } else if (h.stock !== undefined) {
     warn(`${tag} stock 不是物件`);

@@ -120,7 +120,7 @@ test('sanitizeHospital：必要欄位型別錯誤 → 捨棄；選填欄位不�
   assert.equal(h.apptTel, undefined);
   assert.equal(h.note, 'b備註/b');
   assert.deepEqual(h.hours, [0, 0, 0, 0, 0, 0, 0], '任一時段不合格 → 全週視為休診');
-  assert.deepEqual({ ...h.stock }, { flu: 0, novavax: 10 });
+  assert.deepEqual({ ...h.stock }, { flu: 0, novavax: 1 }); // 數量一律化為有（1）／無（0）
   assert.equal(Object.getPrototypeOf(h.stock), Object.prototype);
   assert.equal(({}).polluted, undefined);
   assert.equal('extra' in h, false);
