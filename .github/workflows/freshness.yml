@@ -1,0 +1,33 @@
+# 每天檢查 data 分支的資料是否太舊。太舊就讓這次執行失敗，GitHub 會寄信通知 repo 擁有者
+# （代表負責擷取的那台國內機器沒有在跑，或擷取一直失敗）。
+name: 資料新鮮度檢查
+
+on:
+  schedule:
+    - cron: '0 1 * * *'   # 臺北時間 09:00
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: 檢查 data 分支的快照時間
+        env:
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          MAX_AGE_HOURS: '36'
+        run: |
+          git init -q . && git fetch -q --depth=1 "$REPO_URL" data || { echo "::error::找不到 data 分支，尚未設定資料更新"; exit 1; }
+          git show FETCH_HEAD:hospitals.json > h.json
+          node -e "
+            const d = JSON.parse(require('fs').readFileSync('h.json', 'utf8'));
+            const t = Date.parse(d.meta && d.meta.generatedAt);
+            const age = (Date.now() - t) / 3600000;
+            if (!Number.isFinite(age)) { console.log('::error::快照時間格式不正確'); process.exit(1); }
+            console.log('資料距今 ' + age.toFixed(1) + ' 小時，院所數 ' + (d.hospitals || []).length);
+            if (age > Number(process.env.MAX_AGE_HOURS)) { console.log('::error::院所資料已 ' + Math.floor(age) + ' 小時未更新，請檢查負責擷取的機器'); process.exit(1); }
+          "

@@ -1,22 +1,15 @@
-# 部署到 GitHub Pages，並依排程更新院所資料。
-# 資料更新結果「不提交進 repo」，而是直接隨這次部署上線；見 README「部署到 GitHub Pages」。
-name: 部署與資料更新
+# 部署到 GitHub Pages。
+# 院所資料不在這裡擷取：疾管署現站不接受境外連線（GitHub 的執行機器在國外，實測連線逾時），
+# 所以改由一台國內機器定時擷取，把 hospitals.json 推到 `data` 分支，再觸發這個流程部署。
+# 見 README「部署到 GitHub Pages」與 scripts/publish-data.sh。
+name: 部署
 
 on:
   push:
     branches: [main]
-  schedule:
-    # GitHub 排程用 UTC，且可能延遲數分鐘到數十分鐘
-    - cron: '30 21 * * *'   # 臺北時間 05:30
-    - cron: '30 4 * * *'    # 臺北時間 12:30
   workflow_dispatch:
-    inputs:
-      harvest:
-        description: 重新擷取院所資料（約 10–15 分鐘、對來源站約 280 次請求）
-        type: boolean
-        default: true
 
-# 預設不給任何權限，各工作只拿自己需要的（build 會處理來源網站的不可信資料，不應持有部署權限）
+# 預設不給任何權限，各工作只拿自己需要的
 permissions: {}
 
 concurrency:
@@ -26,52 +19,40 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 15
     permissions:
       contents: read
-      pages: read   # configure-pages 讀取 Pages 設定（base_url）
-    outputs:
-      harvest: ${{ steps.harvest.outcome }}
+      pages: read   # configure-pages 讀取 Pages 設定
     steps:
       # 第三方 action 一律釘選完整 commit SHA（註解為對應版本），避免標籤被改指向惡意版本
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
-          persist-credentials: false   # 這個工作不需要 push，不把 token 留在 .git/config
+          persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
-      - id: pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
-      - name: 擷取並檢查最新資料
-        id: harvest
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.harvest)
-        continue-on-error: true
-        env:
-          HARVEST_UA: vaxmap-next-harvester/1.0 (+${{ github.server_url }}/${{ github.repository }})
-        run: |
-          node scripts/harvest.mjs
-          node scripts/normalize.mjs
-          node --test tests/data.test.mjs
-
-      - name: 擷取未執行或失敗 → 沿用線上資料
-        if: steps.harvest.outcome != 'success'
+      - name: 取用 data 分支上較新的院所資料
         env:
           SKIP_RAW_CROSSCHECK: '1'
-          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}   # 經 env 傳入，不直接內插到 shell
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: |
-          git checkout -- public/data/hospitals.json
-          node scripts/keep-live-data.mjs "$PAGES_BASE_URL"
+          # 公開 repo 可匿名讀取；data 分支不存在時沿用 main 裡的快照
+          if git fetch --depth=1 "$REPO_URL" data 2>/dev/null; then
+            git show FETCH_HEAD:hospitals.json > "$RUNNER_TEMP/hospitals.json"
+            node scripts/keep-live-data.mjs --file "$RUNNER_TEMP/hospitals.json"
+          else
+            echo "沒有 data 分支，沿用 main 裡的快照"
+          fi
           node --test tests/data.test.mjs
 
       - name: 邏輯測試
         run: node --test tests/logic.test.mjs
 
       - name: 摘要
-        env:
-          HARVEST_OUTCOME: ${{ steps.harvest.outcome || 'skipped' }}
         run: |
-          node -e "const d=require('./public/data/hospitals.json');console.log('### 本次上線資料\n\n- 快照時間：'+d.meta.generatedAt+'\n- 院所數：'+d.hospitals.length+'\n- 擷取步驟：'+process.env.HARVEST_OUTCOME)" >> "$GITHUB_STEP_SUMMARY"
+          node -e "const d=require('./public/data/hospitals.json');console.log('### 本次上線資料\n\n- 快照時間：'+d.meta.generatedAt+'\n- 院所數：'+d.hospitals.length)" >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
@@ -90,15 +71,3 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
-
-  notify:
-    # 網站照常部署（沿用舊資料），但讓這次執行顯示為失敗，GitHub 才會寄信通知
-    needs: [build, deploy]
-    if: needs.build.outputs.harvest == 'failure'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions: {}
-    steps:
-      - run: |
-          echo "::error::院所資料擷取失敗，網站沿用上一份資料。請查看 build 工作的「擷取並檢查最新資料」步驟。"
-          exit 1

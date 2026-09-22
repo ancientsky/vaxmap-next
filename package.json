@@ -12,7 +12,8 @@
     "update-data": "node scripts/harvest.mjs && node scripts/normalize.mjs && node --test tests/data.test.mjs",
     "test": "node --test tests/logic.test.mjs tests/data.test.mjs tests/harvest.test.mjs tests/security.test.mjs",
     "test:e2e": "node tests/e2e.spec.mjs",
-    "test:a11y": "node tests/a11y.spec.mjs"
+    "test:a11y": "node tests/a11y.spec.mjs",
+    "publish-data": "bash scripts/publish-data.sh"
   },
   "keywords": [],
   "author": "",

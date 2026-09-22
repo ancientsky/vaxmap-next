@@ -3,6 +3,7 @@
 // 用途：排程擷取的資料不提交進 repo（避免 repo 逐日膨脹），所以「只改程式」的部署
 // 或「擷取失敗」的部署，都要避免把線上資料蓋回 repo 裡較舊的快照。
 // 用法：node scripts/keep-live-data.mjs <Pages 網址>
+//       node scripts/keep-live-data.mjs --file <hospitals.json 路徑>   （例如從 data 分支取出的檔案）
 //
 // 安全：線上檔案同樣視為不可信（可能是舊版流程產生、或遭竄改），必須通過與 normalize.mjs 相同的
 // sanitize.mjs 檢查，且以清理後重新序列化的內容寫入，而不是原樣轉存；否則一份有問題的線上檔
@@ -17,6 +18,24 @@ const base = (process.argv[2] || '').replace(/\/$/, '');
 const local = JSON.parse(fs.readFileSync(LOCAL, 'utf8'));
 const logSafe = (s) => String(s).replace(/[\x00-\x1f\x7f-\x9f]/g, ' ').slice(0, 300);
 const keepLocal = (why) => { console.log(`沿用 repo 內的快照（${logSafe(local.meta?.generatedAt)}）：${logSafe(why)}`); process.exit(0); };
+
+// 檔案模式：來源是本機檔案（部署流程從 data 分支取出），一樣要過清理與新舊比較
+if (process.argv[2] === '--file') {
+  const file = process.argv[3];
+  try {
+    if (!file || !fs.existsSync(file)) keepLocal('找不到指定的檔案（尚未建立 data 分支屬正常）');
+    if (fs.statSync(file).size > MAX_BYTES) keepLocal('指定的檔案過大');
+    const clean = sanitizeDataset(JSON.parse(fs.readFileSync(file, 'utf8')));
+    const n = clean.hospitals.length;
+    if (n < MIN_HOSPITALS || n > LIMITS.maxHospitals) keepLocal(`檔案內容不合理（${n} 家）`);
+    if (!(Date.parse(clean.meta.generatedAt) > Date.parse(local.meta?.generatedAt))) keepLocal('檔案資料沒有比較新');
+    fs.writeFileSync(LOCAL, JSON.stringify(clean));
+    console.log(`採用 ${logSafe(file)} 的資料（${clean.meta.generatedAt}，${n} 家）`);
+  } catch (e) {
+    keepLocal(`檔案未通過檢查：${e?.message || e}`);
+  }
+  process.exit(0);
+}
 
 let url;
 try { url = new URL(`${base}/data/hospitals.json`); } catch { keepLocal('未提供 Pages 網址'); }

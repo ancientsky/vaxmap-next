@@ -51,5 +51,6 @@
 格子在已知院所達 500 家時就先四分，單次請求的 `ids[]` 最多約 700 個；並加上保險絲
 （最多 1,500 次請求、40 分鐘、少於 4,000 家視為失敗）。以模擬伺服器測試時約 250 次請求可取回全部院所。
 
-尚未驗證的一點：從國外機器（例如 GitHub Actions 的執行機器）能否連到現站。若不能，請改在國內機器執行，
-作法見 README「部署到 GitHub Pages」。
+已確認的限制：現站不接受境外連線。2026-09-21 從 GitHub Actions 的執行機器（國外）實測，連線逾時
+（`UND_ERR_CONNECT_TIMEOUT`）。擷取必須在國內的機器上執行，作法見 README「部署到 GitHub Pages」
+（`scripts/publish-data.sh` 與 `scripts/install-updater.sh`）。

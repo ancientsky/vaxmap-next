@@ -31,10 +31,12 @@ scripts/
   dev-server.mjs        本地開發用零相依靜態伺服器
   harvest.mjs           從現站擷取全國院所資料 → data/raw/*.json.gz（過渡作法，見 docs/HARVEST.md）
   normalize.mjs         data/raw/*.json.gz → public/data/hospitals.json 的轉換腳本
-  keep-live-data.mjs    部署時若線上資料較新就沿用（供 GitHub Actions 使用）
+  keep-live-data.mjs    部署時採用 data 分支（或線上）較新的資料，先清理再使用（供 GitHub Actions 使用）
+  publish-data.sh       在國內機器執行：擷取 → 檢查 → 推到 data 分支 → 觸發部署
+  install-updater.sh    在國內的 Linux 機器安裝每日排程（systemd 使用者計時器）
 .github/workflows/
-  deploy.yml            部署到 GitHub Pages＋每日兩次自動更新資料
-  snapshot.yml          每月把線上資料存回 repo
+  deploy.yml            部署到 GitHub Pages（網站取自 main，資料取自 data 分支）
+  freshness.yml         每天檢查資料是否超過 36 小時未更新，太舊就寄信通知
 docs/
   DATA_SCHEMA.md        public/data/hospitals.json 的格式契約
   HARVEST.md            2026-09-21 快照的擷取方式與已知限制
@@ -106,43 +108,47 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 不會留下半套資料上線。擷取的細節與限制見 `docs/HARVEST.md`。
 
 一次完整擷取約對現站發出 280 次請求、傳輸近 100 MB，需時 10–15 分鐘。來源資料本身是院所每日回報，
-**一天更新 1–2 次就足夠，請勿調高頻率或調低請求間隔**。若在 GitHub Pages 上自動更新，見下一節。
+**一天更新 1–2 次就足夠，請勿調高頻率或調低請求間隔**。現站不接受境外連線，擷取必須在國內的機器上執行；搭配 GitHub Pages 的自動更新作法見下一節。
 
 這仍是**過渡作法**；正式作法是由伺服器端直接匯出資料（見「建議的正式資料串接方式」）。
 
 ## 部署到 GitHub Pages（含每日自動更新資料）
 
-專案內已附兩個 GitHub Actions 工作流程。
+**重要前提：疾管署現站不接受境外連線。** 2026-09-21 實測，GitHub Actions 的執行機器（位於國外）連到
+`vaxmap.cdc.gov.tw` 時連線逾時（`UND_ERR_CONNECT_TIMEOUT`）。因此資料擷取無法在 GitHub 上執行，
+改成「國內機器擷取、GitHub 只負責部署」：
 
-`.github/workflows/deploy.yml`（部署與資料更新）在三種情況下執行：推送到 `main`、每天臺北時間 05:30 與
-12:30 的排程、以及在 Actions 頁面手動執行。排程與手動執行時會先重新擷取資料，通過檢查後連同網站一起部署；
-推送程式碼時不擷取，只部署。**擷取到的資料不會提交進 repo**（否則每天會多出約 1 MB 的歷史紀錄），
-而是直接隨該次部署上線。為了避免「只改程式的部署」或「擷取失敗的部署」把線上資料蓋回 repo 裡較舊的快照，
-流程會用 `scripts/keep-live-data.mjs` 比對線上現有的 `hospitals.json`，線上那份比較新就沿用。
-擷取失敗時網站仍會照常部署（沿用上一份資料），但該次執行會標示為失敗，GitHub 會寄信通知 repo 擁有者；
-畫面上的「資料快照」時間超過 36 小時也會顯示「已 N 天未更新」。
+```
+國內的 Linux 機器（每天 05:30、12:30）            GitHub
+  scripts/publish-data.sh                          
+    ├─ harvest.mjs 擷取 → normalize.mjs → 資料檢查  
+    ├─ 把 hospitals.json 強制推送到 data 分支  ──►  data 分支（永遠只有一個提交，repo 不會變大）
+    └─ gh workflow run deploy.yml             ──►  deploy.yml：取 main 的網站＋data 分支較新的資料
+                                                    → 再過一次清理與檢查 → 部署到 Pages
+```
 
-`.github/workflows/snapshot.yml`（每月快照存檔）每月把線上資料提交回 repo 一次，讓 repo 內的備援快照不至於太舊；
-另一個作用是保持 repo 有活動——公開 repo 連續 60 天沒有活動時，GitHub 會自動停用排程。
+`.github/workflows/deploy.yml` 在推送到 `main`、或被手動／被 `publish-data.sh` 觸發時執行：取出 `data` 分支的
+`hospitals.json`，經 `scripts/keep-live-data.mjs --file` 清理並確認比 `main` 裡的快照新，才採用；沒有 `data`
+分支時沿用 `main` 裡的快照。`.github/workflows/freshness.yml` 每天臺北時間 09:00 檢查 `data` 分支的資料，
+超過 36 小時沒更新就讓該次執行失敗，GitHub 會寄信通知 repo 擁有者（代表擷取機器沒在跑或一直失敗）；
+網站畫面上的「資料快照」也會顯示「已 N 天未更新」。
 
-第一次設定的步驟：
+第一次設定：
 
-1. 在 GitHub 建立 repo，把本專案整個推上去（預設分支需為 `main`）。
-2. 到 repo 的 Settings → Pages，把 Source 設為 **GitHub Actions**。
-3. 推送後 `deploy.yml` 會自動執行並部署；網址會顯示在該次執行的 deploy 工作上。
-4. 到 Actions 頁面手動執行一次「部署與資料更新」（保持勾選重新擷取），確認 GitHub 的執行機器
-   **連得到現站**。GitHub 的機器都在國外，現站若阻擋境外連線，擷取步驟會失敗並顯示原因。
+1. 在 GitHub 建立公開的 repo，把本專案推上去（預設分支需為 `main`）。
+2. 到 repo 的 Settings → Pages，把 Source 設為 **GitHub Actions**，然後重新執行一次「部署」流程。
+3. 在一台**位於國內、連得到現站**的 Linux 機器上（需要 git、Node.js 20 以上、已執行 `gh auth login` 的 GitHub CLI），
+   進到專案資料夾先手動試一次：`npm run publish-data`。成功的話 10–15 分鐘後網站上的快照時間會更新。
+4. 執行 `scripts/install-updater.sh` 安裝每日排程。它會另外建立一個專用資料夾
+   （`~/.local/share/vaxmap-updater`，與您修改程式的資料夾分開，每次執行前自動同步 `main`），
+   並設定 systemd 使用者計時器；關機錯過的排程會在開機後補跑。移除用 `scripts/install-updater.sh --uninstall`。
 
-若第 4 步確認境外連不到現站，有兩個替代作法，前端與流程都不用改：在署內或任何一台國內機器上註冊
-GitHub 的自架執行機器（self-hosted runner），並把 `deploy.yml` 裡 build 工作的 `runs-on` 改成
-`self-hosted`；或是在國內機器上用排程執行 `npm run update-data`，再把 `public/data/hospitals.json`
-提交推送（此時請把 `deploy.yml` 的 `schedule` 區段移除）。
+不建議改用 GitHub 的自架執行機器（self-hosted runner）：在**公開** repo 上，任何人送出的 pull request
+都可能讓程式碼在那台機器上執行，GitHub 官方也不建議這樣用。上面的作法只需要那台機器「往外推送」，不接受任何外來指令。
 
 使用 GitHub Pages 需注意：免費方案的 Pages 需要公開的 repo；Pages 無法自訂 HTTP 標頭，
 因此上方 IIS 一節建議的標頭中，只有 `index.html` 內 `<meta>` 能表達的部分會生效（`frame-ancestors` 不會）；
-Pages 對所有檔案固定快取約 10 分鐘，資料更新後最多 10 分鐘才會被使用者看到；使用自訂網域時，請在
-Settings → Secrets and variables → Actions → Variables 新增 `PAGES_URL`（例如 `https://vaxmap.example.tw`），
-供每月快照流程使用。
+Pages 對所有檔案固定快取約 10 分鐘，資料更新後最多 10 分鐘才會被使用者看到。
 
 ## 建議的正式資料串接方式
 
@@ -184,7 +190,7 @@ CORS 或部署在同網域），效果等同於上述排程匯出。
 `normalize.mjs` 與 `keep-live-data.mjs` 都以它作為最後一關；`harvest.mjs` 對單次回應、總傳輸量、單頁筆數與總筆數都設有上限。
 相關測試在 `tests/security.test.mjs`。
 
-**GitHub Actions**：各工作採最小權限（只有 deploy 有 `pages: write`，只有每月快照有 `contents: write`），
+**GitHub Actions**：各工作採最小權限（只有 deploy 有 `pages: write`，沒有任何工作能寫入 repo），
 所有 action 釘選到完整 commit SHA，`${{ }}` 一律經由 `env:` 傳入而不直接寫進指令，checkout 不保留憑證。
 升級 action 版本時請重新查證並更新 SHA。建議到 repo 的 Settings → Environments → github-pages，確認只允許 `main` 分支部署。
 
