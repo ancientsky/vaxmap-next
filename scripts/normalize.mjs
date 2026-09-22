@@ -68,7 +68,8 @@ for (const h of raw.hospitals) {
     const id = bySrc.get(v.VaccineId);
     if (!id) { warn.push(`未知品項: ${v.VaccineId}`); continue; }
     // 型別與範圍由 sanitize.mjs 檢查（非整數會被捨棄）；此處只把缺值視為 0、負數視為 0
-    stock[id] = typeof v.VaccInventory === 'number' ? Math.max(0, v.VaccInventory) : v.VaccInventory ?? 0;
+    // 只發布「有／無」：1 = 有庫存、0 = 無庫存，原始數量不放進公開檔案
+    stock[id] = typeof v.VaccInventory === 'number' ? (v.VaccInventory > 0 ? 1 : 0) : v.VaccInventory ?? 0;
     if (typeof v.AppointmentPhone === 'string' && v.AppointmentPhone && digits(v.AppointmentPhone) !== digits(h.Phone)) apptTel = v.AppointmentPhone;
     // 只接受 https（javascript:、data:、http: 等一律捨棄）
     if (cleanHttpsUrl(v.AppointmentUrl)) apptUrl = v.AppointmentUrl;

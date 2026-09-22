@@ -102,7 +102,7 @@ test('stock keys are a subset of vaccines[].id, values non-negative integers', (
   for (const h of hospitals) {
     for (const [k, v] of Object.entries(h.stock)) {
       if (!VACCINE_IDS.has(k)) offenders.push(`id=${h.id} unknown stock key ${k}`);
-      if (!Number.isInteger(v) || v < 0) offenders.push(`id=${h.id} stock.${k}=${v} not non-negative int`);
+      if (v !== 0 && v !== 1) offenders.push(`id=${h.id} stock.${k}=${v} must be 0 or 1`);
     }
   }
   assert.deepEqual(offenders.slice(0, 30), [], `${offenders.length} bad stock entries`);
@@ -262,7 +262,7 @@ if (rawFile) {
         if (!v) continue;
         const id = VACC_SRC_MAP[v.VaccineId];
         if (!id) continue;
-        expectedStock[id] = Math.max(0, v.VaccInventory || 0);
+        expectedStock[id] = (v.VaccInventory || 0) > 0 ? 1 : 0; // 公開檔只發布有／無
       }
       const allIds = new Set([...Object.keys(expectedStock), ...Object.keys(h.stock)]);
       for (const id of allIds) {

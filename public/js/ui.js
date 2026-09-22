@@ -77,10 +77,16 @@ export function sessionPills(bits, currentBit) {
   return { nodes: frag, label: `今日時段：${spoken.join('、')}` };
 }
 
+/** 庫存圖示：綠圈 ✓ = 有庫存、琥珀菱形 – = 無庫存（形狀＋顏色雙重編碼，並附螢幕閱讀器文字） */
+export function stockMark(has) {
+  return el('span', { class: `stkm ${has ? 'stkm--ok' : 'stkm--zero'}` },
+    el('span', { class: 'stkm__g', 'aria-hidden': 'true' }, el('span', { text: has ? '✓' : '–' })),
+    el('span', { class: 'sr-only', text: has ? '有庫存' : '無庫存' }));
+}
+
 export function stockChip(v, qty) {
   const zero = !(qty > 0);
-  return el('span', { class: `stk${zero ? ' stk--zero' : ''}` },
-    v.short, ' ', zero ? el('span', { text: '無庫存' }) : el('b', { text: fmtNum(qty) }));
+  return el('span', { class: `stk${zero ? ' stk--zero' : ''}` }, v.short, stockMark(!zero));
 }
 
 /**
@@ -186,9 +192,7 @@ export function detail(item, { catalog, ctx, selectedIds, distanceLabel }) {
       const sel = selectedIds.includes(v.id);
       return el('tr', { class: sel ? 'is-selected' : null },
         el('th', { scope: 'row' }, v.name, sel ? el('span', { class: 'sr-only', text: '（已選）' }) : null),
-        q > 0
-          ? el('td', { class: 'num', text: fmtNum(q) })
-          : el('td', { class: 'num zero', text: '目前無庫存' }));
+        el('td', { class: 'num' }, stockMark(q > 0)));
     })));
 
   const schedule = el('div', { class: 'sched-wrap' },
