@@ -1,0 +1,829 @@
+{
+ "meta": {
+  "lang": "zh-Hant",
+  "sourceUrl": "https://www.cdc.gov.tw/Category/MPage/S_ZLz0yyc2lAQ9TStMB0uA",
+  "sourceTitle": "115年度左流右新護肺顧心 疫苗接種專區",
+  "title": "115年度左流右新護肺顧心 疫苗接種專區",
+  "fetchedAt": "2026-09-29T05:26:21.558Z",
+  "changedAt": "2026-09-29T05:26:21.558Z",
+  "translation": "source"
+ },
+ "sections": [
+  {
+   "id": "103106",
+   "key": "coins",
+   "hash": "sha256:b62c80491ff3ae2219861c065c8e403e7b162df0dea1d1310313eae301d9be1e",
+   "title": "接種疫苗 累積你的健康幣",
+   "updated": "2026-09-23",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "p",
+     "text": "自2026年10月1日起，年滿18歲民眾完成健康檢查、癌症篩檢、疫苗接種等指定健康任務，即可累積「健康幣」；並自12月1日起開放使用健康幣兌換健康商品，鼓勵民眾主動做好健康管理。",
+     "runs": [
+      {
+       "text": "自2026年10月1日起，年滿18歲民眾完成健康檢查、癌症篩檢、疫苗接種等指定健康任務，即可累積「健康幣」；並自12月1日起開放使用健康幣兌換健康商品，鼓勵民眾主動做好健康管理。"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "其中，接種流感疫苗可獲得450幣、新冠疫苗900幣、肺炎鏈球菌疫苗600幣，接種疫苗顧健康，還能累積健康幣享回饋！",
+     "runs": [
+      {
+       "text": "其中，接種流感疫苗可獲得450幣、新冠疫苗900幣、肺炎鏈球菌疫苗600幣，接種疫苗顧健康，還能累積健康幣享回饋！"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "更多詳情請查詢 【衛生福利部國民健康署健康幣網站】",
+     "runs": [
+      {
+       "text": "更多詳情請查詢 "
+      },
+      {
+       "text": "【衛生福利部國民健康署健康幣網站】",
+       "href": "https://www.healthtoken.hpa.gov.tw/"
+      }
+     ]
+    }
+   ],
+   "links": [
+    {
+     "text": "「顧健康 賺飽幣」 10月正式開跑！ 健檢、癌篩、打疫苗賺健康幣 12月起開放兌換好康",
+     "href": "https://www.mohw.gov.tw/cp-16-88052-1.html",
+     "isNew": false
+    }
+   ],
+   "files": []
+  },
+  {
+   "id": "103059",
+   "key": "eligibility",
+   "hash": "sha256:ec6b69b9d3bd33c84ed8d429b02d6c9afdbe429b45dc5509609d0272c6332396",
+   "title": "公費疫苗接種對象",
+   "updated": "2026-09-21",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "2026/10/01起 第一階段對象",
+     "head": [
+      "公費接種對象類別",
+      "流感疫苗",
+      "新冠疫苗"
+     ],
+     "rows": [
+      [
+       "醫事及衛生防疫相關人員",
+       "✓",
+       "✓"
+      ],
+      [
+       "65歲以上長者",
+       "✓",
+       "✓"
+      ],
+      [
+       "55-64歲以上原住民",
+       "✓",
+       "✓"
+      ],
+      [
+       "安養/長期照顧（服務）等機構之受照顧者及其所屬工作人員",
+       "✓",
+       "✓"
+      ],
+      [
+       "滿6個月以上至國小入學前幼兒",
+       "✓",
+       "✓ (未滿6歲且從未接種新冠疫苗)"
+      ],
+      [
+       "孕婦",
+       "✓",
+       "✓"
+      ],
+      [
+       "滿6個月以上具有潛在疾病者/高風險對象 （含高風險慢性病人、BMI≧30者、罕病及重大傷病患者）",
+       "✓",
+       "✓ 另納入結核病、失能、精神疾病及失智症患者"
+      ],
+      [
+       "6個月內嬰兒之雙親或實際撫養者",
+       "✓",
+       "✓"
+      ],
+      [
+       "幼兒園及托育機構工作人員、居家托育人員(保母)",
+       "✓",
+       "✓"
+      ],
+      [
+       "國小、國中、高中、高職、五專一至三年級學生",
+       "✓",
+       "✗"
+      ],
+      [
+       "禽畜及動物防疫人員",
+       "✓",
+       "✗"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "2026/11/02起 第二階段對象",
+     "head": [
+      "公費接種對象類別",
+      "流感疫苗",
+      "新冠疫苗"
+     ],
+     "rows": [
+      [
+       "50-64歲無高風險慢性病成人",
+       "✓",
+       "✓"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "2026公費流感新冠疫苗接種對象海報",
+     "href": "https://www.cdc.gov.tw/File/Get/22y4JC0Lw6d98DvQkk8UQQ",
+     "ext": "pdf",
+     "isNew": false
+    }
+   ]
+  },
+  {
+   "id": "103060",
+   "key": "where",
+   "hash": "sha256:b08bc82392e6afa093e596088fb581a456e55f909a16019f70cbc8cea7ea5755",
+   "title": "哪裡可以接種公費流感/新冠疫苗? (含指定量販店設置社區接種站)",
+   "updated": "2026-09-21",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "h",
+     "level": 4,
+     "text": "【資訊依各縣市衛生局、合約院所、量販店公告為準，持續更新】"
+    },
+    {
+     "type": "p",
+     "text": "▲流感新冠肺鏈疫苗及流感藥劑地圖",
+     "runs": [
+      {
+       "text": "▲"
+      },
+      {
+       "text": "流感新冠肺鏈疫苗及流感藥劑地圖",
+       "href": "https://vaxmap.cdc.gov.tw/"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "1.建議民眾在接種公費流感或新冠疫苗前，可先向鄰近合約院所預約，或先電話詢問，並確認有無疫苗後再前往，以免久候或白跑一趟。",
+     "runs": [
+      {
+       "text": "1.建議民眾在接種公費流感或新冠疫苗前，可先向鄰近合約院所預約，或先電話詢問，並確認有無疫苗後再前往，以免久候或白跑一趟。"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "2.醫療院所開診資訊來源為中央健康保險署，僅供參考，看診時段可能臨時異動，建議接種前電洽院所確認。",
+     "runs": [
+      {
+       "text": "2.醫療院所開診資訊來源為中央健康保險署，僅供參考，看診時段可能臨時異動，建議接種前電洽院所確認。"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "level": 4,
+     "text": "【公費流感疫苗】各縣市合約院所及看診時間查詢"
+    },
+    {
+     "type": "p",
+     "text": "臺北市、新北市、基隆市、宜蘭縣、桃園市、新竹市、新竹縣、苗栗縣、臺中市、彰化縣、南投縣、雲林縣、嘉義市、嘉義縣、臺南市、花蓮縣、臺東縣、高雄市、屏東縣、澎湖縣、連江縣、金門縣",
+     "runs": [
+      {
+       "text": "臺北市",
+       "href": "https://health.gov.taipei/cp.aspx?n=F9B897CA6DEBE79A&s=D2317B64B76BEF59"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "新北市",
+       "href": "https://www.health.ntpc.gov.tw/article/%E6%96%B0%E5%8C%97%E5%B8%82%E6%B5%81%E6%84%9F%E7%96%AB%E8%8B%97%E5%8F%8ACOVID_19%E7%96%AB%E8%8B%97%E6%8E%A5%E7%A8%AE%E5%9C%B0%E9%BB%9E%E8%B3%87%E8%A8%8A%E6%9F%A5%E8%A9%A21"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "基隆市",
+       "href": "https://www.klchb.klcg.gov.tw/tw/klchb/1481.html"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "宜蘭縣",
+       "href": "https://www.ilshb.gov.tw/News_Content.aspx?n=15717&s=408402&_CSN=5134"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "桃園市",
+       "href": "https://dph.tycg.gov.tw/News_Content.aspx?n=4271&s=1583773"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "新竹市",
+       "href": "https://dep.hcchb.gov.tw/ch/home.jsp?id=102&parentpath=0,40,99"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "新竹縣",
+       "href": "https://www.hcshb.gov.tw/News_Content.aspx?Create=1&n=54&state=D76AA80471BA9582&s=110197&ccms_cs=1&sms=9069"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "苗栗縣",
+       "href": "https://www.mlshb.gov.tw/nc/article?id=b91abee9-c867-4d29-8f82-d96cb8843125"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺中市",
+       "href": "https://www.health.taichung.gov.tw/26198/26327/26565/1897690/26598/90259/3363707/post"
+      },
+      {
+       "text": "、彰化縣、"
+      },
+      {
+       "text": "南投縣",
+       "href": "https://www.ntshb.gov.tw/form/index?Parser=2,7,124,62"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "雲林縣",
+       "href": "https://ylshb.yunlin.gov.tw/News_Content.aspx?Create=1&n=5478&state=A626BE7E86E56186&s=607063&ccms_cs=1&sms=13550"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "嘉義市",
+       "href": "https://health.chiayi.gov.tw/cp.aspx?n=7690"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "嘉義縣",
+       "href": "https://cyshb.cyhg.gov.tw/News.aspx?n=10841&sms=21362"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺南市",
+       "href": "https://health.tainan.gov.tw/page.asp?mainid=F8952AA7-F993-4C26-B3EA-DFF51C152B02&srcorcaid=462FECE7-F544-4B90-9799-DC3EB3631D9C"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "花蓮縣",
+       "href": "https://www.hlshb.gov.tw/News_Content.aspx?n=8766&sms=14641&s=228413"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺東縣",
+       "href": "https://www.ttshb.gov.tw/FileList/C000011?SubCategoryID=6fd2bdb8-eea7-45a5-9269-47625e19a4f2&ID=b8b06dad-4c35-4005-bdae-7abf3383c704&PageIndex=1&PageType=1"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "高雄市",
+       "href": "https://gov.tw/SWK"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "屏東縣",
+       "href": "https://www.ptshb.gov.tw/News_Content.aspx?n=4BFDA79160D55F30&sms=5C5A2981C9F189EF&s=B06485B03E503B5B"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "澎湖縣",
+       "href": "https://www.phchb.gov.tw/home.jsp?id=255&act=view&dataserno=202409200001"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "連江縣",
+       "href": "https://www.matsuhb.gov.tw/Chhtml/Detail/6023?mcid=113267&webaid=6"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "金門縣",
+       "href": "https://phb.kinmen.gov.tw/Content_List.aspx?n=71479696FA18D647"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "level": 4,
+     "text": "【公費新冠疫苗】各縣市合約院所及看診時間查詢"
+    },
+    {
+     "type": "p",
+     "text": "臺北市、新北市、基隆市、宜蘭縣、連江縣、金門縣、桃園市、新竹市、新竹縣、苗栗縣、臺中市(成人)、臺中市(幼兒)、彰化縣、南投縣、雲林縣、嘉義市、嘉義縣、台南市、高雄市、屏東縣、澎湖縣、花蓮縣、台東縣",
+     "runs": [
+      {
+       "text": "臺北市",
+       "href": "https://health.gov.taipei/cp.aspx?n=CF042BF4EACD8FD2&s=6AC6325EAF675B54"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "新北市",
+       "href": "https://www.health.ntpc.gov.tw/article/%E6%96%B0%E5%8C%97%E5%B8%82%E6%B5%81%E6%84%9F%E7%96%AB%E8%8B%97%E5%8F%8ACOVID_19%E7%96%AB%E8%8B%97%E6%8E%A5%E7%A8%AE%E5%9C%B0%E9%BB%9E%E8%B3%87%E8%A8%8A%E6%9F%A5%E8%A9%A21"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "基隆市",
+       "href": "https://www.klchb.klcg.gov.tw/tw/klchb/4183-320067.html"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "宜蘭縣",
+       "href": "https://www.ilshb.gov.tw/News.aspx?n=15710&sms=15520&_CSN=5106"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "連江縣",
+       "href": "https://www.matsuhb.gov.tw/Chhtml/news/6022?webaid=6"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "金門縣",
+       "href": "https://phb.kinmen.gov.tw/Content_List.aspx?n=CB24F8ACC1374FD4"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "桃園市",
+       "href": "https://dph.tycg.gov.tw/News_Content.aspx?n=20660&s=1379265"
+      },
+      {
+       "text": "、新竹市、"
+      },
+      {
+       "text": "新竹縣",
+       "href": "https://prevention.hcshb.gov.tw/Covid19_Consultation.aspx?n=1012&sms=9996"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "苗栗縣",
+       "href": "https://www.mlshb.gov.tw/nc/article?id=b91abee9-c867-4d29-8f82-d96cb8843125"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺中市(成人",
+       "href": "https://www.health.taichung.gov.tw/3092123/Lpsimplelist"
+      },
+      {
+       "text": ")",
+       "href": "https://www.health.taichung.gov.tw/3369446/post"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺中市(幼兒)",
+       "href": "https://www.health.taichung.gov.tw/3369472/post"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "彰化縣",
+       "href": "https://www.chshb.gov.tw/taxonomy/term/68#gsc.tab=0"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "南投縣",
+       "href": "https://www.ntshb.gov.tw/form/index?Parser=2,7,245,62,122"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "雲林縣",
+       "href": "https://ylshb.yunlin.gov.tw/News_Content.aspx?n=14229&s=515587"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "嘉義市",
+       "href": "https://health.chiayi.gov.tw/cp.aspx?n=7690"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "嘉義縣",
+       "href": "https://cyshb.cyhg.gov.tw/News.aspx?n=10841&sms=21362"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "台南市",
+       "href": "https://health.tainan.gov.tw/page.asp?mainid=F8952AA7-F993-4C26-B3EA-DFF51C152B02&srcorcaid=462FECE7-F544-4B90-9799-DC3EB3631D9C%20%E9%A0%90%E7%B4%84%E6%89%93%E7%96%AB%E8%8B%97"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "高雄市",
+       "href": "https://health.kcg.gov.tw/News_Content.aspx?n=E6542183C27B7E6F&sms=852EDE025ACE239A&s=636703017C2B714C"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "屏東縣",
+       "href": "https://www.ptshb.gov.tw/cp.aspx?n=7F7676C34AC3FCF9&s=609B237CC006A155"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "澎湖縣",
+       "href": "https://www.phchb.gov.tw/home.jsp?id=255&act=view&dataserno=202409200001"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "花蓮縣",
+       "href": "https://www.hlshb.gov.tw/News.aspx?n=8766&sms=14641"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "台東縣",
+       "href": "https://www.ttshb.gov.tw/Announcement/C000001?ID=e5972af4-0729-4ddd-935a-ad4d34947671&PageType=1"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "level": 4,
+     "text": "【2026/11/02起 第二階段對象量販店接種站】(待公布)"
+    },
+    {
+     "type": "p",
+     "text": "▲全聯、大全聯接種站查詢",
+     "runs": [
+      {
+       "text": "▲全聯、大全聯接種站查詢"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "▲萬家福、樂家康接種站查詢",
+     "runs": [
+      {
+       "text": "▲萬家福、樂家康接種站查詢"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": []
+  },
+  {
+   "id": "103061",
+   "key": "precautions",
+   "hash": "sha256:8e354e53a012eb910f5ce26370c9a37f2293a6032bf1fb9635e9622f4921c664",
+   "title": "疫苗接種注意事項",
+   "updated": "2026-09-21",
+   "translated": true,
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "公費流感疫苗接種須知(社區版)",
+     "href": "https://www.cdc.gov.tw/File/Get/hcTdOzrvkLtiXTtYeBW4QA",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "莫德納 XFG COVID-19疫苗接種須知暨接種評估及意願書_中文版_1150707",
+     "href": "https://www.cdc.gov.tw/File/Get/HDtEeJxy8i75wahnQJy5Eg",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "莫德納 XFG COVID-19疫苗接種須知暨接種評估及意願書_英文版_1150707",
+     "href": "https://www.cdc.gov.tw/File/Get/7yIWctBwFfD2EDyYfQg28Q",
+     "ext": "pdf",
+     "isNew": false
+    }
+   ]
+  },
+  {
+   "id": "103062",
+   "key": "brands",
+   "hash": "sha256:183c478aa634c5b136732294cd5476eb00cdc73118e4c754015ddfb7679d5a94",
+   "title": "疫苗廠牌資訊",
+   "updated": "2026-09-21",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "h",
+     "level": 4,
+     "text": "流感疫苗"
+    },
+    {
+     "type": "p",
+     "text": "本(115)年度採用三價流感疫苗，公費疫苗共有5個廠牌(標準型及加強型)，皆為單劑型(每劑0.5mL)，各疫苗廠牌及適用年齡如下：",
+     "runs": [
+      {
+       "text": "本(115)年度採用三價流感疫苗，公費疫苗共有5個廠牌(標準型及加強型)，皆為單劑型(每劑0.5mL)，各疫苗廠牌及適用年齡如下："
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "ordered": false,
+     "items": [
+      "提供3歲以上幼兒及成人使用(標準型)",
+      "國光生物科技股份有限公司：安定伏裂解型流感疫苗。",
+      "高端疫苗生物製劑股份有限公司：福喜健三價流感疫苗。",
+      "提供6個月以上幼兒及成人使用(標準型)",
+      "賽諾菲股份有限公司：菲流達三價流感疫苗。",
+      "荷商葛蘭素史克藥廠股份有限公司台灣分公司：伏流感疫苗。",
+      "台灣東洋藥品工業股份有限公司：輔流威護流感疫苗。",
+      "優先提供安養及長期照顧(服務)等機構65歲以上受照顧者及機構所屬工作人員接種(加強型)",
+      "台灣東洋藥品工業股份有限公司：輔流禦流感疫苗",
+      "賽諾菲股份有限公司：菲優達高劑量三價流感疫苗"
+     ],
+     "levels": [
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1
+     ]
+    },
+    {
+     "type": "h",
+     "level": 4,
+     "text": "新冠疫苗"
+    },
+    {
+     "type": "list",
+     "ordered": false,
+     "items": [
+      "目前國內供應接種之新冠疫苗為mRNA疫苗及蛋白質次單元疫苗，廠牌分別為莫德納及Novavax（Nuvaxovid）。",
+      "莫德納XFG新冠疫苗劑型分為單劑型及多劑型：",
+      "單劑型：適用於滿12歲以上公費接種對象（每劑0.2 mL），為新世代新冠疫苗。新世代新冠疫苗所含抗原劑量只有前一代疫苗的1/5，依臨床研究結果顯示保護效果更好，較前一代疫苗可誘導近2倍免疫保護力，且依實證資料顯示接種後發生發燒與任何局部不良反應約減少一半。因此，新世代新冠疫苗為保護效果更好及副作用較低之疫苗。",
+      "多劑型：適用於滿6個月至11歲公費接種對象（每劑0.25 mL）。",
+      "Novavax（Nuvaxovid）XFG新冠疫苗劑型為單劑型：",
+      "單劑型：適用於滿12歲以上公費接種對象（每劑0.5 mL）。"
+     ],
+     "levels": [
+      0,
+      1,
+      2,
+      2,
+      1,
+      2
+     ]
+    }
+   ],
+   "links": [],
+   "files": []
+  },
+  {
+   "id": "103064",
+   "key": "education",
+   "hash": "sha256:7d47cbf47a4c594a64355d0d1ada3aafce86bdecbe68a2de74ab403b5ca0f0f0",
+   "title": "衛教資源",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [],
+   "links": [
+    {
+     "text": "短片-左流右新 子女關懷篇",
+     "href": "https://www.cdc.gov.tw/Advocacy/SubIndex/2xHloQ6fXNagOKPnayrjgQ?diseaseId=N6XvFa1YP9CXYdB0kNSA9A&tab=1",
+     "isNew": true
+    },
+    {
+     "text": "短片-兩劑都打最平安-早安圖篇",
+     "href": "https://www.cdc.gov.tw/Advocacy/SubIndex/2xHloQ6fXNagOKPnayrjgQ?diseaseId=N6XvFa1YP9CXYdB0kNSA9A&tab=1",
+     "isNew": true
+    }
+   ],
+   "files": [
+    {
+     "text": "2026流感新冠疫苗護肺顧心海報",
+     "href": "https://www.cdc.gov.tw/File/Get/0-nBHDYS8sbAw1Nlv_MHqw",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "預防呼吸道傳染病 從日常衛生做起",
+     "href": "https://www.cdc.gov.tw/File/Get/cpDyYNC-vTFqjKljm9HtIw",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "出遊或參加大型活動不忘落實衛生好習慣",
+     "href": "https://www.cdc.gov.tw/File/Get/OmGj4ckQRNez8k_1TZb_Hw",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "新冠病毒的自白",
+     "href": "https://www.cdc.gov.tw/File/Get/xXIEecVKpBsAxUhISKp5qg",
+     "ext": "pdf",
+     "isNew": false
+    }
+   ]
+  },
+  {
+   "id": "103065",
+   "key": "news",
+   "hash": "sha256:d85ecc829e95112c1c922cac43a6467d24ac3572ee29aa67e8037f07e88b7a25",
+   "title": "最新新聞稿資訊",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [],
+   "links": [
+    {
+     "text": "目前流感疫情持續上升 公費流感抗病毒藥劑擴大用藥條件將延長至今(115)年10月31日止",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/-EYGFSc-mTOTTawYvm91GA?typeid=9",
+     "isNew": true
+    },
+    {
+     "text": "流感及新冠於仍處流行期且流感疫情持續上升 呼籲民眾連假期間加強自主防疫 出現重症危險徵兆儘速就醫",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/Tj9G4dJj3yMmEE0URl49CA?typeid=9",
+     "isNew": true
+    },
+    {
+     "text": "流感及新冠疫情持續 呼籲民眾留意個人衛生習慣 出現重症危險徵兆應儘速就醫治療",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/GWRkQ03fZuKKWwdv191UyQ?typeid=9",
+     "isNew": false
+    },
+    {
+     "text": "流感及新冠仍有傳播風險 呼籲民眾出現症狀戴口罩就醫並在家休息 且留意重症危險徵兆",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/5gJTj70wu9L3psY5kQLUuA?typeid=9",
+     "isNew": false
+    },
+    {
+     "text": "流感及新冠疫情均處流行期且流感疫情持續上升 呼籲民眾落實勤洗手 戴口罩等自我防護措施 並留意重症危險徵兆",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/CqW5UAMFqpDkwJWfWG-WGw?typeid=9",
+     "isNew": false
+    },
+    {
+     "text": "115年秋冬公費首度導入加強型流感及新世代新冠疫苗 疫苗株全更新精準防護 疾管署呼籲流感新冠同時打「左流右新 護肺顧心」",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/PdJqXvsZjg1Q5TA301JYpg?typeid=9",
+     "isNew": false
+    }
+   ],
+   "files": []
+  },
+  {
+   "id": "103063",
+   "key": "faq",
+   "hash": "sha256:599e0cb7ed5c361d32a4dc4ae845d76bed63c026a5b437ea048e3cbca4ffd550",
+   "title": "民眾常見問答",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "p",
+     "text": "季節性流感疫苗Q&A",
+     "runs": [
+      {
+       "text": "季節性流感疫苗Q&A",
+       "href": "https://www.cdc.gov.tw/Category/List/uu68c_niZ3SPoViEMp72Mg"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "新冠疫苗Q&A",
+     "runs": [
+      {
+       "text": "新冠疫苗Q&A",
+       "href": "https://www.cdc.gov.tw/Category/List/Dq7GIwfpZj0TlfqvYBDRAQ"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": []
+  },
+  {
+   "id": "103068",
+   "key": "education",
+   "hash": "sha256:45037d4f9686f8b77107cda85bb3d717578a13edb776f38d8b203d603db16061",
+   "title": "其他衛教推廣資源",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [],
+   "links": [
+    {
+     "text": "短片-台灣家庭醫學醫學會-羅一鈞署長：流感與新冠疫苗一起打，可有效降低肺部併發重症、心肌梗塞與中風風險",
+     "href": "https://www.youtube.com/watch?v=i9sFsyunSfw",
+     "isNew": true
+    },
+    {
+     "text": "短片-台灣家庭醫學醫學會-新冠疫苗接種迷思專家篇",
+     "href": "https://www.youtube.com/watch?v=nN7gBZg6FNA",
+     "isNew": true
+    }
+   ],
+   "files": []
+  },
+  {
+   "id": "103066",
+   "key": "other",
+   "hash": "sha256:4832685928d78d99402d6c05cd20d8085aa1efbbd6511ab2a511d0ed7de08821",
+   "title": "想了解更多流感及新冠併發重症防疫資訊",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [],
+   "links": [
+    {
+     "text": "新冠併發重症專區",
+     "href": "https://www.cdc.gov.tw/Disease/SubIndex/N6XvFa1YP9CXYdB0kNSA9A",
+     "isNew": false
+    },
+    {
+     "text": "流感併發重症專區",
+     "href": "https://www.cdc.gov.tw/Disease/SubIndex/x7jzGIMMuIeuLM5izvwg_g",
+     "isNew": false
+    }
+   ],
+   "files": []
+  }
+ ]
+}

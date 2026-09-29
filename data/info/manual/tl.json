@@ -1,0 +1,665 @@
+{
+  "title": {
+    "hash": "sha256:25b32590e074e4c4c4beefcbd7c5d7b03bba7b62a28154127b07cd98473650b2",
+    "title": "Pagbabakuna sa 2026 (ROC 115): “Flu Shot sa Isang Braso, COVID-19 sa Kabila” para Protektahan ang Baga at Puso"
+  },
+  "sections": [
+    {
+      "id": "103106",
+      "key": "coins",
+      "hash": "sha256:b62c80491ff3ae2219861c065c8e403e7b162df0dea1d1310313eae301d9be1e",
+      "title": "Magpabakuna at mag-ipon ng iyong Health Coins",
+      "blocks": [
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Simula Oktubre 1, 2026, ang mga may edad 18 pataas na makakakumpleto ng mga itinakdang gawain sa kalusugan, tulad ng health checkup, cancer screening at pagbabakuna, ay makaka-ipon ng “Health Coins”. Simula Disyembre 1, puwede nang ipalit ang Health Coins sa mga produktong pangkalusugan, para hikayatin ang bawat isa na alagaan ang sariling kalusugan."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Makakakuha ng 450 coins sa bakuna sa trangkaso, 900 coins sa bakuna sa COVID-19, at 600 coins sa bakuna sa pneumococcal. Magpabakuna para sa kalusugan, at may gantimpala pa sa Health Coins!"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Para sa higit pang detalye, bisitahin ang "
+            },
+            {
+              "text": "[Website ng Health Coins ng Health Promotion Administration, Ministry of Health and Welfare]"
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "text": "Magsisimula na ang “Alagaan ang Kalusugan, Mag-ipon ng Coins” ngayong Oktubre! Mag-ipon ng Health Coins sa health checkup, cancer screening at pagbabakuna; puwede nang ipapalit simula Disyembre"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103059",
+      "key": "eligibility",
+      "hash": "sha256:ec6b69b9d3bd33c84ed8d429b02d6c9afdbe429b45dc5509609d0272c6332396",
+      "title": "Sino ang kwalipikado sa publicly funded na bakuna",
+      "blocks": [
+        {
+          "type": "table",
+          "caption": "Mula 2026/10/01: Unang yugto ng mga kwalipikado",
+          "head": [
+            "Kategorya ng kwalipikado sa publicly funded na bakuna",
+            "Bakuna sa trangkaso",
+            "Bakuna sa COVID-19"
+          ],
+          "rows": [
+            [
+              "Mga medical at public health worker",
+              "✓",
+              "✓"
+            ],
+            [
+              "Mga nakatatandang may edad 65 pataas",
+              "✓",
+              "✓"
+            ],
+            [
+              "Mga katutubo (Indigenous) na may edad 55-64",
+              "✓",
+              "✓"
+            ],
+            [
+              "Mga residente ng nursing home at long-term care facility, at ang mga staff nila",
+              "✓",
+              "✓"
+            ],
+            [
+              "Mga batang may edad 6 na buwan pataas hanggang bago pumasok sa elementarya",
+              "✓",
+              "✓ (wala pang 6 taong gulang at hindi pa nakatanggap ng bakuna sa COVID-19)"
+            ],
+            [
+              "Mga buntis",
+              "✓",
+              "✓"
+            ],
+            [
+              "Mga may edad 6 na buwan pataas na may pinagbabatayang sakit o mataas ang panganib (kasama ang may high-risk na chronic disease, BMI ≧ 30, rare disease at malubhang karamdaman)",
+              "✓",
+              "✓ Kasama rin ang mga may tuberculosis, kapansanan, mental illness at dementia"
+            ],
+            [
+              "Mga magulang o tagapag-alaga ng sanggol na wala pang 6 na buwan",
+              "✓",
+              "✓"
+            ],
+            [
+              "Mga staff ng kindergarten at child care center, at mga home-based na tagapag-alaga (nanny)",
+              "✓",
+              "✓"
+            ],
+            [
+              "Mga estudyante ng elementarya, junior high, senior high, vocational high school at 5-year junior college (unang hanggang ikatlong taon)",
+              "✓",
+              "✗"
+            ],
+            [
+              "Mga manggagawa sa pagkontrol ng sakit ng manok, hayop at alagang hayop",
+              "✓",
+              "✗"
+            ]
+          ]
+        },
+        {
+          "type": "table",
+          "caption": "Mula 2026/11/02: Ikalawang yugto ng mga kwalipikado",
+          "head": [
+            "Kategorya ng kwalipikado sa publicly funded na bakuna",
+            "Bakuna sa trangkaso",
+            "Bakuna sa COVID-19"
+          ],
+          "rows": [
+            [
+              "Mga adult na may edad 50-64 na walang high-risk na chronic disease",
+              "✓",
+              "✓"
+            ]
+          ]
+        }
+      ],
+      "links": [],
+      "files": [
+        {
+          "text": "Poster ng mga kwalipikado sa publicly funded na bakuna sa trangkaso at COVID-19 (2026)"
+        }
+      ]
+    },
+    {
+      "id": "103060",
+      "key": "where",
+      "hash": "sha256:b08bc82392e6afa093e596088fb581a456e55f909a16019f70cbc8cea7ea5755",
+      "title": "Saan puwedeng magpabakuna ng publicly funded na bakuna sa trangkaso/COVID-19? (kasama ang community vaccination site sa mga piling hypermarket)",
+      "blocks": [
+        {
+          "type": "h",
+          "text": "[Ang impormasyon ay batay sa anunsyo ng mga local health bureau, kontratadong klinika at hypermarket, at patuloy na ina-update]"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲"
+            },
+            {
+              "text": "Mapa ng bakuna sa trangkaso, COVID-19 at pneumococcal, at ng gamot sa trangkaso"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "1. Bago magpabakuna ng publicly funded na bakuna sa trangkaso o COVID-19, mainam na magpa-reserve sa kalapit na kontratadong klinika o tumawag muna para kumpirmahin kung may bakuna, para hindi maghintay nang matagal o masayang ang biyahe."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "2. Ang oras ng klinika ay galing sa National Health Insurance Administration at gabay lamang. Puwedeng magbago ang oras nang biglaan, kaya tumawag muna sa klinika bago magpabakuna."
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Publicly funded na bakuna sa trangkaso] Hanapin ang mga kontratadong klinika at oras ng konsulta sa bawat lungsod/county"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Taipei City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "New Taipei City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Keelung City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Yilan County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Taoyuan City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Hsinchu City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Hsinchu County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Miaoli County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Taichung City"
+            },
+            {
+              "text": ", Changhua County, "
+            },
+            {
+              "text": "Nantou County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Yunlin County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Chiayi City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Chiayi County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Tainan City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Hualien County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Taitung County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Kaohsiung City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Pingtung County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Penghu County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Lienchiang County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Kinmen County"
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Publicly funded na bakuna sa COVID-19] Hanapin ang mga kontratadong klinika at oras ng konsulta sa bawat lungsod/county"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Taipei City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "New Taipei City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Keelung City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Yilan County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Lienchiang County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Kinmen County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Taoyuan City"
+            },
+            {
+              "text": ", Hsinchu City, "
+            },
+            {
+              "text": "Hsinchu County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Miaoli County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Taichung City (adults"
+            },
+            {
+              "text": ")"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Taichung City (children)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Changhua County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Nantou County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Yunlin County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Chiayi City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Chiayi County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Tainan City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Kaohsiung City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Pingtung County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Penghu County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Hualien County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Taitung County"
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Mula 2026/11/02: mga vaccination site sa hypermarket para sa ikalawang yugto ng mga kwalipikado] (iaanunsyo pa)"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲Hanapin ang mga vaccination site sa PX Mart at Big PX Mart"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲Hanapin ang mga vaccination site sa Wellcome at Jasons Market Place"
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103061",
+      "key": "precautions",
+      "hash": "sha256:8e354e53a012eb910f5ce26370c9a37f2293a6032bf1fb9635e9622f4921c664",
+      "title": "Mga paalala sa pagpapabakuna",
+      "blocks": [],
+      "links": [],
+      "files": [
+        {
+          "text": "Impormasyon sa pagpapabakuna ng publicly funded na bakuna sa trangkaso (bersyon para sa komunidad)"
+        },
+        {
+          "text": "Moderna XFG COVID-19 na bakuna: impormasyon, pagsusuri at consent form_bersyong Chinese_1150707"
+        },
+        {
+          "text": "Moderna XFG COVID-19 na bakuna: impormasyon, pagsusuri at consent form_bersyong Ingles_1150707"
+        }
+      ]
+    },
+    {
+      "id": "103062",
+      "key": "brands",
+      "hash": "sha256:183c478aa634c5b136732294cd5476eb00cdc73118e4c754015ddfb7679d5a94",
+      "title": "Impormasyon sa mga brand ng bakuna",
+      "blocks": [
+        {
+          "type": "h",
+          "text": "Bakuna sa trangkaso"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Ngayong taon (ROC 115), trivalent na bakuna sa trangkaso ang gagamitin. May 5 brand ng publicly funded na bakuna (standard at enhanced na uri), lahat ay single-dose (0.5 mL bawat dose). Narito ang mga brand at ang angkop na edad:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "Para sa mga batang may edad 3 pataas at mga adult (standard)",
+            "Adimmune Corporation: 安定伏 (Adimmune) split-virion na bakuna sa trangkaso.",
+            "Medigen Vaccine Biologics Corporation: 福喜健 (Medigen) trivalent na bakuna sa trangkaso.",
+            "Para sa mga batang may edad 6 na buwan pataas at mga adult (standard)",
+            "Sanofi: 菲流達 (Sanofi) trivalent na bakuna sa trangkaso.",
+            "GlaxoSmithKline (GSK), sangay sa Taiwan: 伏流感 (GSK) na bakuna sa trangkaso.",
+            "TTY Biopharm Company Limited: 輔流威護 (TTY Biopharm) na bakuna sa trangkaso.",
+            "Inuuna para sa mga residente ng nursing home at long-term care facility na may edad 65 pataas at sa mga staff nila (enhanced)",
+            "TTY Biopharm Company Limited: 輔流禦 (TTY Biopharm) na bakuna sa trangkaso",
+            "Sanofi: 菲優達 (Sanofi) high-dose trivalent na bakuna sa trangkaso"
+          ]
+        },
+        {
+          "type": "h",
+          "text": "Bakuna sa COVID-19"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Ang mga bakuna sa COVID-19 na available ngayon sa Taiwan ay mRNA vaccine at protein subunit vaccine, mula sa Moderna at Novavax (Nuvaxovid).",
+            "May single-dose at multi-dose na anyo ang Moderna XFG na bakuna sa COVID-19:",
+            "Single-dose: para sa mga publicly funded na kwalipikadong may edad 12 pataas (0.2 mL bawat dose); ito ang bagong henerasyon ng bakuna sa COVID-19. Ang dose ng antigen nito ay 1/5 lamang ng nakaraang henerasyon, ngunit ayon sa clinical studies, mas maganda ang proteksyon: halos 2 beses na mas malakas ang immune protection kumpara sa nakaraang bakuna, at halos kalahati lang ang bilang ng nagkaka-lagnat at anumang lokal na side effect pagkatapos magpabakuna. Kaya mas maganda ang proteksyon at mas mababa ang side effect ng bagong henerasyong bakunang ito.",
+            "Multi-dose: para sa mga publicly funded na kwalipikadong may edad 6 na buwan hanggang 11 taon (0.25 mL bawat dose).",
+            "Ang Novavax (Nuvaxovid) XFG na bakuna sa COVID-19 ay single-dose:",
+            "Single-dose: para sa mga publicly funded na kwalipikadong may edad 12 pataas (0.5 mL bawat dose)."
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103064",
+      "key": "education",
+      "hash": "sha256:7d47cbf47a4c594a64355d0d1ada3aafce86bdecbe68a2de74ab403b5ca0f0f0",
+      "title": "Mga materyales sa edukasyong pangkalusugan",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Video: Flu Shot sa Isang Braso, COVID-19 sa Kabila (para sa pag-aalaga sa mga anak)"
+        },
+        {
+          "text": "Video: Pinakaligtas kung parehong bakuna ang tatanggapin (bersyong “Magandang Umaga”)"
+        }
+      ],
+      "files": [
+        {
+          "text": "Poster ng 2026 na bakuna sa trangkaso at COVID-19 para protektahan ang baga at puso"
+        },
+        {
+          "text": "Iwas sakit sa respiratory: magsimula sa araw-araw na kalinisan"
+        },
+        {
+          "text": "Huwag kalimutan ang magandang gawi sa kalinisan sa paglalakbay o pagdalo sa malalaking event"
+        },
+        {
+          "text": "Ang “pagtatapat” ng COVID-19 virus"
+        }
+      ]
+    },
+    {
+      "id": "103065",
+      "key": "news",
+      "hash": "sha256:d85ecc829e95112c1c922cac43a6467d24ac3572ee29aa67e8037f07e88b7a25",
+      "title": "Mga pinakabagong press release",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Patuloy ang pagtaas ng trangkaso: pinalawak na kondisyon sa publicly funded na antiviral para sa trangkaso, pinalawig hanggang Oktubre 31 ngayong taon (ROC 115)"
+        },
+        {
+          "text": "Patuloy pa ang epidemya ng trangkaso at COVID-19 at tumataas ang trangkaso: paalala na mag-ingat sa mahabang bakasyon at magpagamot agad kapag may senyales ng malubhang sakit"
+        },
+        {
+          "text": "Patuloy ang trangkaso at COVID-19: paalala na panatilihin ang kalinisan at magpagamot agad kapag may senyales ng malubhang sakit"
+        },
+        {
+          "text": "May panganib pa ring makahawa ang trangkaso at COVID-19: magsuot ng mask at magpahinga sa bahay kapag may sintomas, at bantayan ang senyales ng malubhang sakit"
+        },
+        {
+          "text": "Nasa epidemic period ang trangkaso at COVID-19 at patuloy na tumataas ang trangkaso: paalala na maghugas ng kamay, magsuot ng mask at bantayan ang senyales ng malubhang sakit"
+        },
+        {
+          "text": "Sa taglagas at taglamig ng 2026 (ROC 115), unang beses na may publicly funded na enhanced na bakuna sa trangkaso at bagong henerasyong bakuna sa COVID-19, at ganap na na-update ang mga strain para sa tumpak na proteksyon; hinihikayat ng Taiwan CDC ang sabay na pagbabakuna: “Flu Shot sa Isang Braso, COVID-19 sa Kabila, Proteksyon sa Baga at Puso”"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103063",
+      "key": "faq",
+      "hash": "sha256:599e0cb7ed5c361d32a4dc4ae845d76bed63c026a5b437ea048e3cbca4ffd550",
+      "title": "Mga madalas itanong ng publiko",
+      "blocks": [
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Q&A tungkol sa seasonal flu vaccine"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Q&A tungkol sa bakuna sa COVID-19"
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103068",
+      "key": "education",
+      "hash": "sha256:45037d4f9686f8b77107cda85bb3d717578a13edb776f38d8b203d603db16061",
+      "title": "Iba pang materyales sa edukasyong pangkalusugan",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Video: Taiwan Academy of Family Physicians – Director-General Lo I-Chun: Ang sabay na pagbabakuna laban sa trangkaso at COVID-19 ay epektibong nagpapababa ng panganib ng malubhang komplikasyon sa baga, atake sa puso at stroke"
+        },
+        {
+          "text": "Video: Taiwan Academy of Family Physicians – Mga eksperto: Mga maling paniniwala tungkol sa bakuna sa COVID-19"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103066",
+      "key": "other",
+      "hash": "sha256:4832685928d78d99402d6c05cd20d8085aa1efbbd6511ab2a511d0ed7de08821",
+      "title": "Alamin ang higit pa tungkol sa pag-iwas sa malubhang komplikasyon ng trangkaso at COVID-19",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Pahina tungkol sa malubhang komplikasyon ng COVID-19"
+        },
+        {
+          "text": "Pahina tungkol sa malubhang komplikasyon ng trangkaso"
+        }
+      ],
+      "files": []
+    }
+  ]
+}

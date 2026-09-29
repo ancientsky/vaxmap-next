@@ -80,8 +80,8 @@ test('non-default catalogs translate the cities and products (not left in Chines
   }
 });
 
-test('index.html: switcher options = supported languages, labelled with each meta.langName', () => {
-  const html = fs.readFileSync(path.join(ROOT, 'public/index.html'), 'utf8');
+for (const page of ['index.html', 'info.html']) test(`${page}: switcher options = supported languages, labelled with each meta.langName`, () => {
+  const html = fs.readFileSync(path.join(ROOT, 'public', page), 'utf8');
   const sel = html.match(/<select id="lang-select"[\s\S]*?<\/select>/)[0];
   const opts = [...sel.matchAll(/<option value="([^"]+)"[^>]*>([^<]+)<\/option>/g)].map((m) => [m[1], m[2]]);
   assert.deepEqual(opts.map((o) => o[0]), [...SUPPORTED_LANGS]);
@@ -90,12 +90,19 @@ test('index.html: switcher options = supported languages, labelled with each met
 
 test('every key referenced by index.html and the JS modules exists in zh-Hant', () => {
   const used = new Set();
-  const html = fs.readFileSync(path.join(ROOT, 'public/index.html'), 'utf8');
-  for (const m of html.matchAll(/data-i18n="([^"]+)"/g)) used.add(m[1]);
-  for (const m of html.matchAll(/data-i18n-attr="([^"]+)"/g)) {
-    for (const pair of m[1].split(';')) used.add(pair.split(':')[1]);
+  for (const page of ['index.html', 'info.html']) {
+    const html = fs.readFileSync(path.join(ROOT, 'public', page), 'utf8');
+    for (const m of html.matchAll(/data-i18n="([^"]+)"/g)) used.add(m[1]);
+    for (const m of html.matchAll(/data-i18n-(?:title|desc)="([^"]+)"/g)) used.add(m[1]);
+    for (const m of html.matchAll(/data-i18n-attr="([^"]+)"/g)) {
+      for (const pair of m[1].split(';')) used.add(pair.split(':')[1]);
+    }
   }
-  for (const f of ['app.js', 'ui.js', 'map.js', 'i18n.js']) {
+  // 接種資訊頁以樣板字串組出的 key
+  for (const k of ['coins', 'eligibility', 'where', 'precautions', 'brands', 'education', 'faq', 'news', 'other']) used.add(`info.key.${k}`);
+  for (const k of ['flu', 'covid', 'pcv']) used.add(`info.coins.${k}`);
+  for (const k of ['en', 'zh']) used.add(`info.fileLang.${k}`);
+  for (const f of ['app.js', 'ui.js', 'map.js', 'i18n.js', 'info.js', 'info-render.js']) {
     const js = fs.readFileSync(path.join(ROOT, 'public/js', f), 'utf8');
     for (const m of js.matchAll(/\b(?:t|tn|tParts)\('([a-zA-Z0-9_.]+)'/g)) used.add(m[1]);
   }

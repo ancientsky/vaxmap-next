@@ -469,3 +469,66 @@ test('trusted-types.js 放行 map.js 的所有底圖版權字串，並擋下其�
   assert.equal(policy.createHTML('<img src=x onerror=alert(1)>'), null);
   assert.equal(policy.createScriptURL, undefined, '不應放行任何 script URL');
 });
+
+/* ------------------------------------------------------------------ *
+ * 接種資訊專區（翻譯快取與模型輸出都視為不可信）
+ * ------------------------------------------------------------------ */
+
+test('translate-info.mjs：遭竄改的翻譯快取（HTML、額外 href、__proto__）不會進入輸出檔', async () => {
+  const { buildSource, projectSection } = await import('../scripts/harvest-info.mjs');
+  const { validateInfo } = await import('../scripts/sanitize-info.mjs');
+  const html = fs.readFileSync(path.join(ROOT, 'tests/fixtures/info-mpage.html'), 'utf8');
+  const src = buildSource(html, { now: new Date('2026-09-29T00:00:00Z') }).doc;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'info-sec-'));
+  try {
+    fs.mkdirSync(path.join(dir, 'data'));
+    fs.writeFileSync(path.join(dir, 'data/source.json'), JSON.stringify(src));
+    const coins = src.sections.find((s) => s.key === 'coins');
+    const elig = src.sections.find((s) => s.key === 'eligibility');
+    const evil = projectSection(coins);
+    evil.title = '<img src=x onerror=alert(1)>Coins';
+    evil.blocks[2].runs[1].href = 'https://evil.example.com/'; // 多出的欄位 → 形狀不符 → 整筆不採用
+    const ok = projectSection(elig);
+    ok.title = `Eligibility ${RLO}${ZWSP}ok`; // 不可見字元：輸出前由 sanitize-info 清掉
+    const cache = `{"${coins.hash}":{"en":${JSON.stringify(evil)}},"${elig.hash}":{"en":${JSON.stringify(ok)},"__proto__":{"polluted":1}},"__proto__":{"x":1},"not-a-hash":{}}`;
+    fs.writeFileSync(path.join(dir, 'data/translations.json'), cache);
+    await execFileAsync('node', [path.join(ROOT, 'scripts/translate-info.mjs')], {
+      env: { ...CHILD_ENV, ANTHROPIC_API_KEY: '', INFO_DATA_DIR: path.join(dir, 'data'), INFO_PUBLIC_DIR: path.join(dir, 'pub') },
+    });
+    const en = JSON.parse(fs.readFileSync(path.join(dir, 'pub/en.json'), 'utf8'));
+    assert.deepEqual(validateInfo(en), []);
+    const json = JSON.stringify(en);
+    assert.ok(!BAD_CHARS.test(json.replace(/\\[nrt]/g, '')), '輸出含有 < > 或不可見字元');
+    assert.ok(!json.includes('evil.example.com') && !json.includes('onerror'));
+    assert.equal(en.sections.find((s) => s.key === 'coins').translated, false, '形狀不符的快取不採用');
+    const e = en.sections.find((s) => s.key === 'eligibility');
+    assert.equal(e.translated, true);
+    assert.equal(e.title, 'Eligibility ok');
+    assert.equal({}.polluted, undefined);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('harvest-info：屬性中的引號／角括號、未閉合標籤、超長註解不會讓解析器失控', async () => {
+  const { buildSource } = await import('../scripts/harvest-info.mjs');
+  const card = (i, body) => `<div class="card"><div id="headingOne${i}"><h3 class="card-title"><span class="word">T${i}</span></h3></div>` +
+    `<div class="card-body">${body}<div class="date">最後更新日期 2026/9/7</div></div></div>`;
+  const nasty = [
+    '<p title="a>b" data-x=\'<script>\'>正文一</p>',
+    '<p><a href="https://www.cdc.gov.tw/a" title=x onclick=alert(1)>連結<b>粗<i>斜</p>',
+    '<!-- <div class="card"> 不應被當成卡片 -->' + '<!-- x -->'.repeat(1000) + '<p>正文三</p>',
+    '<ul><li>一<li>二<ul><li>二之一</ul><li>三</ul>',
+    '<table><tr><td>● <td>✖<tr><td>x</table>',
+  ];
+  const html = `<h2 class="con-title">頁</h2>${nasty.map((b, i) => card(100 + i, b)).join('')}`;
+  const { doc } = buildSource(html, { now: new Date('2026-09-29T00:00:00Z') });
+  assert.equal(doc.sections.length, 5);
+  assert.equal(doc.sections[0].blocks[0].text, '正文一');
+  assert.equal(doc.sections[2].blocks[0].text, '正文三');
+  assert.deepEqual(doc.sections[1].blocks[0].runs, [{ text: '連結粗斜', href: 'https://www.cdc.gov.tw/a' }]);
+  assert.deepEqual(doc.sections[3].blocks[0].items, ['一', '二', '二之一', '三']);
+  assert.deepEqual(doc.sections[3].blocks[0].levels, [0, 0, 1, 0]);
+  assert.deepEqual(doc.sections[4].blocks[0].rows, [['✓', '✗'], ['x']]);
+  assert.ok(!JSON.stringify(doc).includes('onclick'));
+});

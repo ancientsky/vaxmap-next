@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-Hant-TW" data-i18n-title="info.meta.title" data-i18n-desc="info.meta.description">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; worker-src 'none'; require-trusted-types-for 'script'; trusted-types default">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#0b5d57">
+  <meta name="description" content="流感、新冠疫苗公費接種對象、接種地點、健康幣、注意事項與衛教資源，整理自疾管署官網（非官方概念原型）。">
+  <title>接種資訊｜疫苗及流感藥劑地圖（非官方概念原型）</title>
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/info.css">
+</head>
+<body class="info-page">
+  <a class="skip-link" href="#info-title" data-i18n="info.skip">跳到主要內容</a>
+
+  <header class="app-header">
+    <div class="brand">
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M16 3c-5.5 0-10 4.3-10 9.7C6 20 16 29 16 29s10-9 10-16.3C26 7.3 21.5 3 16 3z" fill="currentColor"/>
+        <path d="M16 8.5v8.5M11.8 12.75h8.4" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <p class="brand__title" data-i18n="brand.title">疫苗及流感藥劑地圖</p>
+        <p class="brand__sub"><strong data-i18n="brand.unofficial">非官方概念原型</strong><span data-i18n="brand.source">・資料取自疾管署公開網站</span></p>
+      </div>
+    </div>
+    <nav class="site-nav" aria-label="網站導覽" data-i18n-attr="aria-label:nav.label">
+      <a class="site-nav__link" href="./index.html" data-nav="map">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
+        <span class="site-nav__long" data-i18n="nav.map">地圖</span><span class="site-nav__short" aria-hidden="true" data-i18n="nav.mapShort">地圖</span>
+      </a>
+      <a class="site-nav__link" href="./info.html" data-nav="info" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="site-nav__long" data-i18n="nav.info">接種資訊</span><span class="site-nav__short" aria-hidden="true" data-i18n="nav.infoShort">資訊</span>
+      </a>
+    </nav>
+    <div class="lang">
+      <svg class="lang__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+      <span class="lang__name" aria-hidden="true" data-i18n="meta.langName">繁體中文</span>
+      <span class="lang__short" aria-hidden="true" data-i18n="meta.short">中文</span>
+      <svg class="lang__caret" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <select id="lang-select" class="lang__select" aria-label="語言（Language）" data-i18n-attr="aria-label:lang.label">
+        <option value="zh-Hant" lang="zh-Hant-TW">繁體中文</option>
+        <option value="en" lang="en">English</option>
+        <option value="ja" lang="ja">日本語</option>
+        <option value="ko" lang="ko">한국어</option>
+        <option value="id" lang="id">Bahasa Indonesia</option>
+        <option value="vi" lang="vi">Tiếng Việt</option>
+        <option value="th" lang="th">ไทย</option>
+        <option value="tl" lang="fil">Filipino</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="info" id="main">
+    <div class="info__hero">
+      <p class="info__kicker" data-i18n="info.kicker">接種資訊</p>
+      <h1 class="info__title" id="info-title" tabindex="-1">流感・新冠疫苗接種資訊</h1>
+      <p class="info__intro" data-i18n="info.intro">整理自疾管署官網的疫苗接種專區，並附上每個主題的原文連結。</p>
+      <p class="info__meta" id="info-meta"></p>
+      <p class="info__notice" id="info-notice" role="note" hidden></p>
+      <div class="info__actions">
+        <a class="btn btn--primary" href="./index.html" data-nav="map" id="hero-map">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
+          <span data-i18n="info.openMap">開啟地圖</span>
+        </a>
+      </div>
+    </div>
+
+    <nav class="toc" id="toc" aria-label="本頁內容" data-i18n-attr="aria-label:info.toc" hidden>
+      <ul class="toc__list" id="toc-list"></ul>
+    </nav>
+
+    <div class="info__status" id="info-status" role="status" aria-live="polite">
+      <p class="info__loading"><span class="spinner" aria-hidden="true"></span><span data-i18n="info.loading">接種資訊載入中…</span></p>
+    </div>
+
+    <div class="info__sections" id="info-sections"></div>
+  </main>
+
+  <footer class="info-footer" id="info-footer">
+    <div class="info-footer__inner">
+      <p><strong class="info-footer__tag" data-i18n="brand.unofficial">非官方概念原型</strong> <span data-i18n="info.footer.notice">本站為非官方概念原型，內容轉載自疾管署官網，可能有延遲；正式資訊以疾管署官網為準。</span></p>
+      <p id="footer-source"></p>
+      <p id="footer-synced"></p>
+      <p id="footer-hotline"></p>
+    </div>
+  </footer>
+
+  <noscript><p class="noscript">此頁需要啟用 JavaScript 才能顯示接種資訊。請直接前往疾管署官網「疫苗接種專區」，或撥 1922 防疫專線。</p><p class="noscript" lang="en">This page needs JavaScript. Please visit the Taiwan CDC website or call the hotline 1922.</p></noscript>
+
+  <script src="js/trusted-types.js"></script>
+  <script type="module" src="js/nav.js"></script>
+  <script type="module" src="js/info.js"></script>
+</body>
+</html>

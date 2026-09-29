@@ -26,25 +26,33 @@ public/                 網站本體（唯一需要部署的目錄）
     logic.js            純函式（時間、篩選、排序、URL 狀態）— 無 DOM 相依，可單元測試
     i18n.js             多語系：語系偵測、字串查詢、切換語系（見 docs/I18N.md）
     data-source.js       資料來源 adapter（目前讀本地 JSON；換即時 API 只改這個檔）
-  data/hospitals.json   正規化後的院所資料（前端唯一讀取的資料檔）
+  info.html, js/info*.js, js/nav.js, css/info.css   接種資訊頁（見下方「接種資訊頁」）
+  data/hospitals.json   正規化後的院所資料（地圖頁唯一讀取的資料檔）
+  data/info/<lang>.json 接種資訊專區（8 種語言各一檔；格式見 docs/INFO_SCHEMA.md）
   i18n/<lang>.json      介面字串（zh-Hant 原文、en、ja、ko、id、vi、th、tl）
   vendor/leaflet, vendor/markercluster   第三方地圖函式庫（打包好的靜態檔，隨 public/ 一起部署）
 
 data/raw/               原始擷取檔（.json.gz），僅用於產生 public/data/hospitals.json，不隨網站部署
 data/districts-en.json  22 縣市與 369 個行政區的官方英文名稱（romanize.mjs 使用，不以拼音產生）
+data/info/              接種資訊專區的繁中原文（source.json）與翻譯快取（translations.json）
 scripts/
   dev-server.mjs        本地開發用零相依靜態伺服器
   harvest.mjs           從現站擷取全國院所資料 → data/raw/*.json.gz（過渡作法，見 docs/HARVEST.md）
   normalize.mjs         data/raw/*.json.gz → public/data/hospitals.json 的轉換腳本
   romanize.mjs          院所名稱／地址／行政區的英文（拉丁字母）轉寫，normalize.mjs 呼叫
+  harvest-info.mjs      擷取疾管署「疫苗接種專區」頁面並結構化 → data/info/source.json（見 docs/INFO_PIPELINE.md）
+  translate-info.mjs    以 Anthropic API 翻譯內容有變動的區塊 → public/data/info/<lang>.json
+  sanitize-info.mjs     接種資訊檔的白名單清理與驗證（寫檔前、部署前都會執行）
   keep-live-data.mjs    部署時採用 data 分支（或線上）較新的資料，先清理再使用（供 GitHub Actions 使用）
-  publish-data.sh       在國內機器執行：擷取 → 檢查 → 推到 data 分支 → 觸發部署
+  publish-data.sh       在國內機器執行：擷取院所資料與接種資訊 → 翻譯 → 檢查 → 推到 data 分支 → 有變動才觸發部署
   install-updater.sh    在國內的 Linux 機器安裝每日排程（systemd 使用者計時器）
 .github/workflows/
   deploy.yml            部署到 GitHub Pages（網站取自 main，資料取自 data 分支）
-  freshness.yml         每天檢查資料是否超過 36 小時未更新，太舊就寄信通知
+  freshness.yml         每天檢查資料是否超過 36 小時未更新，太舊就寄信通知（接種資訊太久未抓取只發警告）
 docs/
   DATA_SCHEMA.md        public/data/hospitals.json 的格式契約
+  INFO_SCHEMA.md        public/data/info/<lang>.json（接種資訊專區）的格式契約
+  INFO_PIPELINE.md      接種資訊的擷取、翻譯、費用估算、失敗處理與強制重新翻譯
   HARVEST.md            2026-09-21 快照的擷取方式與已知限制
   I18N.md               多語系規則、醫療用語對照、完整 key 清單（給翻譯者）
   BASEMAP.md            底圖地名語言的評估、實測證據與決策
@@ -56,6 +64,9 @@ tests/
   a11y.spec.mjs         無障礙檢查（僅回報，不修正）
   harvest.test.mjs      以模擬來源伺服器（mock-source.mjs）驗證 harvest.mjs
   romanize.test.mjs     英文轉寫的人工核對範例（名稱、地址、邊界情況）
+  e2e-info.spec.mjs     接種資訊頁的 Playwright 測試（桌面＋手機、語言切換、深連結、惡意資料）
+  info-ui.test.mjs      接種資訊頁純函式（連結白名單、健康幣解析、表格儲存格）單元測試
+  info.test.mjs         接種資訊：解析範例頁（fixtures/info-mpage.html）、惡意頁面、以模擬 API（mock-translate.mjs）測翻譯與快取
 ```
 
 ## 本地執行
@@ -124,6 +135,24 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 
 這仍是**過渡作法**；正式作法是由伺服器端直接匯出資料（見「建議的正式資料串接方式」）。
 
+**接種資訊專區**（`public/data/info/<lang>.json`）另有一條管線：`npm run update-info` 依序執行
+`scripts/harvest-info.mjs`（抓取疾管署「疫苗接種專區」頁面，把每張卡片解析成段落、清單、表格、連結與附件，
+以白名單清理後寫入 `data/info/source.json`）、`scripts/translate-info.mjs`（只把內容有變動的區塊送 Anthropic API
+翻成 7 種語言，結果快取在 `data/info/translations.json`，沒變的區塊不會重送；沒有設定 `ANTHROPIC_API_KEY` 時不翻譯，
+外語檔以繁中原文輸出並標示尚未翻譯），最後驗證 8 個輸出檔。頁面連不上或改版時不會寫入任何檔案，網站沿用上一版。
+一次只抓一頁，典型的單一區塊變動翻譯費用約 US$0.06；細節、費用估算與強制重新翻譯的方法見 `docs/INFO_PIPELINE.md`。
+
+## 接種資訊頁（info.html）
+
+除了地圖，網站另有「接種資訊」頁（`public/info.html`，頁首導覽可切換），內容同步自疾管署官網
+「115年度左流右新護肺顧心 疫苗接種專區」，重新排版成易讀的卡片：健康幣（三種疫苗各多少幣）、公費接種對象
+（第一／第二階段表格，手機改為卡片）、哪裡可以接種（含「開啟地圖」按鈕與各縣市衛生局連結）、注意事項與衛教資料
+（PDF／影片）、疫苗廠牌、常見問答與新聞稿連結。每個區塊都顯示來源的最後更新日期與回到官網該段落的連結。
+八種語言都有：繁中為原文，其餘為機器翻譯（首批由人工校過的初稿匯入，之後每天自動只翻譯有變動的區塊）；
+尚未翻譯的區塊會標示並顯示原文。前端只讀 `public/data/info/<lang>.json`，所有文字以純文字寫入、連結限於
+`*.gov.tw`／`*.gov.taipei`／YouTube（見 `docs/INFO_SCHEMA.md`）。更新機制見「資料如何更新」，程式在
+`public/js/info*.js`，測試為 `tests/e2e-info.spec.mjs` 與 `tests/info-ui.test.mjs`。
+
 ## 多語系
 
 介面支援繁體中文（預設）、English、日本語、한국어、Bahasa Indonesia、Tiếng Việt、ไทย、Filipino，
@@ -155,9 +184,11 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 ```
 國內的 Linux 機器（每天 05:30、12:30）            GitHub
   scripts/publish-data.sh                          
+    ├─ 取回 data 分支上一版（翻譯快取）
     ├─ harvest.mjs 擷取 → normalize.mjs → 資料檢查  
-    ├─ 把 hospitals.json 強制推送到 data 分支  ──►  data 分支（永遠只有一個提交，repo 不會變大）
-    └─ gh workflow run deploy.yml             ──►  deploy.yml：取 main 的網站＋data 分支較新的資料
+    ├─ harvest-info.mjs → translate-info.mjs → 檢查（接種資訊，只翻有變動的區塊）
+    ├─ 把 hospitals.json、info/*.json 強制推送  ──►  data 分支（永遠只有一個提交，repo 不會變大）
+    └─ 有變動才 gh workflow run deploy.yml    ──►  deploy.yml：取 main 的網站＋data 分支較新的資料
                                                     → 再過一次清理與檢查 → 部署到 Pages
 ```
 
@@ -166,6 +197,18 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 分支時沿用 `main` 裡的快照。`.github/workflows/freshness.yml` 每天臺北時間 09:00 檢查 `data` 分支的資料，
 超過 36 小時沒更新就讓該次執行失敗，GitHub 會寄信通知 repo 擁有者（代表擷取機器沒在跑或一直失敗）；
 網站畫面上的「資料快照」也會顯示「已 N 天未更新」。
+
+接種資訊專區走同一條路：`publish-data.sh` 在院所資料之後執行 `harvest-info.mjs`、`translate-info.mjs`，把
+`info/<lang>.json` 連同原文 `info/source.json` 與翻譯快取 `info/translations.json` 一起推到 `data` 分支（快取因此能跨次保留，
+沒變的區塊不會重複付費翻譯）；院所資料與接種資訊任一項失敗時，另一項照常發布，失敗的那項沿用上一版。
+兩者都沒有影響網站畫面的變動時不觸發部署。`deploy.yml` 會取出 `data` 分支的 `info/<lang>.json`，逐檔以
+`scripts/keep-live-data.mjs --info-dir` 驗證（`sanitize-info.mjs` 嚴格檢查）並確認比 `main` 裡的新才採用；`data` 分支沒有這些檔案時
+沿用 `main` 裡的版本。`freshness.yml` 另外檢查 `info/source.json` 的上次抓取時間，超過 36 小時只發出警告（不寄信）；
+它看的是抓取時間而不是來源內容，所以疾管署頁面幾天沒改不會誤報。
+
+**翻譯金鑰**：更新機器上的 `~/.config/vaxmap-updater/env`（`install-updater.sh` 會建立範本並設為 `chmod 600`，由 systemd 以
+`EnvironmentFile=` 載入）填入 `ANTHROPIC_API_KEY=…` 即可啟用翻譯，下次執行生效；手動執行 `npm run publish-data` 時也會讀取這個檔案。
+金鑰只存在這台機器，不進 git、不進 GitHub。未填金鑰時一切照常，只是外語頁面顯示繁中原文。
 
 第一次設定：
 
@@ -176,6 +219,7 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 4. 執行 `scripts/install-updater.sh` 安裝每日排程。它會另外建立一個專用資料夾
    （`~/.local/share/vaxmap-updater`，與您修改程式的資料夾分開，每次執行前自動同步 `main`），
    並設定 systemd 使用者計時器；關機錯過的排程會在開機後補跑。移除用 `scripts/install-updater.sh --uninstall`。
+5. （選用）要翻譯接種資訊專區，編輯 `~/.config/vaxmap-updater/env`，填入 `ANTHROPIC_API_KEY=`（Anthropic Console 建立的金鑰）。
 
 不建議改用 GitHub 的自架執行機器（self-hosted runner）：在**公開** repo 上，任何人送出的 pull request
 都可能讓程式碼在那台機器上執行，GitHub 官方也不建議這樣用。上面的作法只需要那台機器「往外推送」，不接受任何外來指令。
@@ -223,6 +267,9 @@ CORS 或部署在同網域），效果等同於上述排程匯出。
 （去除控制字元與雙向文字控制字元、限制長度、數值範圍與座標範圍檢查、電話與網址格式檢查），
 `normalize.mjs` 與 `keep-live-data.mjs` 都以它作為最後一關；`harvest.mjs` 對單次回應、總傳輸量、單頁筆數與總筆數都設有上限。
 相關測試在 `tests/security.test.mjs`。
+接種資訊專區同樣處理：`harvest-info.mjs` 以不引入套件的白名單解析器只取段落、清單、表格與連結（script、事件屬性、iframe 等整段丟棄），
+連結只保留 https 且主機在允許清單（`*.gov.tw`、`*.gov.taipei`、YouTube；見 `docs/INFO_SCHEMA.md`）；機器翻譯的輸出必須與原文結構完全相同才採用，網址一律取自原文，
+所有檔案寫入前、部署前都經 `scripts/sanitize-info.mjs` 驗證（相關測試在 `tests/info.test.mjs`）。
 
 **GitHub Actions**：各工作採最小權限（只有 deploy 有 `pages: write`，沒有任何工作能寫入 repo），
 所有 action 釘選到完整 commit SHA，`${{ }}` 一律經由 `env:` 傳入而不直接寫進指令，checkout 不保留憑證。

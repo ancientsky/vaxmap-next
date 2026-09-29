@@ -1,5 +1,5 @@
-# 每天檢查 data 分支的資料是否太舊。太舊就讓這次執行失敗，GitHub 會寄信通知 repo 擁有者
-# （代表負責擷取的那台國內機器沒有在跑，或擷取一直失敗）。
+# 每天檢查 data 分支的資料是否太舊。院所資料太舊就讓這次執行失敗，GitHub 會寄信通知 repo 擁有者
+# （代表負責擷取的那台國內機器沒有在跑，或擷取一直失敗）。接種資訊太久沒抓取只發出警告（不寄信）。
 name: 資料新鮮度檢查
 
 on:
@@ -16,12 +16,38 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: 檢查 data 分支的快照時間
+      - name: 取得 data 分支
         env:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-          MAX_AGE_HOURS: '36'
         run: |
           git init -q . && git fetch -q --depth=1 "$REPO_URL" data || { echo "::error::找不到 data 分支，尚未設定資料更新"; exit 1; }
+
+      # 接種資訊：只看「上次抓取時間」（fetchedAt，每次執行都會更新），不看來源內容是否有變，
+      # 所以疾管署頁面好幾天沒改也不會誤報。只發出警告、不讓這次檢查失敗（院所資料才是主要資料）。
+      - name: 檢查接種資訊的抓取時間
+        env:
+          MAX_AGE_HOURS: '36'
+        run: |
+          git show FETCH_HEAD:info/source.json > s.json 2>/dev/null || { echo "::warning::data 分支沒有 info/source.json（接種資訊尚未開始更新）"; exit 0; }
+          git show FETCH_HEAD:info/en.json > en.json 2>/dev/null || true
+          node -e "
+            const fs = require('fs');
+            const d = JSON.parse(fs.readFileSync('s.json', 'utf8'));
+            const age = (Date.now() - Date.parse(d.meta && d.meta.fetchedAt)) / 3600000;
+            if (!Number.isFinite(age)) { console.log('::warning::接種資訊 fetchedAt 格式不正確'); process.exit(0); }
+            console.log('接種資訊距上次抓取 ' + age.toFixed(1) + ' 小時；來源最近變動 ' + d.meta.changedAt + '；' + (d.sections || []).length + ' 個區塊');
+            if (age > Number(process.env.MAX_AGE_HOURS)) console.log('::warning::接種資訊已 ' + Math.floor(age) + ' 小時未成功抓取，請檢查更新機器的記錄（journalctl --user -u vaxmap-updater.service）；頁面可能改版或暫時無法連線');
+            try {
+              const en = JSON.parse(fs.readFileSync('en.json', 'utf8'));
+              const n = en.sections.filter((s) => !s.translated).length;
+              if (n) console.log('::notice::英文版有 ' + n + ' 個區塊尚未翻譯（未設定 ANTHROPIC_API_KEY、或翻譯驗證未通過）');
+            } catch {}
+          "
+
+      - name: 檢查院所資料的快照時間
+        env:
+          MAX_AGE_HOURS: '36'
+        run: |
           git show FETCH_HEAD:hospitals.json > h.json
           node -e "
             const d = JSON.parse(require('fs').readFileSync('h.json', 'utf8'));

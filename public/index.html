@@ -28,6 +28,16 @@
         <p class="brand__sub"><strong data-i18n="brand.unofficial">非官方概念原型</strong><span data-i18n="brand.source">・資料取自疾管署公開網站</span></p>
       </div>
     </div>
+    <nav class="site-nav" aria-label="網站導覽" data-i18n-attr="aria-label:nav.label">
+      <a class="site-nav__link" href="./index.html" data-nav="map" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
+        <span class="site-nav__long" data-i18n="nav.map">地圖</span><span class="site-nav__short" aria-hidden="true" data-i18n="nav.mapShort">地圖</span>
+      </a>
+      <a class="site-nav__link" href="./info.html" data-nav="info">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="site-nav__long" data-i18n="nav.info">接種資訊</span><span class="site-nav__short" aria-hidden="true" data-i18n="nav.infoShort">資訊</span>
+      </a>
+    </nav>
     <div class="lang">
       <svg class="lang__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
       <span class="lang__name" aria-hidden="true" data-i18n="meta.langName">繁體中文</span>
@@ -192,6 +202,7 @@
   <script src="js/trusted-types.js"></script>
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="vendor/markercluster/leaflet.markercluster.js"></script>
+  <script type="module" src="js/nav.js"></script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

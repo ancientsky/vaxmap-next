@@ -1,0 +1,904 @@
+{
+ "meta": {
+  "lang": "en",
+  "sourceUrl": "https://www.cdc.gov.tw/Category/MPage/S_ZLz0yyc2lAQ9TStMB0uA",
+  "sourceTitle": "115年度左流右新護肺顧心 疫苗接種專區",
+  "title": "<img src=x onerror=alert(1)>Hub",
+  "fetchedAt": "2026-09-29T21:30:00.000Z",
+  "changedAt": "2026-09-23T00:00:00.000Z",
+  "translation": "partial",
+  "translatedAt": "2026-09-29T21:35:00.000Z"
+ },
+ "sections": [
+  {
+   "id": "103106",
+   "key": "coins",
+   "hash": "sha256:d280e209b1609969",
+   "title": "<script>alert('t')</script>Coins",
+   "updated": "2026-09-23",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "p",
+     "text": "From October 1, 2026, adults aged 18 and over can earn “Health Coins” by completing designated health tasks such as health check-ups, cancer screenings and vaccinations. Coins can be redeemed for health products from December 1."
+    },
+    {
+     "type": "p",
+     "text": "Completing designated vaccinations also earns a “vaccine bonus”: 450 coins for the flu vaccine, 900 for a COVID-19 vaccine and 600 for a pneumococcal vaccine. Protect your health and collect rewards at the same time!"
+    },
+    {
+     "type": "p",
+     "text": "For details, see the Health Promotion Administration Health Coin website",
+     "runs": [
+      {
+       "text": "For details, see the "
+      },
+      {
+       "text": "Health Promotion Administration Health Coin website",
+       "href": "https://www.healthtoken.hpa.gov.tw/"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "js link http link evil lookalike creds data yt-lookalike yt-http yt-sub",
+     "runs": [
+      {
+       "text": "js link",
+       "href": "javascript:alert(1)"
+      },
+      {
+       "text": " http link",
+       "href": "http://www.cdc.gov.tw/x"
+      },
+      {
+       "text": " evil",
+       "href": "https://evil.example/gov.tw"
+      },
+      {
+       "text": " lookalike",
+       "href": "https://cdc.gov.tw.evil.example/"
+      },
+      {
+       "text": " creds",
+       "href": "https://user:pw@www.cdc.gov.tw/"
+      },
+      {
+       "text": " data",
+       "href": "data:text/html,<script>alert(1)</script>"
+      },
+      {
+       "text": " yt-lookalike",
+       "href": "https://www.youtube.com.evil.example/watch"
+      },
+      {
+       "text": " yt-http",
+       "href": "http://www.youtube.com/watch?v=x"
+      },
+      {
+       "text": " yt-sub",
+       "href": "https://m.youtube.com/watch?v=x"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "<img src=x onerror=alert(2)><b>bold</b>"
+    },
+    {
+     "type": "html",
+     "html": "<script>alert(3)</script>"
+    }
+   ],
+   "links": [
+    {
+     "text": "“Stay healthy, earn coins” launches in October: earn Health Coins for check-ups, cancer screening and vaccines; redeem from December",
+     "href": "https://www.mohw.gov.tw/cp-16-88052-1.html",
+     "isNew": false
+    },
+    {
+     "text": "<svg onload=alert(4)>",
+     "href": "javascript:alert(4)",
+     "isNew": true
+    },
+    {
+     "text": "protocol-relative",
+     "href": "//evil.example/",
+     "isNew": false
+    },
+    {
+     "text": "fake video",
+     "href": "https://youtu.be.evil.example/x",
+     "isNew": false
+    }
+   ],
+   "files": []
+  },
+  {
+   "id": "103059",
+   "key": "eligibility",
+   "hash": "sha256:075c8cd07984c99f",
+   "title": "Who Is Eligible for Publicly Funded Vaccines",
+   "updated": "2026-09-21",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "▲From 2026/10/01 — Phase 1",
+     "head": [
+      "Eligible group",
+      "Flu vaccine",
+      "COVID-19 vaccine"
+     ],
+     "rows": [
+      [
+       "Healthcare and public health workers",
+       "●",
+       "●"
+      ],
+      [
+       "Adults aged 65 and over",
+       "●",
+       "●"
+      ],
+      [
+       "Indigenous people aged 55–64",
+       "●",
+       "●"
+      ],
+      [
+       "Residents and staff of nursing homes and long-term care facilities",
+       "●",
+       "●"
+      ],
+      [
+       "Children from 6 months old until they start elementary school",
+       "●",
+       "●(under 6 and never vaccinated against COVID-19)"
+      ],
+      [
+       "Pregnant women",
+       "●",
+       "●"
+      ],
+      [
+       "People aged 6 months and over with underlying conditions / high-risk groups (including high-risk chronic disease, BMI ≥ 30, rare and catastrophic illnesses)",
+       "●",
+       "●also includes people with tuberculosis, disabilities, mental illness or dementia"
+      ],
+      [
+       "Parents or caregivers of infants under 6 months",
+       "●",
+       "●"
+      ],
+      [
+       "Staff of preschools and childcare centers, and home childminders",
+       "●",
+       "●"
+      ],
+      [
+       "Elementary, junior high and high school students, and years 1–3 of five-year junior colleges",
+       "●",
+       "✖"
+      ],
+      [
+       "Poultry, livestock and animal disease control workers",
+       "●",
+       "✖"
+      ],
+      [
+       "<iframe src=javascript:alert(6)>",
+       "●",
+       "✖"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "▲From 2026/11/02 — Phase 2",
+     "head": [
+      "Eligible group",
+      "Flu vaccine",
+      "COVID-19 vaccine"
+     ],
+     "rows": [
+      [
+       "Adults aged 50–64 without high-risk chronic conditions",
+       "●",
+       "●"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "2026 flu & COVID-19 vaccination poster",
+     "href": "https://www.cdc.gov.tw/File/Get/22y4JC0Lw6d98DvQkk8UQQ",
+     "ext": "pdf",
+     "isNew": false
+    }
+   ]
+  },
+  {
+   "id": "103060",
+   "key": "where",
+   "hash": "sha256:6c0706eca477a246",
+   "title": "Where Can I Get a Publicly Funded Flu or COVID-19 Vaccine? (Including Community Vaccination Sites at Designated Hypermarkets)",
+   "updated": "2026-09-21",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "note",
+     "text": "[Information is subject to announcements by local health bureaus, contracted clinics and hypermarkets, and is updated regularly]"
+    },
+    {
+     "type": "p",
+     "text": "▲Flu, COVID-19 & pneumococcal vaccine and flu antiviral map",
+     "runs": [
+      {
+       "text": "▲"
+      },
+      {
+       "text": "Flu, COVID-19 & pneumococcal vaccine and flu antiviral map",
+       "href": "https://vaxmap.cdc.gov.tw/"
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "ordered": true,
+     "items": [
+      "Before getting a publicly funded flu or COVID-19 vaccine, book with a nearby contracted clinic or call ahead to check that vaccine is available, so you don’t wait long or make a wasted trip.",
+      "Clinic opening hours come from the National Health Insurance Administration and are for reference only; hours may change at short notice, so please call the clinic before you go."
+     ]
+    },
+    {
+     "type": "p",
+     "text": "▲[Publicly funded flu vaccine] Contracted clinics and hours by city/county"
+    },
+    {
+     "type": "p",
+     "text": "Taipei City, New Taipei City, Keelung City, Yilan County, Taoyuan City, Hsinchu City, Hsinchu County, Miaoli County, Taichung City, Changhua County, Nantou County, Yunlin County, Chiayi City, Chiayi County, Tainan City, Hualien County, Taitung County, Kaohsiung City, Pingtung County, Penghu County, Lienchiang County, Kinmen County",
+     "runs": [
+      {
+       "text": "Taipei City",
+       "href": "https://health.gov.taipei/cp.aspx?n=F9B897CA6DEBE79A&s=D2317B64B76BEF59"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "New Taipei City",
+       "href": "https://www.health.ntpc.gov.tw/article/%E6%96%B0%E5%8C%97%E5%B8%82%E6%B5%81%E6%84%9F%E7%96%AB%E8%8B%97%E5%8F%8ACOVID_19%E7%96%AB%E8%8B%97%E6%8E%A5%E7%A8%AE%E5%9C%B0%E9%BB%9E%E8%B3%87%E8%A8%8A%E6%9F%A5%E8%A9%A21"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Keelung City",
+       "href": "https://www.klchb.klcg.gov.tw/tw/klchb/1481.html"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Yilan County",
+       "href": "https://www.ilshb.gov.tw/News_Content.aspx?n=15717&s=408402&_CSN=5134"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Taoyuan City",
+       "href": "https://dph.tycg.gov.tw/News_Content.aspx?n=4271&s=1583773"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Hsinchu City",
+       "href": "https://dep.hcchb.gov.tw/ch/home.jsp?id=102&parentpath=0,40,99"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Hsinchu County",
+       "href": "https://www.hcshb.gov.tw/News_Content.aspx?Create=1&n=54&state=D76AA80471BA9582&s=110197&ccms_cs=1&sms=9069"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Miaoli County",
+       "href": "https://www.mlshb.gov.tw/nc/article?id=b91abee9-c867-4d29-8f82-d96cb8843125"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Taichung City",
+       "href": "https://www.health.taichung.gov.tw/26198/26327/26565/1897690/26598/90259/3363707/post"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Changhua County"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Nantou County",
+       "href": "https://www.ntshb.gov.tw/form/index?Parser=2,7,124,62"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Yunlin County",
+       "href": "https://ylshb.yunlin.gov.tw/News_Content.aspx?Create=1&n=5478&state=A626BE7E86E56186&s=607063&ccms_cs=1&sms=13550"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Chiayi City",
+       "href": "https://health.chiayi.gov.tw/cp.aspx?n=7690"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Chiayi County",
+       "href": "https://cyshb.cyhg.gov.tw/News.aspx?n=10841&sms=21362"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Tainan City",
+       "href": "https://health.tainan.gov.tw/page.asp?mainid=F8952AA7-F993-4C26-B3EA-DFF51C152B02&srcorcaid=462FECE7-F544-4B90-9799-DC3EB3631D9C"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Hualien County",
+       "href": "https://www.hlshb.gov.tw/News_Content.aspx?n=8766&sms=14641&s=228413"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Taitung County",
+       "href": "https://www.ttshb.gov.tw/FileList/C000011?SubCategoryID=6fd2bdb8-eea7-45a5-9269-47625e19a4f2&ID=b8b06dad-4c35-4005-bdae-7abf3383c704&PageIndex=1&PageType=1"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Kaohsiung City",
+       "href": "https://gov.tw/SWK"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Pingtung County",
+       "href": "https://www.ptshb.gov.tw/News_Content.aspx?n=4BFDA79160D55F30&sms=5C5A2981C9F189EF&s=B06485B03E503B5B"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Penghu County",
+       "href": "https://www.phchb.gov.tw/home.jsp?id=255&act=view&dataserno=202409200001"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Lienchiang County",
+       "href": "https://www.matsuhb.gov.tw/Chhtml/Detail/6023?mcid=113267&webaid=6"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Kinmen County",
+       "href": "https://phb.kinmen.gov.tw/Content_List.aspx?n=71479696FA18D647"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "▲[Publicly funded COVID-19 vaccine] Contracted clinics and hours by city/county"
+    },
+    {
+     "type": "p",
+     "text": "Taipei City, New Taipei City, Keelung City, Yilan County, Lienchiang County, Kinmen County, Taoyuan City, Hsinchu City, Hsinchu County, Miaoli County, Taichung City (adults), Taichung City (children), Changhua County, Nantou County, Yunlin County, Chiayi City, Chiayi County, Tainan City, Kaohsiung City, Pingtung County, Penghu County, Hualien County, Taitung County",
+     "runs": [
+      {
+       "text": "Taipei City",
+       "href": "https://health.gov.taipei/cp.aspx?n=CF042BF4EACD8FD2&s=6AC6325EAF675B54"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "New Taipei City",
+       "href": "https://www.health.ntpc.gov.tw/article/%E6%96%B0%E5%8C%97%E5%B8%82%E6%B5%81%E6%84%9F%E7%96%AB%E8%8B%97%E5%8F%8ACOVID_19%E7%96%AB%E8%8B%97%E6%8E%A5%E7%A8%AE%E5%9C%B0%E9%BB%9E%E8%B3%87%E8%A8%8A%E6%9F%A5%E8%A9%A21"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Keelung City",
+       "href": "https://www.klchb.klcg.gov.tw/tw/klchb/4183-320067.html"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Yilan County",
+       "href": "https://www.ilshb.gov.tw/News.aspx?n=15710&sms=15520&_CSN=5106"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Lienchiang County",
+       "href": "https://www.matsuhb.gov.tw/Chhtml/news/6022?webaid=6"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Kinmen County",
+       "href": "https://phb.kinmen.gov.tw/Content_List.aspx?n=CB24F8ACC1374FD4"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Taoyuan City",
+       "href": "https://dph.tycg.gov.tw/News_Content.aspx?n=20660&s=1379265"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Hsinchu City"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Hsinchu County",
+       "href": "https://prevention.hcshb.gov.tw/Covid19_Consultation.aspx?n=1012&sms=9996"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Miaoli County",
+       "href": "https://www.mlshb.gov.tw/nc/article?id=b91abee9-c867-4d29-8f82-d96cb8843125"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Taichung City (adults)",
+       "href": "https://www.health.taichung.gov.tw/3092123/Lpsimplelist"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Taichung City (children)",
+       "href": "https://www.health.taichung.gov.tw/3369472/post"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Changhua County",
+       "href": "https://www.chshb.gov.tw/taxonomy/term/68"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Nantou County",
+       "href": "https://www.ntshb.gov.tw/form/index?Parser=2,7,245,62,122"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Yunlin County",
+       "href": "https://ylshb.yunlin.gov.tw/News_Content.aspx?n=14229&s=515587"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Chiayi City",
+       "href": "https://health.chiayi.gov.tw/cp.aspx?n=7690"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Chiayi County",
+       "href": "https://cyshb.cyhg.gov.tw/News.aspx?n=10841&sms=21362"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Tainan City",
+       "href": "https://health.tainan.gov.tw/page.asp?mainid=F8952AA7-F993-4C26-B3EA-DFF51C152B02&srcorcaid=462FECE7-F544-4B90-9799-DC3EB3631D9C"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Kaohsiung City",
+       "href": "https://health.kcg.gov.tw/News_Content.aspx?n=E6542183C27B7E6F&sms=852EDE025ACE239A&s=636703017C2B714C"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Pingtung County",
+       "href": "https://www.ptshb.gov.tw/cp.aspx?n=7F7676C34AC3FCF9&s=609B237CC006A155"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Penghu County",
+       "href": "https://www.phchb.gov.tw/home.jsp?id=255&act=view&dataserno=202409200001"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Hualien County",
+       "href": "https://www.hlshb.gov.tw/News.aspx?n=8766&sms=14641"
+      },
+      {
+       "text": ", "
+      },
+      {
+       "text": "Taitung County",
+       "href": "https://www.ttshb.gov.tw/Announcement/C000001?ID=e5972af4-0729-4ddd-935a-ad4d34947671&PageType=1"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "text": "[Hypermarket vaccination sites for Phase 2 from 2026/11/02] (to be announced)"
+    },
+    {
+     "type": "p",
+     "text": "▲PX Mart and PX Mart Plus vaccination sites"
+    },
+    {
+     "type": "p",
+     "text": "▲Wellcome and Lopia vaccination sites"
+    }
+   ],
+   "links": [],
+   "files": []
+  },
+  {
+   "id": "103061",
+   "key": "precautions",
+   "hash": "sha256:a1aeca8886426a34",
+   "title": "Vaccination Precautions",
+   "updated": "2026-09-21",
+   "translated": true,
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "Publicly funded flu vaccine information sheet (community edition)",
+     "href": "https://www.cdc.gov.tw/File/Get/hcTdOzrvkLtiXTtYeBW4QA",
+     "ext": "pdf",
+     "isNew": true
+    },
+    {
+     "text": "Moderna XFG COVID-19 vaccine information, screening and consent form (Chinese) 1150707",
+     "href": "https://www.cdc.gov.tw/File/Get/HDtEeJxy8i75wahnQJy5Eg",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "Moderna XFG COVID-19 vaccine information, screening and consent form (English) 1150707",
+     "href": "https://www.cdc.gov.tw/File/Get/7yIWctBwFfD2EDyYfQg28Q",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "evil file",
+     "href": "https://evil.example/x.pdf",
+     "ext": "pdf\" onclick=\"alert(5)",
+     "isNew": false
+    }
+   ]
+  },
+  {
+   "id": "103062",
+   "key": "brands",
+   "hash": "sha256:7fb4e587bee3d1d1",
+   "title": "疫苗廠牌資訊",
+   "updated": "2026-09-21",
+   "translated": false,
+   "blocks": [
+    {
+     "type": "h",
+     "level": 4,
+     "text": "流感疫苗"
+    },
+    {
+     "type": "p",
+     "text": "本(115)年度採用三價流感疫苗，公費疫苗共有5個廠牌(標準型及加強型)，皆為單劑型(每劑0.5mL)，各疫苗廠牌及適用年齡如下："
+    },
+    {
+     "type": "h",
+     "level": 5,
+     "text": "提供3歲以上幼兒及成人使用(標準型)"
+    },
+    {
+     "type": "list",
+     "ordered": false,
+     "items": [
+      "國光生物科技股份有限公司：安定伏裂解型流感疫苗。",
+      "高端疫苗生物製劑股份有限公司：福喜健三價流感疫苗。"
+     ]
+    },
+    {
+     "type": "h",
+     "level": 5,
+     "text": "提供6個月以上幼兒及成人使用(標準型)"
+    },
+    {
+     "type": "list",
+     "ordered": false,
+     "items": [
+      "賽諾菲股份有限公司：菲流達三價流感疫苗。",
+      "荷商葛蘭素史克藥廠股份有限公司台灣分公司：伏流感疫苗。",
+      "台灣東洋藥品工業股份有限公司：輔流威護流感疫苗。"
+     ]
+    },
+    {
+     "type": "h",
+     "level": 5,
+     "text": "優先提供安養及長期照顧(服務)等機構65歲以上受照顧者及機構所屬工作人員接種(加強型)"
+    },
+    {
+     "type": "list",
+     "ordered": false,
+     "items": [
+      "台灣東洋藥品工業股份有限公司：輔流禦流感疫苗",
+      "賽諾菲股份有限公司：菲優達高劑量三價流感疫苗"
+     ]
+    },
+    {
+     "type": "h",
+     "level": 4,
+     "text": "新冠疫苗"
+    },
+    {
+     "type": "p",
+     "text": "目前國內供應接種之新冠疫苗為mRNA疫苗及蛋白質次單元疫苗，廠牌分別為莫德納及Novavax（Nuvaxovid）。"
+    },
+    {
+     "type": "list",
+     "ordered": false,
+     "items": [
+      "莫德納XFG新冠疫苗單劑型：適用於滿12歲以上公費接種對象（每劑0.2 mL），為新世代新冠疫苗。新世代新冠疫苗所含抗原劑量只有前一代疫苗的1/5，依臨床研究結果顯示保護效果更好，較前一代疫苗可誘導近2倍免疫保護力，且接種後發生發燒與任何局部不良反應約減少一半。",
+      "莫德納XFG新冠疫苗多劑型：適用於滿6個月至11歲公費接種對象（每劑0.25 mL）。",
+      "Novavax（Nuvaxovid）XFG新冠疫苗單劑型：適用於滿12歲以上公費接種對象（每劑0.5 mL）。"
+     ]
+    }
+   ],
+   "links": [],
+   "files": []
+  },
+  {
+   "id": "103064",
+   "key": "education",
+   "hash": "sha256:a1c1560ab23c4744",
+   "title": "Health Education Resources",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [],
+   "links": [
+    {
+     "text": "Flu on the left, COVID on the right — caring for your parents",
+     "href": "https://www.cdc.gov.tw/Advocacy/SubIndex/2xHloQ6fXNagOKPnayrjgQ?diseaseId=N6XvFa1YP9CXYdB0kNSA9A&tab=1",
+     "isNew": false
+    },
+    {
+     "text": "Get both shots for peace of mind — good-morning cards",
+     "href": "https://www.cdc.gov.tw/Advocacy/SubIndex/2xHloQ6fXNagOKPnayrjgQ?diseaseId=N6XvFa1YP9CXYdB0kNSA9A&tab=1",
+     "isNew": false
+    }
+   ],
+   "files": [
+    {
+     "text": "2026 flu & COVID-19 vaccination poster",
+     "href": "https://www.cdc.gov.tw/File/Get/0-nBHDYS8sbAw1Nlv_MHqw",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "Prevent respiratory infections with everyday hygiene",
+     "href": "https://www.cdc.gov.tw/File/Get/cpDyYNC-vTFqjKljm9HtIw",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "Keep up good hygiene when travelling or at large events",
+     "href": "https://www.cdc.gov.tw/File/Get/OmGj4ckQRNez8k_1TZb_Hw",
+     "ext": "pdf",
+     "isNew": false
+    },
+    {
+     "text": "Confessions of the COVID-19 virus",
+     "href": "https://www.cdc.gov.tw/File/Get/xXIEecVKpBsAxUhISKp5qg",
+     "ext": "pdf",
+     "isNew": false
+    }
+   ]
+  },
+  {
+   "id": "103065",
+   "key": "news",
+   "hash": "sha256:df10941c88fc0778",
+   "title": "Latest Press Releases",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [],
+   "links": [
+    {
+     "text": "Flu activity keeps rising: expanded eligibility for publicly funded flu antivirals extended to October 31, 2026",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/-EYGFSc-mTOTTawYvm91GA?typeid=9",
+     "isNew": true,
+     "date": "2026-09-26"
+    },
+    {
+     "text": "Flu and COVID-19 still circulating and flu rising: take extra precautions over the long weekend and seek care promptly for warning signs",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/Tj9G4dJj3yMmEE0URl49CA?typeid=9",
+     "isNew": true
+    },
+    {
+     "text": "Flu and COVID-19 continue: mind personal hygiene and seek prompt treatment for signs of severe illness",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/GWRkQ03fZuKKWwdv191UyQ?typeid=9",
+     "isNew": false
+    },
+    {
+     "text": "Flu and COVID-19 can still spread: wear a mask when seeing a doctor with symptoms, rest at home and watch for warning signs",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/5gJTj70wu9L3psY5kQLUuA?typeid=9",
+     "isNew": false
+    },
+    {
+     "text": "Flu activity keeps rising: expanded eligibility for publicly funded flu antivirals extended to October 31, 2026",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/-EYGFSc-mTOTTawYvm91GA?typeid=9",
+     "isNew": false
+    },
+    {
+     "text": "Enhanced flu vaccine and next-generation COVID-19 vaccine offered for the first time this autumn/winter: get both shots",
+     "href": "https://www.cdc.gov.tw/Bulletin/Detail/PdJqXvsZjg1Q5TA301JYpg?typeid=9",
+     "isNew": false
+    }
+   ],
+   "files": []
+  },
+  {
+   "id": "103063",
+   "key": "faq",
+   "hash": "sha256:f7a4cc98dd1364d8",
+   "title": "Frequently Asked Questions",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [
+    {
+     "type": "p",
+     "text": "Seasonal flu vaccine Q&A"
+    },
+    {
+     "type": "p",
+     "text": "https://www.cdc.gov.tw/Category/List/uu68c_niZ3SPoViEMp72Mg"
+    },
+    {
+     "type": "p",
+     "text": "COVID-19 vaccine Q&A"
+    },
+    {
+     "type": "p",
+     "text": "https://www.cdc.gov.tw/Category/List/Dq7GIwfpZj0TlfqvYBDRAQ"
+    }
+   ],
+   "links": [],
+   "files": []
+  },
+  {
+   "id": "103068",
+   "key": "education",
+   "hash": "sha256:e097469b203d212c",
+   "title": "Other Health Promotion Resources",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [],
+   "links": [
+    {
+     "text": "Taiwan Academy of Family Physicians — Director-General Lo Yi-chun: getting flu and COVID-19 vaccines together lowers the risk of severe lung complications, heart attack and stroke",
+     "href": "https://www.youtube.com/watch?v=i9sFsyunSfw",
+     "isNew": false
+    },
+    {
+     "text": "Taiwan Academy of Family Physicians — COVID-19 vaccine myths: experts explain",
+     "href": "https://www.youtube.com/watch?v=nN7gBZg6FNA",
+     "isNew": false
+    }
+   ],
+   "files": []
+  },
+  {
+   "id": "103066",
+   "key": "other",
+   "hash": "sha256:a72dee14183a83f6",
+   "title": "Learn More About Severe Flu and COVID-19",
+   "updated": "2026-09-07",
+   "translated": true,
+   "blocks": [],
+   "links": [
+    {
+     "text": "Severe COVID-19 complications",
+     "href": "https://www.cdc.gov.tw/Disease/SubIndex/N6XvFa1YP9CXYdB0kNSA9A",
+     "isNew": false
+    },
+    {
+     "text": "Severe influenza complications",
+     "href": "https://www.cdc.gov.tw/Disease/SubIndex/x7jzGIMMuIeuLM5izvwg_g",
+     "isNew": false
+    }
+   ],
+   "files": []
+  },
+  {
+   "id": "x\" onmouseover=\"alert(7)",
+   "key": "__proto__",
+   "hash": "x",
+   "title": "weird section",
+   "updated": "not-a-date",
+   "translated": "yes",
+   "blocks": [
+    {
+     "type": "list",
+     "items": [
+      {
+       "text": "obj"
+      },
+      "ok item"
+     ]
+    },
+    {
+     "type": "table",
+     "head": "nope",
+     "rows": "nope"
+    }
+   ],
+   "links": "nope",
+   "files": null
+  },
+  null
+ ]
+}

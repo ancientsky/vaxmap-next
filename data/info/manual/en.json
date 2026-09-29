@@ -1,0 +1,665 @@
+{
+  "title": {
+    "hash": "sha256:25b32590e074e4c4c4beefcbd7c5d7b03bba7b62a28154127b07cd98473650b2",
+    "title": "2026 (ROC year 115) \"Flu Shot in One Arm, COVID-19 in the Other\" Vaccination Page: Protect Your Lungs and Heart"
+  },
+  "sections": [
+    {
+      "id": "103106",
+      "key": "coins",
+      "hash": "sha256:b62c80491ff3ae2219861c065c8e403e7b162df0dea1d1310313eae301d9be1e",
+      "title": "Get vaccinated and earn Health Coins",
+      "blocks": [
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "From October 1, 2026, people aged 18 and over can earn Health Coins by completing designated health tasks such as health checkups, cancer screenings and vaccinations. From December 1, the coins can be exchanged for health products, to encourage everyone to take an active role in managing their health."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "A flu vaccine earns 450 coins, a COVID-19 vaccine 900 coins and a pneumococcal vaccine 600 coins. Getting vaccinated protects your health, and you earn Health Coins as a reward too!"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "For more details, see the "
+            },
+            {
+              "text": "[Health Coins website of the Health Promotion Administration, Ministry of Health and Welfare]"
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "text": "\"Take care of your health, earn coins\": launching in October! Earn Health Coins for health checkups, cancer screening and vaccination, with exchange of rewards from December"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103059",
+      "key": "eligibility",
+      "hash": "sha256:ec6b69b9d3bd33c84ed8d429b02d6c9afdbe429b45dc5509609d0272c6332396",
+      "title": "Who can get publicly funded vaccines",
+      "blocks": [
+        {
+          "type": "table",
+          "caption": "Phase 1 groups, from 2026/10/01",
+          "head": [
+            "Publicly funded group",
+            "Flu vaccine",
+            "COVID-19 vaccine"
+          ],
+          "rows": [
+            [
+              "Health care workers and public health / disease prevention personnel",
+              "✓",
+              "✓"
+            ],
+            [
+              "Adults aged 65 and over",
+              "✓",
+              "✓"
+            ],
+            [
+              "Indigenous people aged 55-64",
+              "✓",
+              "✓"
+            ],
+            [
+              "Residents of elderly care / long-term care facilities and the staff who work there",
+              "✓",
+              "✓"
+            ],
+            [
+              "Children aged 6 months up to school entry age (before elementary school)",
+              "✓",
+              "✓ (under age 6 and never vaccinated against COVID-19)"
+            ],
+            [
+              "Pregnant women",
+              "✓",
+              "✓"
+            ],
+            [
+              "People aged 6 months and over with underlying conditions or at high risk (including high-risk chronic diseases, BMI ≧ 30, rare diseases and catastrophic illnesses)",
+              "✓",
+              "✓ Also includes people with tuberculosis, disability, mental illness or dementia"
+            ],
+            [
+              "Parents or actual caregivers of infants under 6 months",
+              "✓",
+              "✓"
+            ],
+            [
+              "Staff of kindergartens and child care centers, and home-based child care providers (nannies)",
+              "✓",
+              "✓"
+            ],
+            [
+              "Students in elementary school, junior high, senior high, vocational high school, and years 1 to 3 of five-year junior college",
+              "✓",
+              "✗"
+            ],
+            [
+              "Poultry, livestock and animal disease control workers",
+              "✓",
+              "✗"
+            ]
+          ]
+        },
+        {
+          "type": "table",
+          "caption": "Phase 2 groups, from 2026/11/02",
+          "head": [
+            "Publicly funded group",
+            "Flu vaccine",
+            "COVID-19 vaccine"
+          ],
+          "rows": [
+            [
+              "Healthy adults aged 50-64 without high-risk chronic conditions",
+              "✓",
+              "✓"
+            ]
+          ]
+        }
+      ],
+      "links": [],
+      "files": [
+        {
+          "text": "2026 publicly funded flu and COVID-19 vaccine eligibility poster"
+        }
+      ]
+    },
+    {
+      "id": "103060",
+      "key": "where",
+      "hash": "sha256:b08bc82392e6afa093e596088fb581a456e55f909a16019f70cbc8cea7ea5755",
+      "title": "Where can I get publicly funded flu / COVID-19 vaccines? (including community vaccination stations at designated hypermarkets)",
+      "blocks": [
+        {
+          "type": "h",
+          "text": "[Information is based on announcements from local health bureaus, contracted clinics and hypermarkets, and is updated regularly]"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲"
+            },
+            {
+              "text": "Map of flu, COVID-19 and pneumococcal vaccines and flu antivirals"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "1. Before getting a publicly funded flu or COVID-19 vaccine, we suggest booking an appointment with a nearby contracted clinic, or calling first to confirm the vaccine is in stock, so you avoid a long wait or a wasted trip."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "2. Clinic opening information comes from the National Health Insurance Administration and is for reference only. Consultation hours may change at short notice, so please call the clinic to confirm before you go."
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Publicly funded flu vaccine] Find contracted clinics and consultation hours by county/city"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Taipei City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " New Taipei City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Keelung City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Yilan County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Taoyuan City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Hsinchu City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Hsinchu County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Miaoli County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Taichung City"
+            },
+            {
+              "text": "、 Changhua County、 "
+            },
+            {
+              "text": "Nantou County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Yunlin County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Chiayi City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Chiayi County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Tainan City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Hualien County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Taitung County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Kaohsiung City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Pingtung County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Penghu County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Lienchiang County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Kinmen County"
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Publicly funded COVID-19 vaccine] Find contracted clinics and consultation hours by county/city"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Taipei City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " New Taipei City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Keelung City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Yilan County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Lienchiang County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Kinmen County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Taoyuan City"
+            },
+            {
+              "text": "、 Hsinchu City、 "
+            },
+            {
+              "text": "Hsinchu County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Miaoli County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Taichung City (adults"
+            },
+            {
+              "text": ")"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Taichung City (children)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Changhua County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Nantou County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Yunlin County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Chiayi City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Chiayi County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Tainan City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Kaohsiung City"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Pingtung County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Penghu County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Hualien County"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": " Taitung County"
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Phase 2 hypermarket vaccination stations, from 2026/11/02] (to be announced)"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲Find PX Mart and Big PX Mart vaccination stations"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲Find Wellcome (萬家福) and Le Jia Kang (樂家康) vaccination stations"
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103061",
+      "key": "precautions",
+      "hash": "sha256:8e354e53a012eb910f5ce26370c9a37f2293a6032bf1fb9635e9622f4921c664",
+      "title": "Vaccination precautions",
+      "blocks": [],
+      "links": [],
+      "files": [
+        {
+          "text": "Publicly funded flu vaccine information sheet (community version)"
+        },
+        {
+          "text": "Moderna XFG COVID-19 vaccine information sheet, screening assessment and consent form (Chinese version) 1150707"
+        },
+        {
+          "text": "Moderna XFG COVID-19 vaccine information sheet, screening assessment and consent form (English version) 1150707"
+        }
+      ]
+    },
+    {
+      "id": "103062",
+      "key": "brands",
+      "hash": "sha256:183c478aa634c5b136732294cd5476eb00cdc73118e4c754015ddfb7679d5a94",
+      "title": "Vaccine brands",
+      "blocks": [
+        {
+          "type": "h",
+          "text": "Flu vaccine"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "This year (ROC year 115, 2026) the trivalent flu vaccine is used. There are 5 publicly funded brands (standard and enhanced types), all single-dose (0.5 mL per dose). The brands and the ages they are approved for are listed below:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "For children aged 3 and over and adults (standard type)",
+            "Adimmune: 安定伏 (Adimmune split-virion flu vaccine).",
+            "Medigen: 福喜健 (Medigen trivalent flu vaccine).",
+            "For children aged 6 months and over and adults (standard type)",
+            "Sanofi: 菲流達 (Sanofi trivalent flu vaccine).",
+            "GSK (Taiwan branch): 伏流感 (GSK flu vaccine).",
+            "TTY Biopharm: 輔流威護 (TTY Biopharm flu vaccine).",
+            "Given first to people aged 65 and over in elderly care / long-term care facilities and to the staff of those facilities (enhanced type)",
+            "TTY Biopharm: 輔流禦 (TTY Biopharm enhanced flu vaccine)",
+            "Sanofi: 菲優達 (Sanofi high-dose trivalent flu vaccine)"
+          ]
+        },
+        {
+          "type": "h",
+          "text": "COVID-19 vaccine"
+        },
+        {
+          "type": "list",
+          "items": [
+            "The COVID-19 vaccines currently available in Taiwan are an mRNA vaccine and a protein subunit vaccine, from Moderna and Novavax (Nuvaxovid) respectively.",
+            "Moderna XFG COVID-19 vaccine comes in single-dose and multi-dose forms:",
+            "Single-dose: for publicly funded recipients aged 12 and over (0.2 mL per dose). This is a new-generation COVID-19 vaccine. It contains only 1/5 of the antigen dose of the previous generation, yet clinical studies show better protection, inducing nearly twice the immune protection, and evidence shows about half as many cases of fever and of any local side effects after vaccination. The new-generation vaccine therefore offers better protection with fewer side effects.",
+            "Multi-dose: for publicly funded recipients aged 6 months to 11 years (0.25 mL per dose).",
+            "Novavax (Nuvaxovid) XFG COVID-19 vaccine comes in a single-dose form:",
+            "Single-dose: for publicly funded recipients aged 12 and over (0.5 mL per dose)."
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103064",
+      "key": "education",
+      "hash": "sha256:7d47cbf47a4c594a64355d0d1ada3aafce86bdecbe68a2de74ab403b5ca0f0f0",
+      "title": "Health education resources",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Video: Flu shot in one arm, COVID-19 in the other (caring for your children)"
+        },
+        {
+          "text": "Video: Getting both vaccines is the safest (Good Morning greeting-card edition)"
+        }
+      ],
+      "files": [
+        {
+          "text": "2026 flu and COVID-19 vaccine poster: protect your lungs and heart"
+        },
+        {
+          "text": "Preventing respiratory infections starts with everyday hygiene"
+        },
+        {
+          "text": "Keep up good hygiene habits when traveling or attending large events"
+        },
+        {
+          "text": "The COVID-19 virus's confession"
+        }
+      ]
+    },
+    {
+      "id": "103065",
+      "key": "news",
+      "hash": "sha256:d85ecc829e95112c1c922cac43a6467d24ac3572ee29aa67e8037f07e88b7a25",
+      "title": "Latest press releases",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Flu activity continues to rise: expanded eligibility for publicly funded flu antivirals extended to October 31 this year (ROC year 115)"
+        },
+        {
+          "text": "Flu and COVID-19 are still circulating and flu activity keeps rising: public urged to take extra precautions during the holiday and seek care quickly if severe warning signs appear"
+        },
+        {
+          "text": "Flu and COVID-19 activity continues: public urged to keep up good hygiene and seek treatment quickly if severe warning signs appear"
+        },
+        {
+          "text": "Flu and COVID-19 can still spread: if you have symptoms, wear a mask to see a doctor and rest at home, and watch for severe warning signs"
+        },
+        {
+          "text": "Flu and COVID-19 are both in their epidemic period and flu activity keeps rising: public urged to wash hands often, wear masks and take other protective measures, and watch for severe warning signs"
+        },
+        {
+          "text": "For autumn and winter 2026 (ROC year 115), publicly funded enhanced flu vaccines and new-generation COVID-19 vaccines are introduced for the first time, with all vaccine strains updated for precise protection; Taiwan CDC urges getting both flu and COVID-19 shots together: flu shot in one arm, COVID-19 in the other, to protect lungs and heart"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103063",
+      "key": "faq",
+      "hash": "sha256:599e0cb7ed5c361d32a4dc4ae845d76bed63c026a5b437ea048e3cbca4ffd550",
+      "title": "Frequently asked questions",
+      "blocks": [
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Seasonal flu vaccine Q&A"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "COVID-19 vaccine Q&A"
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103068",
+      "key": "education",
+      "hash": "sha256:45037d4f9686f8b77107cda85bb3d717578a13edb776f38d8b203d603db16061",
+      "title": "Other health education resources",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Video: Taiwan Academy of Family Physicians, with Director-General Lo Yi-chun: getting flu and COVID-19 vaccines together can effectively lower the risk of severe lung complications, heart attack and stroke"
+        },
+        {
+          "text": "Video: Taiwan Academy of Family Physicians, experts on COVID-19 vaccination myths"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103066",
+      "key": "other",
+      "hash": "sha256:4832685928d78d99402d6c05cd20d8085aa1efbbd6511ab2a511d0ed7de08821",
+      "title": "Want to know more about severe complications of flu and COVID-19?",
+      "blocks": [],
+      "links": [
+        {
+          "text": "COVID-19 severe complications page"
+        },
+        {
+          "text": "Influenza severe complications page"
+        }
+      ],
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,665 @@
+{
+  "title": {
+    "hash": "sha256:25b32590e074e4c4c4beefcbd7c5d7b03bba7b62a28154127b07cd98473650b2",
+    "title": "Vaksinasi Tahun 2026 (ROC 115): Flu di Satu Lengan, COVID-19 di Lengan Lain, Lindungi Paru dan Jantung"
+  },
+  "sections": [
+    {
+      "id": "103106",
+      "key": "coins",
+      "hash": "sha256:b62c80491ff3ae2219861c065c8e403e7b162df0dea1d1310313eae301d9be1e",
+      "title": "Vaksinasi untuk mengumpulkan Koin Kesehatan",
+      "blocks": [
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Mulai 1 Oktober 2026, warga berusia 18 tahun ke atas yang menyelesaikan tugas kesehatan tertentu, seperti pemeriksaan kesehatan, skrining kanker, dan vaksinasi, dapat mengumpulkan Koin Kesehatan (Health Coins). Mulai 1 Desember, koin dapat ditukar dengan produk kesehatan, untuk mendorong semua orang menjaga kesehatannya secara aktif."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Vaksin influenza memberi 450 koin, vaksin COVID-19 memberi 900 koin, dan vaksin pneumokokus memberi 600 koin. Vaksinasi menjaga kesehatan Anda, dan Anda juga mendapat hadiah dari koin yang terkumpul!"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Info lebih lanjut: "
+            },
+            {
+              "text": "[Situs Koin Kesehatan, Health Promotion Administration, Kementerian Kesehatan dan Kesejahteraan]"
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "text": "Program \"Jaga Kesehatan, Raih Koin\" dimulai Oktober! Kumpulkan Koin Kesehatan lewat pemeriksaan kesehatan, skrining kanker, dan vaksinasi; penukaran hadiah dibuka mulai Desember"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103059",
+      "key": "eligibility",
+      "hash": "sha256:ec6b69b9d3bd33c84ed8d429b02d6c9afdbe429b45dc5509609d0272c6332396",
+      "title": "Siapa yang berhak vaksin bersubsidi pemerintah",
+      "blocks": [
+        {
+          "type": "table",
+          "caption": "Tahap 1, mulai 2026/10/01",
+          "head": [
+            "Kelompok penerima vaksin publicly funded",
+            "Vaksin influenza",
+            "Vaksin COVID-19"
+          ],
+          "rows": [
+            [
+              "Tenaga medis dan petugas kesehatan/pencegahan penyakit",
+              "✓",
+              "✓"
+            ],
+            [
+              "Lansia usia 65 tahun ke atas",
+              "✓",
+              "✓"
+            ],
+            [
+              "Penduduk asli (Masyarakat Adat) usia 55-64 tahun ke atas",
+              "✓",
+              "✓"
+            ],
+            [
+              "Penghuni panti jompo/perawatan jangka panjang dan staf lembaga tersebut",
+              "✓",
+              "✓"
+            ],
+            [
+              "Anak usia 6 bulan ke atas hingga sebelum masuk SD",
+              "✓",
+              "✓ (di bawah 6 tahun dan belum pernah divaksin COVID-19)"
+            ],
+            [
+              "Ibu hamil",
+              "✓",
+              "✓"
+            ],
+            [
+              "Usia 6 bulan ke atas dengan penyakit penyerta/kelompok berisiko tinggi (termasuk penderita penyakit kronis berisiko tinggi, BMI ≧ 30, penyakit langka, dan penyakit berat/katastropik)",
+              "✓",
+              "✓ Juga mencakup penderita tuberkulosis, disabilitas, gangguan jiwa, dan demensia"
+            ],
+            [
+              "Orang tua atau pengasuh bayi di bawah 6 bulan",
+              "✓",
+              "✓"
+            ],
+            [
+              "Staf taman kanak-kanak dan tempat penitipan anak, serta pengasuh anak di rumah",
+              "✓",
+              "✓"
+            ],
+            [
+              "Siswa SD, SMP, SMA, SMK, dan kelas 1-3 sekolah kejuruan lima tahun (wuzhuan)",
+              "✓",
+              "✗"
+            ],
+            [
+              "Petugas pencegahan penyakit unggas, ternak, dan hewan",
+              "✓",
+              "✗"
+            ]
+          ]
+        },
+        {
+          "type": "table",
+          "caption": "Tahap 2, mulai 2026/11/02",
+          "head": [
+            "Kelompok penerima vaksin publicly funded",
+            "Vaksin influenza",
+            "Vaksin COVID-19"
+          ],
+          "rows": [
+            [
+              "Dewasa usia 50-64 tahun tanpa penyakit kronis berisiko tinggi",
+              "✓",
+              "✓"
+            ]
+          ]
+        }
+      ],
+      "links": [],
+      "files": [
+        {
+          "text": "Poster penerima vaksin flu dan COVID-19 publicly funded 2026"
+        }
+      ]
+    },
+    {
+      "id": "103060",
+      "key": "where",
+      "hash": "sha256:b08bc82392e6afa093e596088fb581a456e55f909a16019f70cbc8cea7ea5755",
+      "title": "Di mana bisa mendapat vaksin flu/COVID-19 bersubsidi pemerintah? (termasuk pos vaksinasi komunitas di hipermarket tertentu)",
+      "blocks": [
+        {
+          "type": "h",
+          "text": "[Informasi mengikuti pengumuman dinas kesehatan kota/kabupaten, klinik mitra, dan hipermarket; terus diperbarui]"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲ "
+            },
+            {
+              "text": "Peta vaksin flu, COVID-19, pneumokokus, dan obat antivirus flu"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "1. Sebelum menerima vaksin flu atau COVID-19 bersubsidi, sebaiknya buat janji dengan klinik mitra terdekat atau telepon dulu untuk memastikan vaksin tersedia, agar tidak menunggu lama atau datang sia-sia."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "2. Jam praktik klinik berasal dari National Health Insurance Administration dan hanya sebagai acuan. Jam bisa berubah mendadak, jadi telepon klinik sebelum datang."
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Vaksin flu publicly funded] Cari klinik mitra dan jam praktik per kota/kabupaten"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Kota Taipei"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Taipei Baru"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Keelung"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Yilan"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Taoyuan"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Hsinchu"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Hsinchu"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Miaoli"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Taichung"
+            },
+            {
+              "text": ", Kabupaten Changhua, "
+            },
+            {
+              "text": "Kabupaten Nantou"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Yunlin"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Chiayi"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Chiayi"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Tainan"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Hualien"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Taitung"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Kaohsiung"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Pingtung"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Penghu"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Lienchiang"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Kinmen"
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Vaksin COVID-19 publicly funded] Cari klinik mitra dan jam praktik per kota/kabupaten"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Kota Taipei"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Taipei Baru"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Keelung"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Yilan"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Lienchiang"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Kinmen"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Taoyuan"
+            },
+            {
+              "text": ", Kota Hsinchu, "
+            },
+            {
+              "text": "Kabupaten Hsinchu"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Miaoli"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Taichung (dewasa"
+            },
+            {
+              "text": ")"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Taichung (anak)"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Changhua"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Nantou"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Yunlin"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Chiayi"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Chiayi"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Tainan"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kota Kaohsiung"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Pingtung"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Penghu"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Hualien"
+            },
+            {
+              "text": "、 "
+            },
+            {
+              "text": "Kabupaten Taitung"
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Pos vaksinasi di hipermarket untuk kelompok Tahap 2, mulai 2026/11/02] (akan diumumkan)"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲ Cari pos vaksinasi di PX Mart dan PX Mart Big (全聯、大全聯)"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲ Cari pos vaksinasi di Wanjiafu dan Lejiakang (萬家福、樂家康)"
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103061",
+      "key": "precautions",
+      "hash": "sha256:8e354e53a012eb910f5ce26370c9a37f2293a6032bf1fb9635e9622f4921c664",
+      "title": "Hal yang perlu diperhatikan saat vaksinasi",
+      "blocks": [],
+      "links": [],
+      "files": [
+        {
+          "text": "Panduan vaksin flu publicly funded (versi komunitas)"
+        },
+        {
+          "text": "Panduan vaksin Moderna XFG COVID-19 beserta formulir penilaian dan persetujuan_versi Mandarin_1150707"
+        },
+        {
+          "text": "Panduan vaksin Moderna XFG COVID-19 beserta formulir penilaian dan persetujuan_versi Inggris_1150707"
+        }
+      ]
+    },
+    {
+      "id": "103062",
+      "key": "brands",
+      "hash": "sha256:183c478aa634c5b136732294cd5476eb00cdc73118e4c754015ddfb7679d5a94",
+      "title": "Informasi merek vaksin",
+      "blocks": [
+        {
+          "type": "h",
+          "text": "Vaksin influenza"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Tahun ini (ROC 115, 2026) digunakan vaksin influenza trivalen. Ada 5 merek vaksin bersubsidi (tipe standar dan tipe penguat), semuanya dosis tunggal (0,5 mL per dosis). Merek dan usia yang dapat menerimanya adalah sebagai berikut:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "Untuk anak usia 3 tahun ke atas dan dewasa (tipe standar)",
+            "Adimmune: 安定伏 (vaksin influenza split-virion).",
+            "Medigen: 福喜健 (vaksin influenza trivalen).",
+            "Untuk anak usia 6 bulan ke atas dan dewasa (tipe standar)",
+            "Sanofi: 菲流達 (vaksin influenza trivalen).",
+            "GSK (cabang Taiwan dari perusahaan Belanda): 伏流感 (vaksin influenza).",
+            "TTY Biopharm: 輔流威護 (vaksin influenza).",
+            "Diutamakan bagi penghuni berusia 65 tahun ke atas di panti jompo/perawatan jangka panjang dan staf lembaga tersebut (tipe penguat)",
+            "TTY Biopharm: 輔流禦 (vaksin influenza)",
+            "Sanofi: 菲優達 (vaksin influenza trivalen dosis tinggi)"
+          ]
+        },
+        {
+          "type": "h",
+          "text": "Vaksin COVID-19"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Vaksin COVID-19 yang tersedia di Taiwan saat ini adalah vaksin mRNA dan vaksin subunit protein, dengan merek Moderna dan Novavax (Nuvaxovid).",
+            "Vaksin COVID-19 Moderna XFG tersedia dalam kemasan dosis tunggal dan multidosis:",
+            "Dosis tunggal: untuk penerima vaksin bersubsidi usia 12 tahun ke atas (0,2 mL per dosis), yaitu vaksin COVID-19 generasi baru. Vaksin generasi baru mengandung antigen hanya 1/5 dari generasi sebelumnya. Studi klinis menunjukkan perlindungan lebih baik, dengan kekebalan hampir 2 kali lipat dibanding generasi sebelumnya, dan data bukti menunjukkan demam serta reaksi lokal setelah vaksinasi berkurang sekitar setengahnya. Jadi vaksin generasi baru memberi perlindungan lebih baik dengan efek samping lebih ringan.",
+            "Multidosis: untuk penerima vaksin bersubsidi usia 6 bulan sampai 11 tahun (0,25 mL per dosis).",
+            "Vaksin COVID-19 Novavax (Nuvaxovid) XFG tersedia dalam dosis tunggal:",
+            "Dosis tunggal: untuk penerima vaksin bersubsidi usia 12 tahun ke atas (0,5 mL per dosis)."
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103064",
+      "key": "education",
+      "hash": "sha256:7d47cbf47a4c594a64355d0d1ada3aafce86bdecbe68a2de74ab403b5ca0f0f0",
+      "title": "Sumber edukasi kesehatan",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Video: Flu di satu lengan, COVID-19 di lengan lain, edisi peduli anak"
+        },
+        {
+          "text": "Video: Dua vaksin sekaligus paling aman, edisi gambar ucapan selamat pagi"
+        }
+      ],
+      "files": [
+        {
+          "text": "Poster vaksin flu dan COVID-19 2026: lindungi paru dan jantung"
+        },
+        {
+          "text": "Cegah penyakit menular saluran pernapasan mulai dari kebersihan sehari-hari"
+        },
+        {
+          "text": "Tetap jaga kebiasaan bersih saat bepergian atau menghadiri acara besar"
+        },
+        {
+          "text": "Pengakuan virus COVID-19"
+        }
+      ]
+    },
+    {
+      "id": "103065",
+      "key": "news",
+      "hash": "sha256:d85ecc829e95112c1c922cac43a6467d24ac3572ee29aa67e8037f07e88b7a25",
+      "title": "Siaran pers terbaru",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Epidemi flu terus meningkat; perluasan syarat penggunaan obat antivirus flu bersubsidi diperpanjang hingga 31 Oktober tahun ini (ROC 115, 2026)"
+        },
+        {
+          "text": "Flu dan COVID-19 masih dalam masa epidemi dan flu terus meningkat; masyarakat diimbau memperkuat perlindungan diri selama libur panjang dan segera berobat bila muncul tanda bahaya penyakit berat"
+        },
+        {
+          "text": "Epidemi flu dan COVID-19 berlanjut; masyarakat diimbau menjaga kebersihan diri dan segera berobat bila muncul tanda bahaya penyakit berat"
+        },
+        {
+          "text": "Flu dan COVID-19 masih berisiko menular; bila bergejala, pakai masker saat berobat, istirahat di rumah, dan waspadai tanda bahaya penyakit berat"
+        },
+        {
+          "text": "Flu dan COVID-19 sama-sama dalam masa epidemi dan flu terus meningkat; masyarakat diimbau rajin cuci tangan, memakai masker, dan waspadai tanda bahaya penyakit berat"
+        },
+        {
+          "text": "Musim gugur-dingin 2026 (ROC 115): untuk pertama kalinya vaksin flu tipe penguat dan vaksin COVID-19 generasi baru bersubsidi, dengan strain yang diperbarui sepenuhnya. Taiwan CDC mengimbau: suntik flu di satu lengan, COVID-19 di lengan lain, lindungi paru dan jantung"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103063",
+      "key": "faq",
+      "hash": "sha256:599e0cb7ed5c361d32a4dc4ae845d76bed63c026a5b437ea048e3cbca4ffd550",
+      "title": "Pertanyaan yang sering diajukan",
+      "blocks": [
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Tanya jawab vaksin flu musiman"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Tanya jawab vaksin COVID-19"
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103068",
+      "key": "education",
+      "hash": "sha256:45037d4f9686f8b77107cda85bb3d717578a13edb776f38d8b203d603db16061",
+      "title": "Sumber edukasi kesehatan lainnya",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Video: Taiwan Academy of Family Medicine, Dirjen Lo Yi-chun: Vaksin flu dan COVID-19 sekaligus dapat menurunkan risiko komplikasi berat paru, serangan jantung, dan stroke"
+        },
+        {
+          "text": "Video: Taiwan Academy of Family Medicine, pakar meluruskan mitos vaksin COVID-19"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103066",
+      "key": "other",
+      "hash": "sha256:4832685928d78d99402d6c05cd20d8085aa1efbbd6511ab2a511d0ed7de08821",
+      "title": "Ingin tahu lebih banyak tentang pencegahan komplikasi berat flu dan COVID-19",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Halaman khusus komplikasi berat COVID-19"
+        },
+        {
+          "text": "Halaman khusus komplikasi berat influenza"
+        }
+      ],
+      "files": []
+    }
+  ]
+}

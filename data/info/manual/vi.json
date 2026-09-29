@@ -1,0 +1,665 @@
+{
+  "title": {
+    "hash": "sha256:25b32590e074e4c4c4beefcbd7c5d7b03bba7b62a28154127b07cd98473650b2",
+    "title": "Khu tiêm chủng năm 115 (2026): “Một tay tiêm cúm, một tay tiêm COVID-19” – bảo vệ phổi, chăm sóc tim"
+  },
+  "sections": [
+    {
+      "id": "103106",
+      "key": "coins",
+      "hash": "sha256:b62c80491ff3ae2219861c065c8e403e7b162df0dea1d1310313eae301d9be1e",
+      "title": "Tiêm vắc-xin, tích lũy Xu Sức khỏe (Health Coins)",
+      "blocks": [
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Từ ngày 01/10/2026, người từ đủ 18 tuổi hoàn thành các nhiệm vụ sức khỏe được chỉ định như khám sức khỏe, tầm soát ung thư, tiêm vắc-xin sẽ tích lũy được “Xu Sức khỏe”; từ ngày 1 tháng 12, có thể dùng Xu Sức khỏe để đổi lấy sản phẩm chăm sóc sức khỏe, nhằm khuyến khích mọi người chủ động chăm sóc sức khỏe."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Trong đó, tiêm vắc-xin cúm nhận được 450 xu, vắc-xin COVID-19 900 xu, vắc-xin phế cầu 600 xu. Tiêm vắc-xin để bảo vệ sức khỏe, bạn còn tích lũy được Xu Sức khỏe để nhận quà!"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Để biết thêm chi tiết, vui lòng xem "
+            },
+            {
+              "text": "Trang web Xu Sức khỏe của Cơ quan Y tế Quốc dân, Bộ Y tế và Phúc lợi"
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "text": "Chương trình “Chăm sóc sức khỏe, kiếm xu” chính thức bắt đầu từ tháng 10: khám sức khỏe, tầm soát ung thư, tiêm vắc-xin để kiếm Xu Sức khỏe, từ tháng 12 có thể đổi quà hấp dẫn"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103059",
+      "key": "eligibility",
+      "hash": "sha256:ec6b69b9d3bd33c84ed8d429b02d6c9afdbe429b45dc5509609d0272c6332396",
+      "title": "Đối tượng được tiêm vắc-xin do nhà nước chi trả",
+      "blocks": [
+        {
+          "type": "table",
+          "caption": "Đối tượng giai đoạn 1 từ 2026/10/01",
+          "head": [
+            "Nhóm đối tượng được tiêm do nhà nước chi trả",
+            "Vắc-xin cúm",
+            "Vắc-xin COVID-19"
+          ],
+          "rows": [
+            [
+              "Nhân viên y tế và nhân viên phòng chống dịch",
+              "✓",
+              "✓"
+            ],
+            [
+              "Người cao tuổi từ 65 tuổi trở lên",
+              "✓",
+              "✓"
+            ],
+            [
+              "Người bản địa từ 55–64 tuổi",
+              "✓",
+              "✓"
+            ],
+            [
+              "Người được chăm sóc và nhân viên của các cơ sở dưỡng lão/chăm sóc dài hạn",
+              "✓",
+              "✓"
+            ],
+            [
+              "Trẻ từ đủ 6 tháng tuổi đến trước khi vào tiểu học",
+              "✓",
+              "✓ (dưới 6 tuổi và chưa từng tiêm vắc-xin COVID-19)"
+            ],
+            [
+              "Phụ nữ mang thai",
+              "✓",
+              "✓"
+            ],
+            [
+              "Người từ đủ 6 tháng tuổi trở lên có bệnh nền/thuộc nhóm nguy cơ cao (gồm người mắc bệnh mạn tính nguy cơ cao, người có BMI ≥ 30, bệnh nhân bệnh hiếm và bệnh nặng)",
+              "✓",
+              "✓ Bao gồm thêm bệnh nhân lao, người khuyết tật, người có bệnh tâm thần và người bị sa sút trí tuệ"
+            ],
+            [
+              "Cha mẹ hoặc người trực tiếp nuôi dưỡng trẻ dưới 6 tháng tuổi",
+              "✓",
+              "✓"
+            ],
+            [
+              "Nhân viên nhà trẻ, trường mầm non và cơ sở giữ trẻ, người giữ trẻ tại nhà",
+              "✓",
+              "✓"
+            ],
+            [
+              "Học sinh tiểu học, trung học cơ sở, trung học phổ thông, trung cấp nghề và năm 1–3 của hệ cao đẳng 5 năm",
+              "✓",
+              "✗"
+            ],
+            [
+              "Nhân viên phòng dịch gia cầm, gia súc và động vật",
+              "✓",
+              "✗"
+            ]
+          ]
+        },
+        {
+          "type": "table",
+          "caption": "Đối tượng giai đoạn 2 từ 2026/11/02",
+          "head": [
+            "Nhóm đối tượng được tiêm do nhà nước chi trả",
+            "Vắc-xin cúm",
+            "Vắc-xin COVID-19"
+          ],
+          "rows": [
+            [
+              "Người trưởng thành từ 50–64 tuổi không có bệnh mạn tính nguy cơ cao",
+              "✓",
+              "✓"
+            ]
+          ]
+        }
+      ],
+      "links": [],
+      "files": [
+        {
+          "text": "Áp phích đối tượng tiêm vắc-xin cúm và COVID-19 do nhà nước chi trả năm 2026"
+        }
+      ]
+    },
+    {
+      "id": "103060",
+      "key": "where",
+      "hash": "sha256:b08bc82392e6afa093e596088fb581a456e55f909a16019f70cbc8cea7ea5755",
+      "title": "Tiêm vắc-xin cúm/COVID-19 do nhà nước chi trả ở đâu? (gồm các điểm tiêm cộng đồng tại siêu thị lớn được chỉ định)",
+      "blocks": [
+        {
+          "type": "h",
+          "text": "[Thông tin theo thông báo của sở y tế các huyện/thành phố, cơ sở ký hợp đồng và siêu thị; liên tục cập nhật]"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲"
+            },
+            {
+              "text": "Bản đồ vắc-xin cúm, COVID-19, phế cầu và thuốc kháng vi-rút cúm"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "1. Trước khi tiêm vắc-xin cúm hoặc COVID-19 do nhà nước chi trả, bạn nên đặt lịch hoặc gọi điện hỏi cơ sở ký hợp đồng gần nhất và xác nhận còn vắc-xin rồi hãy đến, để khỏi phải chờ lâu hoặc đi uổng công."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "2. Thông tin giờ khám của các cơ sở y tế lấy từ Cơ quan Bảo hiểm Y tế Quốc dân, chỉ để tham khảo; giờ khám có thể thay đổi đột xuất, nên gọi điện xác nhận trước khi tiêm."
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Vắc-xin cúm do nhà nước chi trả] Tra cứu cơ sở ký hợp đồng và giờ khám theo huyện/thành phố"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Đài Bắc"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Tân Bắc"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Cơ Long"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Nghi Lan"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đào Viên"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Tân Trúc (thành phố)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Tân Trúc (huyện)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Miêu Lật"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đài Trung"
+            },
+            {
+              "text": "、Chương Hóa、"
+            },
+            {
+              "text": "Nam Đầu"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Vân Lâm"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Gia Nghĩa (thành phố)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Gia Nghĩa (huyện)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đài Nam"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Hoa Liên"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đài Đông"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Cao Hùng"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Bình Đông"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Bành Hồ"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Liên Giang"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Kim Môn"
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Vắc-xin COVID-19 do nhà nước chi trả] Tra cứu cơ sở ký hợp đồng và giờ khám theo huyện/thành phố"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Đài Bắc"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Tân Bắc"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Cơ Long"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Nghi Lan"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Liên Giang"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Kim Môn"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đào Viên"
+            },
+            {
+              "text": "、Tân Trúc (thành phố)、"
+            },
+            {
+              "text": "Tân Trúc (huyện)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Miêu Lật"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đài Trung (người lớn"
+            },
+            {
+              "text": ")"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đài Trung (trẻ nhỏ)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Chương Hóa"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Nam Đầu"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Vân Lâm"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Gia Nghĩa (thành phố)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Gia Nghĩa (huyện)"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đài Nam"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Cao Hùng"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Bình Đông"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Bành Hồ"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Hoa Liên"
+            },
+            {
+              "text": "、"
+            },
+            {
+              "text": "Đài Đông"
+            }
+          ]
+        },
+        {
+          "type": "h",
+          "text": "[Điểm tiêm tại siêu thị cho đối tượng giai đoạn 2 từ 2026/11/02] (sẽ công bố)"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲Tra cứu điểm tiêm tại PX Mart và Big PX Mart"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "▲Tra cứu điểm tiêm tại Wellcome và Jasons Market Place"
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103061",
+      "key": "precautions",
+      "hash": "sha256:8e354e53a012eb910f5ce26370c9a37f2293a6032bf1fb9635e9622f4921c664",
+      "title": "Lưu ý khi tiêm vắc-xin",
+      "blocks": [],
+      "links": [],
+      "files": [
+        {
+          "text": "Hướng dẫn tiêm vắc-xin cúm do nhà nước chi trả (bản cộng đồng)"
+        },
+        {
+          "text": "Hướng dẫn tiêm vắc-xin COVID-19 Moderna XFG, phiếu đánh giá và giấy đồng ý tiêm_bản tiếng Trung_1150707"
+        },
+        {
+          "text": "Hướng dẫn tiêm vắc-xin COVID-19 Moderna XFG, phiếu đánh giá và giấy đồng ý tiêm_bản tiếng Anh_1150707"
+        }
+      ]
+    },
+    {
+      "id": "103062",
+      "key": "brands",
+      "hash": "sha256:183c478aa634c5b136732294cd5476eb00cdc73118e4c754015ddfb7679d5a94",
+      "title": "Thông tin các hãng vắc-xin",
+      "blocks": [
+        {
+          "type": "h",
+          "text": "Vắc-xin cúm"
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Năm nay (năm 115) sử dụng vắc-xin cúm tam giá; vắc-xin do nhà nước chi trả có 5 hãng (loại tiêu chuẩn và loại tăng cường), đều là liều đơn (mỗi liều 0,5 mL). Các hãng và độ tuổi áp dụng như sau:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "Dùng cho trẻ từ 3 tuổi và người lớn (loại tiêu chuẩn)",
+            "Adimmune (國光生物科技): 安定伏 (An Định Phục), vắc-xin cúm bất hoạt phân đoạn.",
+            "Medigen (高端疫苗生物製劑): 福喜健 (Phúc Hỷ Kiện), vắc-xin cúm tam giá.",
+            "Dùng cho trẻ từ 6 tháng tuổi và người lớn (loại tiêu chuẩn)",
+            "Sanofi (賽諾菲): 菲流達 (Phi Lưu Đạt), vắc-xin cúm tam giá.",
+            "GSK (荷商葛蘭素史克), chi nhánh Đài Loan: 伏流感 (Phục Lưu Cảm), vắc-xin cúm.",
+            "TTY Biopharm (台灣東洋藥品): 輔流威護 (Phụ Lưu Uy Hộ), vắc-xin cúm.",
+            "Ưu tiên cho người từ 65 tuổi trở lên được chăm sóc tại các cơ sở dưỡng lão/chăm sóc dài hạn và nhân viên của các cơ sở này (loại tăng cường)",
+            "TTY Biopharm (台灣東洋藥品): 輔流禦 (Phụ Lưu Ngự), vắc-xin cúm",
+            "Sanofi (賽諾菲): 菲優達 (Phi Ưu Đạt), vắc-xin cúm tam giá liều cao"
+          ]
+        },
+        {
+          "type": "h",
+          "text": "Vắc-xin COVID-19"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Hiện vắc-xin COVID-19 được cung cấp trong nước gồm vắc-xin mRNA và vắc-xin tiểu đơn vị protein, của hai hãng Moderna và Novavax (Nuvaxovid).",
+            "Vắc-xin COVID-19 Moderna XFG có dạng liều đơn và dạng nhiều liều:",
+            "Dạng liều đơn: dùng cho đối tượng do nhà nước chi trả từ đủ 12 tuổi trở lên (mỗi liều 0,2 mL), là vắc-xin COVID-19 thế hệ mới. Lượng kháng nguyên của vắc-xin thế hệ mới chỉ bằng 1/5 thế hệ trước; kết quả nghiên cứu lâm sàng cho thấy hiệu quả bảo vệ tốt hơn, tạo miễn dịch bảo vệ cao gần gấp 2 lần, và số trường hợp sốt cũng như phản ứng phụ tại chỗ sau tiêm giảm khoảng một nửa. Vì vậy, vắc-xin COVID-19 thế hệ mới có hiệu quả bảo vệ tốt hơn và ít tác dụng phụ hơn.",
+            "Dạng nhiều liều: dùng cho đối tượng do nhà nước chi trả từ đủ 6 tháng đến 11 tuổi (mỗi liều 0,25 mL).",
+            "Vắc-xin COVID-19 Novavax (Nuvaxovid) XFG có dạng liều đơn:",
+            "Dạng liều đơn: dùng cho đối tượng do nhà nước chi trả từ đủ 12 tuổi trở lên (mỗi liều 0,5 mL)."
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103064",
+      "key": "education",
+      "hash": "sha256:7d47cbf47a4c594a64355d0d1ada3aafce86bdecbe68a2de74ab403b5ca0f0f0",
+      "title": "Tài liệu giáo dục sức khỏe",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Video: “Một tay tiêm cúm, một tay tiêm COVID-19” – thông điệp quan tâm con cái"
+        },
+        {
+          "text": "Video: Tiêm đủ cả hai mũi là an toàn nhất – phiên bản “Chào buổi sáng”"
+        }
+      ],
+      "files": [
+        {
+          "text": "Áp phích năm 2026: tiêm vắc-xin cúm và COVID-19 để bảo vệ phổi, chăm sóc tim"
+        },
+        {
+          "text": "Phòng bệnh truyền nhiễm đường hô hấp: bắt đầu từ vệ sinh hằng ngày"
+        },
+        {
+          "text": "Đi chơi hay dự sự kiện lớn cũng đừng quên giữ thói quen vệ sinh tốt"
+        },
+        {
+          "text": "Lời tự thuật của vi-rút corona"
+        }
+      ]
+    },
+    {
+      "id": "103065",
+      "key": "news",
+      "hash": "sha256:d85ecc829e95112c1c922cac43a6467d24ac3572ee29aa67e8037f07e88b7a25",
+      "title": "Thông cáo báo chí mới nhất",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Dịch cúm tiếp tục gia tăng: điều kiện mở rộng sử dụng thuốc kháng vi-rút cúm do nhà nước chi trả được kéo dài đến hết ngày 31 tháng 10 năm nay (năm 115)"
+        },
+        {
+          "text": "Cúm và COVID-19 vẫn đang trong mùa dịch và dịch cúm tiếp tục gia tăng: kêu gọi người dân tăng cường tự phòng dịch trong kỳ nghỉ lễ, đi khám ngay khi có dấu hiệu nguy hiểm của bệnh nặng"
+        },
+        {
+          "text": "Dịch cúm và COVID-19 tiếp diễn: kêu gọi người dân chú ý vệ sinh cá nhân, đi khám và điều trị ngay khi có dấu hiệu nguy hiểm của bệnh nặng"
+        },
+        {
+          "text": "Cúm và COVID-19 vẫn có nguy cơ lây lan: kêu gọi người dân có triệu chứng thì đeo khẩu trang khi đi khám, nghỉ ngơi ở nhà và chú ý các dấu hiệu nguy hiểm của bệnh nặng"
+        },
+        {
+          "text": "Cúm và COVID-19 đều đang trong mùa dịch và dịch cúm tiếp tục gia tăng: kêu gọi người dân thực hiện rửa tay thường xuyên, đeo khẩu trang và các biện pháp tự bảo vệ khác, đồng thời chú ý các dấu hiệu nguy hiểm của bệnh nặng"
+        },
+        {
+          "text": "Thu đông năm 115 lần đầu đưa vào chương trình do nhà nước chi trả vắc-xin cúm loại tăng cường và vắc-xin COVID-19 thế hệ mới, đổi toàn bộ chủng vắc-xin để bảo vệ chính xác; CDC Đài Loan kêu gọi tiêm đồng thời cúm và COVID-19: “Một tay tiêm cúm, một tay tiêm COVID-19, bảo vệ phổi, chăm sóc tim”"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103063",
+      "key": "faq",
+      "hash": "sha256:599e0cb7ed5c361d32a4dc4ae845d76bed63c026a5b437ea048e3cbca4ffd550",
+      "title": "Câu hỏi thường gặp",
+      "blocks": [
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Hỏi đáp về vắc-xin cúm mùa"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "runs": [
+            {
+              "text": "Hỏi đáp về vắc-xin COVID-19"
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "files": []
+    },
+    {
+      "id": "103068",
+      "key": "education",
+      "hash": "sha256:45037d4f9686f8b77107cda85bb3d717578a13edb776f38d8b203d603db16061",
+      "title": "Các tài liệu giáo dục sức khỏe khác",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Video: Hội Y học Gia đình Đài Loan – Cục trưởng La Nhất Quân (羅一鈞): tiêm đồng thời vắc-xin cúm và COVID-19 giúp giảm hiệu quả nguy cơ biến chứng nặng ở phổi, nhồi máu cơ tim và đột quỵ"
+        },
+        {
+          "text": "Video: Hội Y học Gia đình Đài Loan – Chuyên gia giải đáp các lầm tưởng về tiêm vắc-xin COVID-19"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "103066",
+      "key": "other",
+      "hash": "sha256:4832685928d78d99402d6c05cd20d8085aa1efbbd6511ab2a511d0ed7de08821",
+      "title": "Tìm hiểu thêm về thông tin phòng chống biến chứng nặng của cúm và COVID-19",
+      "blocks": [],
+      "links": [
+        {
+          "text": "Chuyên trang về COVID-19 biến chứng nặng"
+        },
+        {
+          "text": "Chuyên trang về cúm biến chứng nặng"
+        }
+      ],
+      "files": []
+    }
+  ]
+}

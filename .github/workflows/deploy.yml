@@ -1,6 +1,6 @@
 # 部署到 GitHub Pages。
 # 院所資料不在這裡擷取：疾管署現站不接受境外連線（GitHub 的執行機器在國外，實測連線逾時），
-# 所以改由一台國內機器定時擷取，把 hospitals.json 推到 `data` 分支，再觸發這個流程部署。
+# 所以改由一台國內機器定時擷取，把 hospitals.json 與接種資訊 info/<lang>.json 推到 `data` 分支，再觸發這個流程部署。
 # 見 README「部署到 GitHub Pages」與 scripts/publish-data.sh。
 name: 部署
 
@@ -33,7 +33,7 @@ jobs:
           node-version: 22
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
-      - name: 取用 data 分支上較新的院所資料
+      - name: 取用 data 分支上較新的院所資料與接種資訊
         env:
           SKIP_RAW_CROSSCHECK: '1'
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
@@ -42,10 +42,24 @@ jobs:
           if git fetch --depth=1 "$REPO_URL" data 2>/dev/null; then
             git show FETCH_HEAD:hospitals.json > "$RUNNER_TEMP/hospitals.json"
             node scripts/keep-live-data.mjs --file "$RUNNER_TEMP/hospitals.json"
+            # 接種資訊專區（info/<lang>.json）：有才取；每個檔各自驗證、比較新舊（見 docs/INFO_PIPELINE.md）
+            mkdir -p "$RUNNER_TEMP/info"
+            for l in zh-Hant en ja ko id vi th tl; do
+              git show "FETCH_HEAD:info/$l.json" > "$RUNNER_TEMP/info/$l.json" 2>/dev/null || rm -f "$RUNNER_TEMP/info/$l.json"
+            done
+            node scripts/keep-live-data.mjs --info-dir "$RUNNER_TEMP/info"
           else
             echo "沒有 data 分支，沿用 main 裡的快照"
           fi
           node --test tests/data.test.mjs
+
+      - name: 檢查接種資訊檔
+        run: |
+          if compgen -G 'public/data/info/*.json' >/dev/null; then
+            node scripts/sanitize-info.mjs --check public/data/info/*.json
+          else
+            echo "沒有接種資訊檔，略過"
+          fi
 
       - name: 邏輯測試
         run: node --test tests/logic.test.mjs
@@ -53,6 +67,7 @@ jobs:
       - name: 摘要
         run: |
           node -e "const d=require('./public/data/hospitals.json');console.log('### 本次上線資料\n\n- 快照時間：'+d.meta.generatedAt+'\n- 院所數：'+d.hospitals.length)" >> "$GITHUB_STEP_SUMMARY"
+          node -e "try{const d=require('./public/data/info/zh-Hant.json');const t=['en','ja','ko','id','vi','th','tl'].map(l=>{try{const x=require('./public/data/info/'+l+'.json');return l+' '+x.sections.filter(s=>s.translated).length+'/'+x.sections.length}catch{return l+' —'}});console.log('- 接種資訊：抓取 '+d.meta.fetchedAt+'，來源變動 '+d.meta.changedAt+'；已翻譯區塊 '+t.join('、'))}catch{console.log('- 接種資訊：無')}" >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:

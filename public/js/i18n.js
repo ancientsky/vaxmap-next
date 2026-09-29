@@ -378,8 +378,9 @@ export function applyDocument(root = document) {
   html.lang = getLocale();
   html.dir = lookup('meta.dir') === 'rtl' ? 'rtl' : 'ltr';
   html.dataset.lang = lang;
-  document.title = t('meta.title');
-  document.querySelector('meta[name="description"]')?.setAttribute('content', t('meta.description'));
+  // 各頁面可用 <html data-i18n-title="…" data-i18n-desc="…"> 指定自己的標題與描述 key（預設為地圖頁）
+  document.title = t(html.dataset.i18nTitle || 'meta.title');
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t(html.dataset.i18nDesc || 'meta.description'));
   for (const node of root.querySelectorAll('[data-i18n]')) {
     const key = node.dataset.i18n;
     node.textContent = key === 'glyph.closed' ? closedGlyph() : t(key);

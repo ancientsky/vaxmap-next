@@ -4,12 +4,45 @@
 // 或「擷取失敗」的部署，都要避免把線上資料蓋回 repo 裡較舊的快照。
 // 用法：node scripts/keep-live-data.mjs <Pages 網址>
 //       node scripts/keep-live-data.mjs --file <hospitals.json 路徑>   （例如從 data 分支取出的檔案）
+//       node scripts/keep-live-data.mjs --info-dir <資料夾>             接種資訊專區 <lang>.json（從 data 分支 info/ 取出）
 //
 // 安全：線上檔案同樣視為不可信（可能是舊版流程產生、或遭竄改），必須通過與 normalize.mjs 相同的
 // sanitize.mjs 檢查，且以清理後重新序列化的內容寫入，而不是原樣轉存；否則一份有問題的線上檔
 // 會在每次部署、每月快照時被自己延續下去。
 import fs from 'node:fs';
+import path from 'node:path';
 import { sanitizeDataset, LIMITS } from './sanitize.mjs';
+import { readInfoFile, INFO_LANGS } from './sanitize-info.mjs';
+
+// 接種資訊模式：每個語言檔各自判斷——必須通過 sanitize-info.mjs 的嚴格驗證（清理後內容完全不變）、
+// meta.lang 與檔名相符、且 fetchedAt 比 repo 內的新，才覆蓋 public/data/info/<lang>.json；否則沿用 repo 內的版本。
+if (process.argv[2] === '--info-dir') {
+  const dir = process.argv[3];
+  const logSafe = (s) => String(s).replace(/[\x00-\x1f\x7f-\x9f]/g, ' ').slice(0, 300);
+  if (!dir || !fs.existsSync(dir)) {
+    console.log('沒有接種資訊檔（data 分支尚未有 info/ 屬正常），沿用 repo 內的版本');
+    process.exit(0);
+  }
+  const OUT = 'public/data/info';
+  const adopted = [];
+  for (const lang of INFO_LANGS) {
+    const f = path.join(dir, `${lang}.json`);
+    if (!fs.existsSync(f)) continue;
+    const { data, errors } = readInfoFile(f, { lang });
+    if (errors.length) { console.log(`接種資訊 ${lang}：未通過檢查，沿用 repo 內的版本（${logSafe(errors[0])}）`); continue; }
+    const localFile = path.join(OUT, `${lang}.json`);
+    const local = fs.existsSync(localFile) ? readInfoFile(localFile, { lang }) : { data: null, errors: ['不存在'] };
+    if (!local.errors.length && !(Date.parse(data.meta.fetchedAt) > Date.parse(local.data.meta.fetchedAt))) {
+      console.log(`接種資訊 ${lang}：沒有比較新，沿用 repo 內的版本`);
+      continue;
+    }
+    fs.mkdirSync(OUT, { recursive: true });
+    fs.writeFileSync(localFile, JSON.stringify(data) + '\n');
+    adopted.push(`${lang}（${data.meta.fetchedAt}，${data.meta.translation}）`);
+  }
+  console.log(adopted.length ? `採用接種資訊：${adopted.join('、')}` : '接種資訊：沒有可採用的新檔案');
+  process.exit(0);
+}
 
 const LOCAL = 'public/data/hospitals.json';
 const MAX_BYTES = 20 * 1024 * 1024; // 正常約 1.2 MB
