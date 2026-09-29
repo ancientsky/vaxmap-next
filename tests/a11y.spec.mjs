@@ -134,6 +134,31 @@ async function main() {
     if (!langSel || langSel.tag !== 'SELECT' || !langSel.name.trim() || langSel.options < 8) report('lang-switcher', `語言切換應為具名稱的 select：${JSON.stringify(langSel)}`);
     else console.log(`  ok - language switcher is a named <select> ("${langSel.name}", ${langSel.options} options, value=${langSel.value})`);
 
+    // 底圖切換：原生 radio，放在具名稱的 fieldset／legend 內，每個 radio 都有可見文字標籤
+    const bm = await page.evaluate(() => {
+      const fs = document.getElementById('basemap-switch');
+      const lg = fs?.querySelector(':scope > legend');
+      const radios = fs ? [...fs.querySelectorAll('input[type="radio"][name="basemap"]')] : [];
+      const shown = radios.filter((r) => !r.closest('[hidden]'));
+      return {
+        tag: fs?.tagName, legend: lg?.textContent.trim() || '',
+        radios: radios.length, shown: shown.length,
+        unlabelled: shown.filter((r) => !(r.labels?.[0]?.textContent || '').trim()).length,
+        checked: shown.filter((r) => r.checked).length,
+      };
+    });
+    // 舊版 accessibility.snapshot() 會把 group 攤平，改用 ARIA snapshot 檢查群組名稱與 radio 名稱
+    const bmAria = await page.locator('#basemap-switch').ariaSnapshot().catch(() => '');
+    const bmGroup = bmAria.match(/^- group "([^"]*)"/)?.[1] || '';
+    const bmRadios = [...bmAria.matchAll(/^\s*- radio "([^"]*)"(.*)$/gm)].map((m) => ({ name: m[1], checked: /\[checked\]/.test(m[2]) }));
+    if (bm.tag !== 'FIELDSET' || !bm.legend || bm.shown < 2 || bm.unlabelled || bm.checked !== 1) {
+      report('basemap-switcher', `底圖切換應為 fieldset＋legend、radio 皆有標籤且恰好一個勾選：${JSON.stringify(bm)}`);
+    } else if (bmGroup !== bm.legend || bmRadios.length !== bm.shown || bmRadios.some((r) => !r.name.trim() || /✓/.test(r.name)) || bmRadios.filter((r) => r.checked).length !== 1) {
+      report('basemap-switcher', `無障礙樹中應有名為「${bm.legend}」、含 ${bm.shown} 個具名 radio（名稱不含勾號）的群組：${bmAria.replace(/\n/g, ' | ')}`);
+    } else {
+      console.log(`  ok - basemap switcher: group "${bm.legend}" with ${bmRadios.length} named radios (${bmRadios.map((r) => r.name).join(' / ')}), one checked`);
+    }
+
     // Chips / panel options expose aria-pressed.
     const chipCount = await page.locator('.chip--group, .opt').count();
     const chipsMissingPressed = await page.evaluate(() => {
@@ -300,6 +325,8 @@ async function main() {
         if (r.width === 0 && r.height === 0) continue;
         const style = getComputedStyle(el);
         if (style.display === 'none' || style.visibility === 'hidden') continue;
+        // 收合的 <details> 內容（content-visibility: hidden）沒有畫出來，不算點擊目標
+        if (el.checkVisibility && !el.checkVisibility()) continue;
         const sel = el.id ? `#${el.id}` : el.className ? `.${String(el.className).split(' ').filter(Boolean).join('.')}` : el.tagName;
         const { w, h } = hitRect(el);
         if (w >= 44 - 0.5 && h >= 44 - 0.5) continue;
@@ -308,10 +335,15 @@ async function main() {
       }
       return { bad, inline };
     });
-    const passes = [['initial', null], ['tokens shown', 'g=covid&p=mod_adult&stock=1&city=%E8%87%BA%E5%8C%97%E5%B8%82'], ['panel open', 'OPEN']];
+    const passes = [['initial', null], ['legend open (basemap switcher)', 'LEGEND'], ['tokens shown', 'g=covid&p=mod_adult&stock=1&city=%E8%87%BA%E5%8C%97%E5%B8%82'], ['panel open', 'OPEN']];
     let offenderTotal = 0;
     for (const [label, hash] of passes) {
       if (hash === 'OPEN') { await mpage.locator('#filter-toggle').tap(); await mpage.waitForTimeout(350); }
+      else if (hash === 'LEGEND') {
+        await mpage.locator('#legend > summary').tap(); await mpage.waitForTimeout(300);
+        const n = await mpage.evaluate(() => [...document.querySelectorAll('#basemap-switch input')].filter((i) => i.getBoundingClientRect().width > 0).length);
+        if (n < 2) report('tap-target', `[legend open] 底圖切換的 radio 未顯示（${n} 個）`);
+      }
       else if (hash) { await mpage.evaluate((h) => { location.hash = h; }, hash); await mpage.waitForTimeout(500); }
       const { bad, inline } = await measureTargets();
       offenderTotal += bad.length;
@@ -349,6 +381,8 @@ async function main() {
       .filter((l) => /[\u4e00-\u9fff]/.test(l) && !/[A-Za-z]/.test(l)));
     if (cjkNames.length) report('i18n', `[en] 仍有中文的 aria-label：${cjkNames.slice(0, 5).join(' | ')}`);
     else console.log('  ok - [en] no Chinese-only aria-labels left');
+    await epage.locator('#legend > summary').tap();
+    await epage.waitForTimeout(300);
     const prevPage = mpage;
     mpage = epage;
     const { bad: ebad } = await measureTargets();

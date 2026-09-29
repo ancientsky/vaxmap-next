@@ -138,6 +138,14 @@
             <li><span class="cl-sample" aria-hidden="true">12</span><span data-i18n="legend.cluster">院所群集（外圈比例為上述狀態）</span></li>
           </ul>
           <p class="legend__note" data-i18n="legend.note">庫存依所選品項判定；未選品項時以任一品項判定。</p>
+          <fieldset class="basemap" id="basemap-switch" disabled>
+            <legend class="basemap__title" data-i18n="basemap.title">底圖</legend>
+            <div class="basemap__opts">
+              <label class="seg" data-basemap-opt="nlscEn" hidden><input class="seg__input" type="radio" name="basemap" value="nlscEn"><span class="seg__text" data-i18n="basemap.nlscEn">英文版電子地圖</span></label>
+              <label class="seg" data-basemap-opt="nlsc"><input class="seg__input" type="radio" name="basemap" value="nlsc"><span class="seg__text" data-i18n="basemap.nlsc">通用版電子地圖</span></label>
+              <label class="seg" data-basemap-opt="osm"><input class="seg__input" type="radio" name="basemap" value="osm"><span class="seg__text" data-i18n="basemap.osm">OpenStreetMap</span></label>
+            </div>
+          </fieldset>
         </details>
       </div>
 

@@ -17,20 +17,46 @@ export const ATTRIBUTION = {
 };
 const NLSC = (layer) => `https://wmts.nlsc.gov.tw/wmts/${layer}/default/GoogleMapsCompatible/{z}/{y}/{x}`;
 // labels：該圖磚地名使用的文字（用來判斷備援後是否要提醒「地名可能是中文」）
+// service：同一個服務（主機）的圖層視為一起失效——某圖層載入失敗後，備援會跳過同服務的其他圖層
 const PROVIDERS = {
-  osm: { name: 'OpenStreetMap', url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', labels: 'zh', options: { maxZoom: 19 } },
-  nlsc: { name: '國土測繪中心通用版電子地圖', url: NLSC('EMAP'), labels: 'zh', options: { maxZoom: 19, maxNativeZoom: 19 } },
-  nlscEn: { name: 'NLSC e-map (English)', url: NLSC('EMAP8'), labels: 'en', options: { maxZoom: 19, maxNativeZoom: 19 } },
+  osm: { name: 'OpenStreetMap', url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', labels: 'zh', service: 'osm', options: { maxZoom: 19 } },
+  nlsc: { name: '國土測繪中心通用版電子地圖', url: NLSC('EMAP'), labels: 'zh', service: 'nlsc', options: { maxZoom: 19, maxNativeZoom: 19 } },
+  nlscEn: { name: 'NLSC e-map (English)', url: NLSC('EMAP8'), labels: 'en', service: 'nlsc', options: { maxZoom: 19, maxNativeZoom: 19 } },
 };
-// 每種「地名文字」的備援鏈：順序即優先順序，載入失敗時自動換下一個。[供應者 id, 版權字串]
+// 每種「地名文字」可選的底圖與備援順序。[供應者 id, 版權字串]
+// - 第一個是預設；使用者在圖例的「底圖」選了別的，就從那個開始，其餘依此順序備援（跳過已失效的服務）。
+// - 使用者可選的項目＝鏈中所有底圖（外文介面也可選中文版 NLSC，讓地名與路牌一致）。
+// - zh：NLSC 通用版電子地圖對臺灣使用者載入較快，OSM 為備援。
 // ja/ko：目前沒有免金鑰的供應者提供日文／韓文街道名稱（OpenFreeMap 向量圖磚實測 0/800 條道路有
-// name:ja／name:ko），因此與其他外文介面一樣使用英文地名。
+// name:ja／name:ko），因此 ko 與其他外文介面一樣使用英文地名。
 export const BASEMAP_CHAINS = {
-  zh: [['osm', ATTRIBUTION.osmZh], ['nlsc', ATTRIBUTION.nlsc]],
-  latin: [['nlscEn', ATTRIBUTION.nlscEn], ['osm', ATTRIBUTION.osmEn]],
+  zh: [['nlsc', ATTRIBUTION.nlsc], ['osm', ATTRIBUTION.osmZh]],
+  latin: [['nlscEn', ATTRIBUTION.nlscEn], ['osm', ATTRIBUTION.osmEn], ['nlsc', ATTRIBUTION.nlscEn]],
 };
 // 日文使用者看得懂漢字路名，且與路牌一致，沿用中文底圖；其他外語用國土測繪中心英文版
 export const basemapKind = (lang) => (lang === 'zh-Hant' || lang === 'ja' ? 'zh' : 'latin');
+
+// 使用者選擇的底圖，依地名文字（zh／latin）分開記住：{"zh":"osm","latin":"nlsc"}
+export const BASEMAP_PREF_KEY = 'vaxmap.basemap';
+function readBasemapPref() {
+  try {
+    const o = JSON.parse(window.localStorage.getItem(BASEMAP_PREF_KEY) || 'null');
+    const out = {};
+    if (o && typeof o === 'object' && !Array.isArray(o)) {
+      for (const kind of Object.keys(BASEMAP_CHAINS)) {
+        if (typeof o[kind] === 'string' && BASEMAP_CHAINS[kind].some(([id]) => id === o[kind])) out[kind] = o[kind];
+      }
+    }
+    return out;
+  } catch { return {}; } // 無痕模式、停用儲存空間、內容損毀時視為沒有偏好
+}
+function writeBasemapPref(kind, id) {
+  try {
+    const o = readBasemapPref();
+    o[kind] = id;
+    window.localStorage.setItem(BASEMAP_PREF_KEY, JSON.stringify(o));
+  } catch { /* ignore */ }
+}
 
 // 休診符號依語系（'休' 或 '×'，兩者都在 trusted-types.js 的允許清單內）
 const glyphFor = (status) => (status === 'closed' ? closedGlyph() : status === 'ok' ? '✓' : '–');
@@ -110,43 +136,56 @@ export function createMap(el, handlers = {}) {
   map.fitBounds(TW_BOUNDS);
 
   // ---------- 底圖與備援 ----------
-  // 依介面語系選備援鏈（中文地名／英文地名），切換語系時由 relabel() 換鏈，不需重新載入。
-  // 測試用：?tiles=<供應者 id>（osm、nlsc、nlscEn）若在目前的鏈中就從它開始；
-  // ?tiles=fail 讓每條鏈的第一個底圖指向無效主機以驗證自動備援。
+  // 依介面語系選底圖鏈（中文地名／英文地名），切換語系時由 relabel() 換鏈，不需重新載入。
+  // 起點：網址測試掛勾 → 使用者在圖例選過的底圖（localStorage，依 zh／latin 分開）→ 鏈的第一個。
+  // 測試用：?tiles=<供應者 id>（osm、nlsc、nlscEn）若在目前的鏈中就從它開始（不寫入偏好）；
+  // ?tiles=fail 讓每條鏈的預設底圖指向無效主機以驗證自動備援；?tiles=fail:<id>[,<id>] 只讓指定的底圖失效。
   let tileMode = null;
   try { tileMode = new URLSearchParams(location.search).get('tiles'); } catch { /* ignore */ }
+  const failIds = tileMode === 'fail' ? null : tileMode?.startsWith('fail:') ? tileMode.slice(5).split(',') : [];
   const chains = {};
   for (const [kind, list] of Object.entries(BASEMAP_CHAINS)) {
     chains[kind] = list.map(([id, attribution], i) => {
       const p = PROVIDERS[id];
-      const url = tileMode === 'fail' && i === 0 ? 'https://tiles.invalid/{z}/{x}/{y}.png' : p.url;
-      return { id, name: p.name, labels: p.labels, url, options: { ...p.options, attribution } };
+      const broken = failIds === null ? i === 0 : failIds.includes(id);
+      const url = broken ? 'https://tiles.invalid/{z}/{x}/{y}.png' : p.url;
+      return { id, name: p.name, labels: p.labels, service: p.service, url, options: { ...p.options, attribution } };
     });
   }
   let chainKind = null;
-  let tiles = null;
-  let tileIdx = 0;
+  let seq = null; // 本次嘗試順序：[選定的底圖, ...其餘依鏈的順序]
   let tileLayer = null;
+  /** 從 id 開始的嘗試順序（id 不在鏈中就從預設開始） */
+  function sequenceFrom(id) {
+    const chain = chains[chainKind];
+    const first = chain.find((x) => x.id === id) || chain[0];
+    const list = [first, ...chain.filter((x) => x !== first)];
+    list.failed = new Set(); // 已失效的服務
+    return list;
+  }
   function useTiles(i) {
     if (tileLayer) map.removeLayer(tileLayer);
-    tileIdx = i;
     let errors = 0, loads = 0; // 每個圖層各自計數
-    const cur = tiles;
+    const cur = seq;
     const tl = cur[i];
     const layer = L.tileLayer(tl.url, { ...tl.options, detectRetina: false });
     tileLayer = layer;
     el.dataset.basemap = tl.id; // 供測試與除錯辨識目前底圖
+    handlers.onBasemapChange?.(tl.id, chains[chainKind].map((x) => x.id));
     layer.on('tileerror', () => {
       if (tileLayer !== layer) return; // 已被替換的圖層
       errors++;
       if (errors === 4 && errors > loads * 2) {
-        if (i + 1 < cur.length) {
-          const to = cur[i + 1];
-          useTiles(i + 1);
+        cur.failed.add(tl.service);
+        let j = i + 1;
+        while (j < cur.length && cur.failed.has(cur[j].service)) j++;
+        if (j < cur.length) {
+          const to = cur[j];
+          useTiles(j);
           handlers.onTileStatus?.('fallback', {
             from: tl.name, to: to.name, fromId: tl.id, toId: to.id,
-            // 外文介面備援到中文地名的底圖時，提醒使用者地名可能是中文
-            localLabels: chainKind !== 'zh' && to.labels === 'zh',
+            // 外文介面由英文地名的底圖備援到中文地名的底圖時，提醒使用者地名可能是中文
+            localLabels: chainKind !== 'zh' && to.labels === 'zh' && tl.labels !== 'zh',
           });
         } else {
           handlers.onTileStatus?.('failed');
@@ -165,9 +204,17 @@ export function createMap(el, handlers = {}) {
     const kind = basemapKind(getLang());
     if (kind === chainKind) return;
     chainKind = kind;
-    tiles = chains[kind];
-    const forced = tiles.findIndex((x) => x.id === tileMode);
-    useTiles(forced > 0 ? forced : 0);
+    const forced = chains[kind].some((x) => x.id === tileMode) ? tileMode : null;
+    seq = sequenceFrom(forced || readBasemapPref()[kind]);
+    useTiles(0);
+  }
+  /** 使用者在圖例選擇底圖：立即切換並記住（依地名文字分開記） */
+  function setBasemap(id) {
+    if (!chains[chainKind].some((x) => x.id === id)) return;
+    writeBasemapPref(chainKind, id);
+    if (el.dataset.basemap === id) return;
+    seq = sequenceFrom(id);
+    useTiles(0);
   }
   syncBasemap();
 
@@ -473,6 +520,8 @@ export function createMap(el, handlers = {}) {
     setUserLocation,
     getView,
     relabel,
+    setBasemap,
+    getBasemap: () => ({ id: el.dataset.basemap, choices: chains[chainKind].map((x) => x.id) }),
     setView: (v) => map.setView([v.lat, v.lng], v.z, { animate: false }),
     invalidate: () => map.invalidateSize({ pan: false }),
     panIntoView,

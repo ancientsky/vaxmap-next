@@ -845,7 +845,7 @@ html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
   border-radius: 12px;
   box-shadow: var(--shadow-2);
   font-size: .875rem;
-  max-width: 260px;
+  max-width: 280px;
 }
 .legend__summary {
   list-style: none;
@@ -866,6 +866,32 @@ html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
 .legend__list { list-style: none; margin: 0; padding: 0 14px; display: grid; gap: 6px; }
 .legend__list li { display: flex; align-items: center; gap: 8px; }
 .legend__note { padding: 8px 14px 12px; color: var(--muted); font-size: .8125rem; }
+
+/* 底圖切換：原生 radio（透明、覆蓋整個選項，點擊範圍＝選項大小），外觀為膠囊按鈕列 */
+.basemap { margin: 0; padding: 8px 14px 12px; border: 0; border-top: 1px solid var(--border); min-width: 0; }
+.basemap__title { float: left; width: 100%; padding: 0; margin: 0 0 6px; font-weight: 700; font-size: .8125rem; }
+.basemap__opts { clear: both; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+/* 三個選項（外文介面）：前兩個並排，最後一個獨佔一列 */
+.basemap[data-count="3"] .seg:last-child { grid-column: 1 / -1; }
+.seg { position: relative; display: flex; min-width: 0; }
+.seg__input {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+  opacity: 0; cursor: pointer; z-index: 1;
+}
+.seg__text {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px;
+  min-height: 36px; padding: 4px 6px;
+  border: 1px solid var(--border-strong); border-radius: 10px;
+  font-size: .8125rem; line-height: 1.2; text-align: center; text-wrap: balance;
+  color: var(--text); background: var(--surface);
+}
+/* 勾號：不只靠顏色表示「已選」 */
+.seg__input:checked + .seg__text { background: var(--brand); border-color: var(--brand); color: var(--on-brand); font-weight: 700; }
+/* 替代文字為空：勾號不讀出、不進入可存取名稱（已選狀態由 radio 本身傳達） */
+.seg__input:checked + .seg__text::before { content: "✓"; content: "✓" / ""; flex: none; }
+.seg__input:hover + .seg__text { border-color: var(--brand); }
+.seg__input:focus-visible + .seg__text { outline: 3px solid var(--focus); outline-offset: 2px; }
+.basemap:disabled .seg__text { opacity: .6; }
 .cl-sample {
   display: inline-grid; place-items: center;
   width: 24px; height: 24px; border-radius: 50%; flex: none;
@@ -1038,6 +1064,13 @@ html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
 
   .leaflet-bottom { bottom: var(--sheet-h); }
   .legend { top: 10px; bottom: auto; right: 10px; left: auto; }
+  .seg__text { min-height: var(--tap); }
+  /* 手機：圖例展開時盡量不必捲動 */
+  .legend__list { gap: 4px; }
+  .legend__note { padding: 6px 14px 8px; }
+  .basemap { padding: 6px 14px 10px; }
+  .basemap__title { margin-bottom: 4px; }
+  .legend[open] { max-height: calc(100% - var(--sheet-h) - 20px); overflow-y: auto; overscroll-behavior: contain; }
   .leaflet-top.leaflet-right { top: 56px; }
   .map-status { top: auto; bottom: calc(var(--sheet-h) + 12px); }
 }
@@ -1062,4 +1095,5 @@ html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
 @media (forced-colors: active) {
   .chip[aria-pressed="true"], .opt[aria-pressed="true"] { outline: 2px solid CanvasText; }
   .mk__b, .cl__ring { forced-color-adjust: none; }
+  .seg__input:checked + .seg__text { outline: 2px solid CanvasText; }
 }

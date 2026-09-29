@@ -506,22 +506,47 @@ async function waitTilesSettled(p, timeout = 20000) {
   await p.waitForTimeout(400);
 }
 
+/** 圖例內的底圖切換：可見選項（依序）與目前勾選的值 */
+const basemapSwitch = (p) => p.evaluate(() => {
+  const fs = document.getElementById('basemap-switch');
+  const opts = [...fs.querySelectorAll('[data-basemap-opt]')].filter((o) => !o.hidden);
+  return {
+    visible: opts.map((o) => o.dataset.basemapOpt),
+    labels: opts.map((o) => o.textContent.trim()),
+    checked: fs.querySelector('input[name="basemap"]:checked')?.value || null,
+    disabled: fs.disabled,
+  };
+});
+const storedPref = (p) => p.evaluate(() => { try { return JSON.parse(localStorage.getItem('vaxmap.basemap') || 'null'); } catch { return 'ERR'; } });
+const waitBasemap = (p, id, timeout = 15000) => p.waitForFunction((x) => document.getElementById('map').dataset.basemap === x, id, { timeout }).catch(() => {});
+const sameList = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+/** 網址 hash 的 lang 是延遲寫入的；重新載入前先等它跟上目前語系，免得 reload 帶回舊語系 */
+const hashSettled = (p) => p.waitForFunction(() => {
+  const l = document.documentElement.dataset.lang;
+  const m = location.hash.match(/(?:^#|&)lang=([^&]+)/);
+  return l === 'zh-Hant' ? !m : !!m && m[1] === l;
+}, null, { timeout: 5000 }).catch(() => {});
+
 async function runBasemapFlow(browser, baseUrl) {
-  console.log('\n=== basemap (label language + fallback) ===');
+  console.log('\n=== basemap (defaults per language, switcher, fallback) ===');
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
   const page = await ctx.newPage();
   const errors = await collectConsoleErrors(page, true);
   const reqs = [];
   page.on('request', (r) => { if (/openstreetmap|nlsc|tiles\.invalid/.test(r.url())) reqs.push(r.url()); });
 
-  const osmReq = page.waitForRequest((r) => tileHost.osm.test(r.url()), { timeout: 15000 }).catch(() => null);
+  // 繁中預設：NLSC 通用版電子地圖（EMAP），不抓 OSM
+  const emapReq = page.waitForRequest((r) => tileHost.nlsc.test(r.url()), { timeout: 15000 }).catch(() => null);
   await page.goto(`${baseUrl}#${TPE_VIEW}`, { waitUntil: 'load' });
   await waitCount(page);
-  ok('zh-Hant: basemap is OpenStreetMap (Chinese labels)', (await basemapId(page)) === 'osm' && !!(await osmReq), await basemapId(page));
-  ok('zh-Hant: OSM attribution in Chinese', /OpenStreetMap 貢獻者/.test(await attribution(page)), await attribution(page));
-  ok('zh-Hant: no English-map tile requested', !reqs.some((u) => tileHost.nlscEn.test(u)));
+  ok('zh-Hant: default basemap is NLSC EMAP', (await basemapId(page)) === 'nlsc' && !!(await emapReq), await basemapId(page));
+  ok('zh-Hant: NLSC attribution in Chinese', /內政部國土測繪中心/.test(await attribution(page)), await attribution(page));
+  ok('zh-Hant: no OSM / English-map tile requested by default', !reqs.some((u) => tileHost.osm.test(u) || tileHost.nlscEn.test(u)));
+  let sw = await basemapSwitch(page);
+  ok('zh-Hant: switcher offers 通用版電子地圖 / OpenStreetMap, NLSC checked',
+    sameList(sw.visible, ['nlsc', 'osm']) && sw.checked === 'nlsc' && !sw.disabled && sameList(sw.labels, ['通用版電子地圖', 'OpenStreetMap']), JSON.stringify(sw));
 
-  // 切到英文：換成 NLSC 英文版電子地圖，不重新載入
+  // 切到英文：換成 NLSC 英文版電子地圖，不重新載入；三個選項
   await page.evaluate(() => { window.__noReload = 1; });
   const enReq = page.waitForRequest((r) => tileHost.nlscEn.test(r.url()), { timeout: 15000 }).catch(() => null);
   await page.locator('#lang-select').selectOption('en');
@@ -529,6 +554,9 @@ async function runBasemapFlow(browser, baseUrl) {
   ok('en: tiles now come from NLSC EMAP8 (English labels)', !!(await enReq) && (await basemapId(page)) === 'nlscEn', await basemapId(page));
   ok('en: attribution credits NLSC in English', /NLSC, Ministry of the Interior/.test(await attribution(page)), await attribution(page));
   ok('en: basemap switched without a page reload', await page.evaluate(() => window.__noReload === 1));
+  sw = await basemapSwitch(page);
+  ok('en: switcher offers NLSC (English) / NLSC (Chinese) / OpenStreetMap, English checked',
+    sameList(sw.visible, ['nlscEn', 'nlsc', 'osm']) && sw.checked === 'nlscEn' && sameList(sw.labels, ['NLSC (English)', 'NLSC (Chinese)', 'OpenStreetMap']), JSON.stringify(sw));
 
   // en → ko：同一條英文地名鏈，不應重建底圖
   const before = reqs.length;
@@ -537,45 +565,136 @@ async function runBasemapFlow(browser, baseUrl) {
   await page.waitForTimeout(600);
   ok('en → ko keeps the English-label basemap (no tile reload)', (await basemapId(page)) === 'nlscEn' && reqs.length === before, `${await basemapId(page)} +${reqs.length - before} requests`);
 
-  // 回到繁中：換回 OSM
-  const backReq = page.waitForRequest((r) => tileHost.osm.test(r.url()), { timeout: 15000 }).catch(() => null);
+  // 回到繁中：換回 NLSC 中文
   await page.locator('#lang-select').selectOption('zh-Hant');
   await page.waitForFunction(() => document.documentElement.lang === 'zh-Hant-TW');
-  ok('back to zh-Hant restores OSM', !!(await backReq) && (await basemapId(page)) === 'osm' && /貢獻者/.test(await attribution(page)));
+  ok('back to zh-Hant restores NLSC EMAP', (await basemapId(page)) === 'nlsc' && /內政部國土測繪中心/.test(await attribution(page)), await basemapId(page));
+  ok('switching languages does not store a basemap preference', (await storedPref(page)) === null, JSON.stringify(await storedPref(page)));
+
+  // 切換器：繁中選 OSM → 立即換圖、版權換成 OSM、記住（只記 zh）
+  const osmReq = page.waitForRequest((r) => tileHost.osm.test(r.url()), { timeout: 15000 }).catch(() => null);
+  await page.locator('#basemap-switch input[value="osm"]').check();
+  await waitBasemap(page, 'osm');
+  ok('switcher: choosing OpenStreetMap swaps the tiles immediately', (await basemapId(page)) === 'osm' && !!(await osmReq), await basemapId(page));
+  ok('switcher: attribution follows the map (OSM, Chinese)', /OpenStreetMap 貢獻者/.test(await attribution(page)) && !/國土測繪中心/.test(await attribution(page)), await attribution(page));
+  ok('switcher: zh preference stored in vaxmap.basemap', sameList(await storedPref(page), { zh: 'osm' }), JSON.stringify(await storedPref(page)));
+  await hashSettled(page);
+  await page.reload({ waitUntil: 'load' });
+  await waitCount(page);
+  sw = await basemapSwitch(page);
+  ok('switcher: zh choice persists across reload', (await basemapId(page)) === 'osm' && sw.checked === 'osm', `${await basemapId(page)} ${JSON.stringify(sw)}`);
+
+  // 外文的偏好分開記：英文仍是 EMAP8；在英文選中文版 NLSC
+  await page.locator('#lang-select').selectOption('en');
+  await page.waitForFunction(() => document.documentElement.lang === 'en');
+  ok('switcher: latin languages keep their own default (zh choice does not leak)', (await basemapId(page)) === 'nlscEn', await basemapId(page));
+  const emapReq2 = page.waitForRequest((r) => tileHost.nlsc.test(r.url()), { timeout: 15000 }).catch(() => null);
+  await page.locator('#basemap-switch input[value="nlsc"]').check();
+  await waitBasemap(page, 'nlsc');
+  ok('switcher (en): NLSC (Chinese) loads EMAP tiles', (await basemapId(page)) === 'nlsc' && !!(await emapReq2), await basemapId(page));
+  ok('switcher (en): NLSC attribution stays in English', /NLSC, Ministry of the Interior/.test(await attribution(page)), await attribution(page));
+  ok('switcher: both preferences stored separately', sameList(await storedPref(page), { zh: 'osm', latin: 'nlsc' }), JSON.stringify(await storedPref(page)));
+  await hashSettled(page);
+  await page.reload({ waitUntil: 'load' });
+  await waitCount(page);
+  sw = await basemapSwitch(page);
+  ok('switcher: latin choice persists across reload', (await basemapId(page)) === 'nlsc' && sw.checked === 'nlsc' && (await page.evaluate(() => document.documentElement.lang)) === 'en', `${await basemapId(page)} ${JSON.stringify(sw)}`);
+  await page.locator('#lang-select').selectOption('zh-Hant');
+  await page.waitForFunction(() => document.documentElement.lang === 'zh-Hant-TW');
+  ok('switcher: back to zh-Hant uses the zh choice (OSM)', (await basemapId(page)) === 'osm' && (await basemapSwitch(page)).checked === 'osm', await basemapId(page));
   ok('no console errors (incl. Trusted Types) while switching basemaps', errors.length === 0, errors.slice(0, 5).join(' || '));
   await ctx.close();
 
-  // ?tiles=fail：繁中 OSM → NLSC 中文版；英文 NLSC 英文版 → OSM 並提示地名可能是中文
-  for (const [lang, locale, want, statusRe] of [
-    ['zh-Hant', 'zh-TW', 'nlsc', /已改用國土測繪中心通用版電子地圖底圖/],
-    ['en', 'en-US', 'osm', /switched to the OpenStreetMap map, so street and place names may be in Chinese/],
+  // ja 預設與繁中相同
+  {
+    const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'ja-JP' });
+    const p = await c.newPage();
+    await p.goto(`${baseUrl}#lang=ja&${TPE_VIEW}`, { waitUntil: 'load' });
+    await waitCount(p);
+    const s = await basemapSwitch(p);
+    ok('ja: default basemap is NLSC EMAP, two options (通用版電子地図 / OpenStreetMap)',
+      (await basemapId(p)) === 'nlsc' && sameList(s.visible, ['nlsc', 'osm']) && s.checked === 'nlsc', `${await basemapId(p)} ${JSON.stringify(s)}`);
+    await c.close();
+  }
+
+  // ?tiles=fail：預設底圖失效 → 繁中 NLSC → OSM；英文 NLSC 英文版 → OSM 並提示地名可能是中文；單選鈕跟著更新
+  // ?tiles=fail:osm＋已選 OSM：使用者選的底圖失效 → 改用 NLSC
+  for (const [label, lang, locale, query, pref, want, statusRe] of [
+    ['zh-Hant ?tiles=fail', 'zh-Hant', 'zh-TW', 'fail', null, 'osm', /底圖「國土測繪中心通用版電子地圖」無法載入，已自動改用「OpenStreetMap」$/],
+    ['en ?tiles=fail', 'en', 'en-US', 'fail', null, 'osm', /Couldn’t load the “NLSC \(Taiwan\) English” base map; switched to “OpenStreetMap”, so street and place names may be in Chinese/],
+    ['zh-Hant chosen OSM fails', 'zh-Hant', 'zh-TW', 'fail:osm', { zh: 'osm' }, 'nlsc', /底圖「OpenStreetMap」無法載入，已自動改用「國土測繪中心通用版電子地圖」$/],
+    ['en chosen NLSC (Chinese) fails', 'en', 'en-US', 'fail:nlsc', { latin: 'nlsc' }, 'osm', /^Couldn’t load the “NLSC \(Taiwan\) e-map” base map; switched to “OpenStreetMap”$/],
   ]) {
     const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale });
+    if (pref) await c.addInitScript((v) => { try { localStorage.setItem('vaxmap.basemap', v); } catch { /* ignore */ } }, JSON.stringify(pref));
     const p = await c.newPage();
     const errs = await collectConsoleErrors(p, true);
-    await p.goto(`${baseUrl}?tiles=fail#${TPE_VIEW}`, { waitUntil: 'load' });
+    const hashLang = lang === 'zh-Hant' ? '' : `lang=${lang}&`;
+    await p.goto(`${baseUrl}?tiles=${query}#${hashLang}${TPE_VIEW}`, { waitUntil: 'load' });
     await waitCount(p);
-    await p.waitForFunction((id) => document.getElementById('map').dataset.basemap === id, want, { timeout: 15000 }).catch(() => {});
+    await waitBasemap(p, want);
     await p.waitForFunction(() => !document.getElementById('map-status').hidden, null, { timeout: 5000 }).catch(() => {});
     const st = await mapStatus(p);
-    ok(`${lang} ?tiles=fail falls back to ${want}`, (await basemapId(p)) === want, await basemapId(p));
-    ok(`${lang} ?tiles=fail shows the fallback notice`, statusRe.test(st), st);
-    if (lang === 'en') {
+    const s = await basemapSwitch(p);
+    ok(`${label}: falls back to ${want}`, (await basemapId(p)) === want, await basemapId(p));
+    ok(`${label}: radio follows the fallback (${want} checked)`, s.checked === want, JSON.stringify(s));
+    ok(`${label}: shows the fallback notice`, statusRe.test(st), st);
+    if (pref) ok(`${label}: fallback does not overwrite the stored choice`, sameList(await storedPref(p), pref), JSON.stringify(await storedPref(p)));
+    if (label === 'en ?tiles=fail') {
       ok('en fallback: OSM attribution in English', /OpenStreetMap contributors/.test(await attribution(p)), await attribution(p));
       await waitTilesSettled(p);
       await p.screenshot({ path: path.join(SCREEN_DIR, 'basemap-en-fallback-desktop.png') });
     }
-    ok(`${lang} ?tiles=fail: no console errors`, errs.length === 0, errs.slice(0, 3).join(' || '));
+    ok(`${label}: no console errors`, errs.length === 0, errs.slice(0, 3).join(' || '));
     await c.close();
   }
 
-  // ?tiles=nlsc 測試掛勾仍可用
+  // ?tiles=osm 測試掛勾仍可用（且不寫入偏好）
   {
     const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
     const p = await c.newPage();
-    await p.goto(`${baseUrl}?tiles=nlsc#${TPE_VIEW}`, { waitUntil: 'load' });
+    await p.goto(`${baseUrl}?tiles=osm#${TPE_VIEW}`, { waitUntil: 'load' });
     await waitCount(p);
-    ok('?tiles=nlsc starts on the NLSC Chinese map', (await basemapId(p)) === 'nlsc', await basemapId(p));
+    ok('?tiles=osm starts on OpenStreetMap (radio checked, not stored)',
+      (await basemapId(p)) === 'osm' && (await basemapSwitch(p)).checked === 'osm' && (await storedPref(p)) === null, await basemapId(p));
+    await c.close();
+  }
+
+  // 截圖：桌面（繁中，圖例展開）與手機（英文三個選項，展開圖例）
+  {
+    const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
+    const p = await c.newPage();
+    await p.goto(`${baseUrl}#${TPE_VIEW}`, { waitUntil: 'load' });
+    await waitCount(p);
+    await waitTilesSettled(p);
+    ok('desktop: legend (with basemap switcher) open by default', await p.evaluate(() => document.getElementById('legend').open));
+    await p.screenshot({ path: path.join(SCREEN_DIR, 'basemap-switcher-desktop.png') });
+    await c.close();
+  }
+  {
+    const c = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, locale: 'en-US' });
+    const p = await c.newPage();
+    await p.goto(`${baseUrl}#lang=en&${TPE_VIEW}`, { waitUntil: 'load' });
+    await waitCount(p);
+    ok('mobile: legend collapsed by default', !(await p.evaluate(() => document.getElementById('legend').open)));
+    await p.locator('#legend > summary').tap();
+    await p.waitForTimeout(300);
+    const m = await p.evaluate(() => {
+      const lg = document.getElementById('legend').getBoundingClientRect();
+      const sheetTop = document.getElementById('sheet').getBoundingClientRect().top;
+      const segs = [...document.querySelectorAll('#basemap-switch .seg:not([hidden]) input')].map((i) => i.getBoundingClientRect());
+      return { h: Math.round(lg.height), bottom: Math.round(lg.bottom), sheetTop: Math.round(sheetTop), right: lg.right, vw: innerWidth, minW: Math.min(...segs.map((r) => r.width)), minH: Math.min(...segs.map((r) => r.height)), n: segs.length };
+    });
+    ok('mobile: switcher options are ≥44px tap targets', m.n === 3 && m.minW >= 44 && m.minH >= 44, JSON.stringify(m));
+    ok('mobile: open legend stays above the results sheet and inside the viewport', m.bottom <= m.sheetTop && m.right <= m.vw, JSON.stringify(m));
+    const osmReq2 = p.waitForRequest((r) => tileHost.osm.test(r.url()), { timeout: 15000 }).catch(() => null);
+    await p.locator('#basemap-switch .seg[data-basemap-opt="osm"]').tap();
+    await waitBasemap(p, 'osm');
+    ok('mobile: tapping a switcher option changes the basemap', (await basemapId(p)) === 'osm' && !!(await osmReq2), await basemapId(p));
+    await p.locator('#basemap-switch .seg[data-basemap-opt="nlscEn"]').tap();
+    await waitBasemap(p, 'nlscEn');
+    await waitTilesSettled(p);
+    await p.screenshot({ path: path.join(SCREEN_DIR, 'basemap-switcher-mobile.png') });
     await c.close();
   }
 

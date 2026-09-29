@@ -31,6 +31,7 @@ const dom = {
   listScroll: $('list-scroll'), notice: $('list-notice'), results: $('results'), footer: $('list-footer'),
   back: $('back-btn'), detailScroll: $('detail-scroll'), detail: $('detail'),
   announcer: $('announcer'), mapStatus: $('map-status'), legend: $('legend'),
+  basemapSwitch: $('basemap-switch'),
   langSelect: $('lang-select'),
 };
 
@@ -156,6 +157,7 @@ function init() {
       onMarkerClick: (id) => openDetail(id, { fromMap: true }),
       onMarkerHover: (id) => highlightCard(id),
       onMoveEnd: () => { onMapMoved(); },
+      onBasemapChange: syncBasemapSwitch,
       onTileStatus: (s, info) => {
         // 外文介面的英文底圖失效、改用中文地名底圖時，提示地名可能是中文（停留較久）
         if (s === 'fallback') {
@@ -674,6 +676,22 @@ const onMapMoved = debounce(() => {
   }
   writeHash();
 }, 120);
+
+// ---------------- 底圖切換（圖例內的單選按鈕） ----------------
+/** 只顯示目前語系可選的底圖，並勾選實際顯示中的底圖（自動備援後也會更新） */
+function syncBasemapSwitch(current, choices) {
+  dom.basemapSwitch.disabled = false;
+  dom.basemapSwitch.dataset.count = String(choices.length);
+  for (const opt of dom.basemapSwitch.querySelectorAll('[data-basemap-opt]')) {
+    const id = opt.dataset.basemapOpt;
+    opt.hidden = !choices.includes(id);
+    opt.querySelector('input').checked = id === current;
+  }
+}
+dom.basemapSwitch.addEventListener('change', (e) => {
+  const input = e.target;
+  if (input instanceof HTMLInputElement && input.name === 'basemap' && input.checked) mapApi?.setBasemap(input.value);
+});
 
 // 地圖提示以 {key, tiles} 描述保存，切換語系時可重繪
 let mapStatusMsg = null;
