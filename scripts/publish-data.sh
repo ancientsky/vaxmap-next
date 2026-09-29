@@ -22,6 +22,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# normalize.mjs 需要 pinyin-pro（院所名稱、地址的英文拼音；devDependency）
+[[ -d node_modules/pinyin-pro ]] || npm ci --no-audit --no-fund --loglevel=error
+
 echo "== $(date '+%F %T') 開始擷取"
 node scripts/harvest.mjs
 node scripts/normalize.mjs

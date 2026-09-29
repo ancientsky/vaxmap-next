@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { sanitizeDataset, cleanHttpsUrl, LIMITS } from './sanitize.mjs';
+import { romanizeHospital } from './romanize.mjs';
 
 const RAW_DIR = 'data/raw';
 const OUT = 'public/data/hospitals.json';
@@ -97,6 +98,9 @@ for (const h of hospitals) {
 }
 const deduped = [...byCode.values()].sort((a, b) => a.id - b.id);
 
+// 英文（拉丁字母）名稱、地址、縣市、行政區，供非中文介面使用（規則見 scripts/romanize.mjs）
+for (const h of deduped) Object.assign(h, romanizeHospital(h));
+
 const draft = {
   meta: { generatedAt: raw.harvestedAt, source: raw.source || 'https://vaxmap.cdc.gov.tw/', count: deduped.length, rawCount: raw.hospitals.length },
   vaccines: VACCINES.map(({ srcId, ...v }) => v),
@@ -111,6 +115,8 @@ try {
   console.error(`資料未通過檢查，不寫入 ${OUT}：${e.message}`);
   process.exit(1);
 }
+const noEn = out.hospitals.filter((h) => !h.nameEn || !h.addrEn || !h.cityEn || !h.distEn);
+if (noEn.length) { console.error(`${noEn.length} 家缺少英文欄位（例如 ${noEn[0].id}），不寫入 ${OUT}`); process.exit(1); }
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(out));
 const size = fs.statSync(OUT).size;

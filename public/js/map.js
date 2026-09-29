@@ -1,27 +1,36 @@
-// Leaflet 地圖封裝：底圖（含自動備援）、院所標記、群集、定位點。
+// Leaflet 地圖封裝：底圖（依介面語系選擇、含自動備援）、院所標記、群集、定位點。
 /* global L */
-import { t, tn, closedGlyph } from './i18n.js';
+import { t, tn, closedGlyph, getLang } from './i18n.js';
 
 const TW_BOUNDS = [[21.8, 119.9], [25.4, 122.1]];
 
-// 順序即優先順序：第一個是預設底圖，載入失敗時自動換下一個
-const TILES = [
-  {
-    id: 'osm',
-    name: 'OpenStreetMap',
-    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    options: {
-      maxZoom: 19,
-      attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> 貢獻者',
-    },
-  },
-  {
-    id: 'nlsc',
-    name: '國土測繪中心通用版電子地圖',
-    url: 'https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}',
-    options: { maxZoom: 19, maxNativeZoom: 19, attribution: '© 內政部國土測繪中心' },
-  },
-];
+// ---------- 底圖 ----------
+// 評估與決策見 docs/BASEMAP.md。重點：OSM 圖磚的地名是當地語言（中文）；國土測繪中心 EMAP8
+// 是官方英文版電子地圖（全臺、z7–19 皆為英文），免申請、免金鑰，與 EMAP 同一主機（CSP 不需變動）。
+// 版權字串是固定 HTML，必須與 trusted-types.js 的 ALLOW 清單逐字相同。
+const OSM_LINK = '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>';
+export const ATTRIBUTION = {
+  osmZh: `© ${OSM_LINK} 貢獻者`,
+  osmEn: `© ${OSM_LINK} contributors`,
+  nlsc: '© 內政部國土測繪中心',
+  nlscEn: '© NLSC, Ministry of the Interior (Taiwan)',
+};
+const NLSC = (layer) => `https://wmts.nlsc.gov.tw/wmts/${layer}/default/GoogleMapsCompatible/{z}/{y}/{x}`;
+// labels：該圖磚地名使用的文字（用來判斷備援後是否要提醒「地名可能是中文」）
+const PROVIDERS = {
+  osm: { name: 'OpenStreetMap', url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', labels: 'zh', options: { maxZoom: 19 } },
+  nlsc: { name: '國土測繪中心通用版電子地圖', url: NLSC('EMAP'), labels: 'zh', options: { maxZoom: 19, maxNativeZoom: 19 } },
+  nlscEn: { name: 'NLSC e-map (English)', url: NLSC('EMAP8'), labels: 'en', options: { maxZoom: 19, maxNativeZoom: 19 } },
+};
+// 每種「地名文字」的備援鏈：順序即優先順序，載入失敗時自動換下一個。[供應者 id, 版權字串]
+// ja/ko：目前沒有免金鑰的供應者提供日文／韓文街道名稱（OpenFreeMap 向量圖磚實測 0/800 條道路有
+// name:ja／name:ko），因此與其他外文介面一樣使用英文地名。
+export const BASEMAP_CHAINS = {
+  zh: [['osm', ATTRIBUTION.osmZh], ['nlsc', ATTRIBUTION.nlsc]],
+  latin: [['nlscEn', ATTRIBUTION.nlscEn], ['osm', ATTRIBUTION.osmEn]],
+};
+// 日文使用者看得懂漢字路名，且與路牌一致，沿用中文底圖；其他外語用國土測繪中心英文版
+export const basemapKind = (lang) => (lang === 'zh-Hant' || lang === 'ja' ? 'zh' : 'latin');
 
 // 休診符號依語系（'休' 或 '×'，兩者都在 trusted-types.js 的允許清單內）
 const glyphFor = (status) => (status === 'closed' ? closedGlyph() : status === 'ok' ? '✓' : '–');
@@ -101,28 +110,44 @@ export function createMap(el, handlers = {}) {
   map.fitBounds(TW_BOUNDS);
 
   // ---------- 底圖與備援 ----------
-  // 測試用：?tiles=nlsc 直接使用備援底圖；?tiles=fail 讓預設底圖指向無效主機以驗證自動備援
+  // 依介面語系選備援鏈（中文地名／英文地名），切換語系時由 relabel() 換鏈，不需重新載入。
+  // 測試用：?tiles=<供應者 id>（osm、nlsc、nlscEn）若在目前的鏈中就從它開始；
+  // ?tiles=fail 讓每條鏈的第一個底圖指向無效主機以驗證自動備援。
   let tileMode = null;
   try { tileMode = new URLSearchParams(location.search).get('tiles'); } catch { /* ignore */ }
-  const tiles = TILES.map((t) => ({ ...t }));
-  if (tileMode === 'fail') tiles[0] = { ...tiles[0], url: 'https://tiles.invalid/{z}/{x}/{y}.png' };
+  const chains = {};
+  for (const [kind, list] of Object.entries(BASEMAP_CHAINS)) {
+    chains[kind] = list.map(([id, attribution], i) => {
+      const p = PROVIDERS[id];
+      const url = tileMode === 'fail' && i === 0 ? 'https://tiles.invalid/{z}/{x}/{y}.png' : p.url;
+      return { id, name: p.name, labels: p.labels, url, options: { ...p.options, attribution } };
+    });
+  }
+  let chainKind = null;
+  let tiles = null;
   let tileIdx = 0;
   let tileLayer = null;
   function useTiles(i) {
     if (tileLayer) map.removeLayer(tileLayer);
     tileIdx = i;
     let errors = 0, loads = 0; // 每個圖層各自計數
-    const t = tiles[i];
-    const layer = L.tileLayer(t.url, { ...t.options, detectRetina: false });
+    const cur = tiles;
+    const tl = cur[i];
+    const layer = L.tileLayer(tl.url, { ...tl.options, detectRetina: false });
     tileLayer = layer;
+    el.dataset.basemap = tl.id; // 供測試與除錯辨識目前底圖
     layer.on('tileerror', () => {
       if (tileLayer !== layer) return; // 已被替換的圖層
       errors++;
       if (errors === 4 && errors > loads * 2) {
-        if (tileIdx + 1 < tiles.length) {
-          const from = tiles[tileIdx].name;
-          useTiles(tileIdx + 1);
-          handlers.onTileStatus?.('fallback', { from, to: tiles[tileIdx].name, fromId: tiles[i].id, toId: tiles[tileIdx].id });
+        if (i + 1 < cur.length) {
+          const to = cur[i + 1];
+          useTiles(i + 1);
+          handlers.onTileStatus?.('fallback', {
+            from: tl.name, to: to.name, fromId: tl.id, toId: to.id,
+            // 外文介面備援到中文地名的底圖時，提醒使用者地名可能是中文
+            localLabels: chainKind !== 'zh' && to.labels === 'zh',
+          });
         } else {
           handlers.onTileStatus?.('failed');
         }
@@ -135,7 +160,16 @@ export function createMap(el, handlers = {}) {
     });
     layer.addTo(map);
   }
-  useTiles(tileMode === 'nlsc' ? 1 : 0);
+  /** 依目前語系選底圖鏈；鏈沒變就不動（避免切換同類語系時重載圖磚） */
+  function syncBasemap() {
+    const kind = basemapKind(getLang());
+    if (kind === chainKind) return;
+    chainKind = kind;
+    tiles = chains[kind];
+    const forced = tiles.findIndex((x) => x.id === tileMode);
+    useTiles(forced > 0 ? forced : 0);
+  }
+  syncBasemap();
 
   // ---------- 院所標記 ----------
   const cluster = L.markerClusterGroup({
@@ -408,8 +442,9 @@ export function createMap(el, handlers = {}) {
 
   map.on('moveend', () => handlers.onMoveEnd?.());
 
-  /** 切換語系後：縮放按鈕、圖釘（休診符號與 aria-label）、群集提示文字 */
+  /** 切換語系後：底圖地名語言、縮放按鈕、圖釘（休診符號與 aria-label）、群集提示文字 */
   function relabel() {
+    syncBasemap();
     const zin = el.querySelector('.leaflet-control-zoom-in');
     const zout = el.querySelector('.leaflet-control-zoom-out');
     for (const [a, key] of [[zin, 'map.zoomIn'], [zout, 'map.zoomOut']]) {

@@ -8,7 +8,7 @@ import { createMap } from './map.js';
 import { el, card, detail, skeletonCards, fmtNum, vShort } from './ui.js';
 import {
   initI18n, getLang, setLang, onLangChange, t, tn, tParts, tGroup, tCity, placeLabel,
-  formatDistanceL, formatTaipeiL, cityAliases,
+  formatDistanceL, formatTaipeiL, cityAliases, learnPlaceNames, tDist, getLocale,
 } from './i18n.js';
 
 const PAGE = 50;
@@ -132,6 +132,7 @@ async function start() {
   showLoading();
   try {
     data = await loadData();
+    learnPlaceNames(data.hospitals); // 行政區英文名稱（外文介面的行政區選單、篩選標籤）
   } catch (err) {
     console.error(err);
     showError(err);
@@ -156,7 +157,11 @@ function init() {
       onMarkerHover: (id) => highlightCard(id),
       onMoveEnd: () => { onMapMoved(); },
       onTileStatus: (s, info) => {
-        if (s === 'fallback') setMapStatus({ key: 'map.tileFallback', tiles: info }, 6000);
+        // 外文介面的英文底圖失效、改用中文地名底圖時，提示地名可能是中文（停留較久）
+        if (s === 'fallback') {
+          setMapStatus({ key: info.localLabels ? 'map.tileFallbackLocal' : 'map.tileFallback', tiles: info },
+            info.localLabels ? 10000 : 6000);
+        }
         if (s === 'failed') setMapStatus({ key: 'map.tileFailed' }, 0);
         if (s === 'ok') setMapStatus(null, 0);
       },
@@ -357,9 +362,11 @@ function buildCityOptions() {
 }
 
 function buildDistOptions() {
-  const dists = state.city ? [...(distsByCity.get(state.city) || [])].sort((a, b) => a.localeCompare(b, 'zh-Hant-TW')) : [];
+  // 外文（latin）介面顯示英文行政區名，並依顯示文字排序
+  const dists = state.city ? [...(distsByCity.get(state.city) || [])].map((d) => ({ d, label: tDist(state.city, d) }))
+    .sort((a, b) => a.label.localeCompare(b.label, getLocale())) : [];
   dom.dist.replaceChildren(el('option', { value: '', text: t('filters.allDists') }),
-    ...dists.map((d) => el('option', { value: d, text: d })));
+    ...dists.map(({ d, label }) => el('option', { value: d, text: label })));
   dom.dist.disabled = !state.city;
 }
 
@@ -672,7 +679,7 @@ const onMapMoved = debounce(() => {
 let mapStatusMsg = null;
 function mapStatusText(m) {
   if (!m) return '';
-  if (m.key === 'map.tileFallback') {
+  if (m.key === 'map.tileFallback' || m.key === 'map.tileFallbackLocal') {
     const name = (id, fb) => (id ? t(`map.tiles.${id}`) : fb);
     return t(m.key, {
       from: name(m.tiles?.fromId, m.tiles?.from || t('map.tiles.default')),

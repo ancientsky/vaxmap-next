@@ -7,11 +7,13 @@
 (function () {
   if (!window.trustedTypes || !window.trustedTypes.createPolicy) return;
   var mk = function (g) { return '<span class="mk__b"><span class="mk__g" aria-hidden="true">' + g + '</span></span>'; };
+  // 底圖版權字串（map.js 的 ATTRIBUTION，逐字相同）
+  var osm = '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>';
   var ALLOW = ['', '<svg/>',
     '<a href="https://leafletjs.com" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"/><path fill="#FFD500" d="M0 4h12v3H0z"/><path fill="#E0BC00" d="M0 7h12v1H0z"/></svg> Leaflet</a>',
     '<span aria-hidden="true">+</span>', '<span aria-hidden="true">&#x2212;</span>',
-    '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> 貢獻者',
-    '© 內政部國土測繪中心', mk('✓'), mk('–'), mk('休'), mk('×'),
+    '© ' + osm + ' 貢獻者', '© ' + osm + ' contributors',
+    '© 內政部國土測繪中心', '© NLSC, Ministry of the Interior (Taiwan)', mk('✓'), mk('–'), mk('休'), mk('×'),
     '<span class="me-dot__p"></span><span class="me-dot__c"></span>'];
   var ok = Object.create(null);
   ALLOW.forEach(function (s) { ok[s] = true; });

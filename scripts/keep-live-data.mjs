@@ -17,6 +17,8 @@ const MIN_HOSPITALS = 4000;
 const base = (process.argv[2] || '').replace(/\/$/, '');
 const local = JSON.parse(fs.readFileSync(LOCAL, 'utf8'));
 const logSafe = (s) => String(s).replace(/[\x00-\x1f\x7f-\x9f]/g, ' ').slice(0, 300);
+// 新版資料每筆都有英文欄位（見 scripts/romanize.mjs）；舊版流程產生的檔案不採用，以免英文介面退回中文
+const hasEnglish = (d) => d.hospitals.every((h) => h.nameEn && h.addrEn && h.cityEn && h.distEn);
 const keepLocal = (why) => { console.log(`沿用 repo 內的快照（${logSafe(local.meta?.generatedAt)}）：${logSafe(why)}`); process.exit(0); };
 
 // 檔案模式：來源是本機檔案（部署流程從 data 分支取出），一樣要過清理與新舊比較
@@ -28,6 +30,7 @@ if (process.argv[2] === '--file') {
     const clean = sanitizeDataset(JSON.parse(fs.readFileSync(file, 'utf8')));
     const n = clean.hospitals.length;
     if (n < MIN_HOSPITALS || n > LIMITS.maxHospitals) keepLocal(`檔案內容不合理（${n} 家）`);
+    if (!hasEnglish(clean)) keepLocal('檔案是舊版格式（缺少英文欄位 nameEn／addrEn）；等下一次擷取以新版 normalize.mjs 產生');
     if (!(Date.parse(clean.meta.generatedAt) > Date.parse(local.meta?.generatedAt))) keepLocal('檔案資料沒有比較新');
     fs.writeFileSync(LOCAL, JSON.stringify(clean));
     console.log(`採用 ${logSafe(file)} 的資料（${clean.meta.generatedAt}，${n} 家）`);
@@ -70,6 +73,7 @@ try {
   }
   const n = clean.hospitals.length;
   if (n < MIN_HOSPITALS || n > LIMITS.maxHospitals) keepLocal(`線上檔案內容不合理（${n} 家）`);
+  if (!hasEnglish(clean)) keepLocal('線上檔案是舊版格式（缺少英文欄位 nameEn／addrEn）');
   if (!(Date.parse(clean.meta.generatedAt) > Date.parse(local.meta?.generatedAt))) keepLocal('線上資料沒有比較新');
   fs.writeFileSync(LOCAL, JSON.stringify(clean));
   console.log(`沿用線上資料（${clean.meta.generatedAt}，${n} 家）`);

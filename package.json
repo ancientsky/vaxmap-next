@@ -10,7 +10,7 @@
     "normalize": "node scripts/normalize.mjs",
     "verify-vendor": "node scripts/verify-vendor.mjs",
     "update-data": "node scripts/harvest.mjs && node scripts/normalize.mjs && node --test tests/data.test.mjs",
-    "test": "node --test tests/logic.test.mjs tests/i18n.test.mjs tests/data.test.mjs tests/harvest.test.mjs tests/security.test.mjs",
+    "test": "node --test tests/logic.test.mjs tests/i18n.test.mjs tests/romanize.test.mjs tests/data.test.mjs tests/harvest.test.mjs tests/security.test.mjs",
     "test:e2e": "node tests/e2e.spec.mjs",
     "test:a11y": "node tests/a11y.spec.mjs",
     "publish-data": "bash scripts/publish-data.sh"
@@ -20,6 +20,7 @@
   "license": "ISC",
   "devDependencies": {
     "leaflet": "^1.9.4",
-    "leaflet.markercluster": "^1.5.3"
+    "leaflet.markercluster": "^1.5.3",
+    "pinyin-pro": "^3.29.4"
   }
 }

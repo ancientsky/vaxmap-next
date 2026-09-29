@@ -375,7 +375,7 @@ async function runI18nFlow(browser, baseUrl) {
   ok('result-count text is English and the count is unchanged', /results?/.test(head) && (await countFromResultsHeading(page)) === zhCount, head);
   const badge = await page.locator('.card .badge').first().innerText();
   ok('card status label is English', /In stock|Out of stock|Closed today/.test(badge), badge);
-  ok('card place shows translated city + Chinese district', /Taipei City · \S+/.test(await page.locator('.card__meta').first().innerText()));
+  ok('card place shows English city + English district', /Taipei City · \S+ District/.test(await page.locator('.card__meta').first().innerText()));
   const tokenLabels = await page.locator('#tokens .token').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')));
   ok('token labels are English', tokenLabels.includes('Remove filter: In stock only') && tokenLabels.includes('Remove filter: Taipei City'), JSON.stringify(tokenLabels));
   ok('chips are English', (await page.locator('.chip--group').first().innerText()).includes('Flu'));
@@ -488,6 +488,256 @@ async function i18nScreenshots(browser, baseUrl) {
   }
 }
 
+// ---------------- 底圖（地名語言與備援） ----------------
+// 臺北市中心 z15（網址 hash 的 map=lat,lng,z）
+const TPE_VIEW = 'map=25.04180,121.53200,15';
+const basemapId = (p) => p.evaluate(() => document.getElementById('map').dataset.basemap);
+const attribution = (p) => p.evaluate(() => document.querySelector('.leaflet-control-attribution')?.textContent || '');
+const mapStatus = (p) => p.evaluate(() => { const e = document.getElementById('map-status'); return e.hidden ? '' : e.textContent; });
+const tileHost = { osm: /tile\.openstreetmap\.org\//, nlsc: /wmts\.nlsc\.gov\.tw\/wmts\/EMAP\//, nlscEn: /wmts\.nlsc\.gov\.tw\/wmts\/EMAP8\// };
+
+/** 等到目前底圖的圖磚都載完（或逾時），供截圖用 */
+async function waitTilesSettled(p, timeout = 20000) {
+  await p.waitForFunction(() => {
+    const all = document.querySelectorAll('.leaflet-tile-container img.leaflet-tile');
+    const done = document.querySelectorAll('.leaflet-tile-container img.leaflet-tile-loaded');
+    return all.length > 0 && done.length === all.length;
+  }, { timeout }).catch(() => {});
+  await p.waitForTimeout(400);
+}
+
+async function runBasemapFlow(browser, baseUrl) {
+  console.log('\n=== basemap (label language + fallback) ===');
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
+  const page = await ctx.newPage();
+  const errors = await collectConsoleErrors(page, true);
+  const reqs = [];
+  page.on('request', (r) => { if (/openstreetmap|nlsc|tiles\.invalid/.test(r.url())) reqs.push(r.url()); });
+
+  const osmReq = page.waitForRequest((r) => tileHost.osm.test(r.url()), { timeout: 15000 }).catch(() => null);
+  await page.goto(`${baseUrl}#${TPE_VIEW}`, { waitUntil: 'load' });
+  await waitCount(page);
+  ok('zh-Hant: basemap is OpenStreetMap (Chinese labels)', (await basemapId(page)) === 'osm' && !!(await osmReq), await basemapId(page));
+  ok('zh-Hant: OSM attribution in Chinese', /OpenStreetMap 貢獻者/.test(await attribution(page)), await attribution(page));
+  ok('zh-Hant: no English-map tile requested', !reqs.some((u) => tileHost.nlscEn.test(u)));
+
+  // 切到英文：換成 NLSC 英文版電子地圖，不重新載入
+  await page.evaluate(() => { window.__noReload = 1; });
+  const enReq = page.waitForRequest((r) => tileHost.nlscEn.test(r.url()), { timeout: 15000 }).catch(() => null);
+  await page.locator('#lang-select').selectOption('en');
+  await page.waitForFunction(() => document.documentElement.lang === 'en');
+  ok('en: tiles now come from NLSC EMAP8 (English labels)', !!(await enReq) && (await basemapId(page)) === 'nlscEn', await basemapId(page));
+  ok('en: attribution credits NLSC in English', /NLSC, Ministry of the Interior/.test(await attribution(page)), await attribution(page));
+  ok('en: basemap switched without a page reload', await page.evaluate(() => window.__noReload === 1));
+
+  // en → ko：同一條英文地名鏈，不應重建底圖
+  const before = reqs.length;
+  await page.locator('#lang-select').selectOption('ko');
+  await page.waitForFunction(() => document.documentElement.lang.startsWith('ko'));
+  await page.waitForTimeout(600);
+  ok('en → ko keeps the English-label basemap (no tile reload)', (await basemapId(page)) === 'nlscEn' && reqs.length === before, `${await basemapId(page)} +${reqs.length - before} requests`);
+
+  // 回到繁中：換回 OSM
+  const backReq = page.waitForRequest((r) => tileHost.osm.test(r.url()), { timeout: 15000 }).catch(() => null);
+  await page.locator('#lang-select').selectOption('zh-Hant');
+  await page.waitForFunction(() => document.documentElement.lang === 'zh-Hant-TW');
+  ok('back to zh-Hant restores OSM', !!(await backReq) && (await basemapId(page)) === 'osm' && /貢獻者/.test(await attribution(page)));
+  ok('no console errors (incl. Trusted Types) while switching basemaps', errors.length === 0, errors.slice(0, 5).join(' || '));
+  await ctx.close();
+
+  // ?tiles=fail：繁中 OSM → NLSC 中文版；英文 NLSC 英文版 → OSM 並提示地名可能是中文
+  for (const [lang, locale, want, statusRe] of [
+    ['zh-Hant', 'zh-TW', 'nlsc', /已改用國土測繪中心通用版電子地圖底圖/],
+    ['en', 'en-US', 'osm', /switched to the OpenStreetMap map, so street and place names may be in Chinese/],
+  ]) {
+    const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale });
+    const p = await c.newPage();
+    const errs = await collectConsoleErrors(p, true);
+    await p.goto(`${baseUrl}?tiles=fail#${TPE_VIEW}`, { waitUntil: 'load' });
+    await waitCount(p);
+    await p.waitForFunction((id) => document.getElementById('map').dataset.basemap === id, want, { timeout: 15000 }).catch(() => {});
+    await p.waitForFunction(() => !document.getElementById('map-status').hidden, null, { timeout: 5000 }).catch(() => {});
+    const st = await mapStatus(p);
+    ok(`${lang} ?tiles=fail falls back to ${want}`, (await basemapId(p)) === want, await basemapId(p));
+    ok(`${lang} ?tiles=fail shows the fallback notice`, statusRe.test(st), st);
+    if (lang === 'en') {
+      ok('en fallback: OSM attribution in English', /OpenStreetMap contributors/.test(await attribution(p)), await attribution(p));
+      await waitTilesSettled(p);
+      await p.screenshot({ path: path.join(SCREEN_DIR, 'basemap-en-fallback-desktop.png') });
+    }
+    ok(`${lang} ?tiles=fail: no console errors`, errs.length === 0, errs.slice(0, 3).join(' || '));
+    await c.close();
+  }
+
+  // ?tiles=nlsc 測試掛勾仍可用
+  {
+    const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
+    const p = await c.newPage();
+    await p.goto(`${baseUrl}?tiles=nlsc#${TPE_VIEW}`, { waitUntil: 'load' });
+    await waitCount(p);
+    ok('?tiles=nlsc starts on the NLSC Chinese map', (await basemapId(p)) === 'nlsc', await basemapId(p));
+    await c.close();
+  }
+
+  // 各語系臺北 z15 截圖（人工檢查地名是否為該語言可讀的文字）
+  for (const [lang, locale] of [['zh', 'zh-TW'], ['en', 'en-US'], ['ja', 'ja-JP'], ['ko', 'ko-KR'], ['th', 'th-TH']]) {
+    const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale });
+    const p = await c.newPage();
+    const hashLang = lang === 'zh' ? '' : `lang=${lang}&`;
+    await p.goto(`${baseUrl}#${hashLang}${TPE_VIEW}`, { waitUntil: 'load' });
+    await waitCount(p);
+    await waitTilesSettled(p);
+    await p.screenshot({ path: path.join(SCREEN_DIR, `basemap-${lang}-desktop.png`) });
+    await c.close();
+  }
+}
+
+// ---------------- 院所名稱／地址的英文轉寫（meta.script：latin／han） ----------------
+const CJK = /\p{Script=Han}/u;
+const ASCII_TEXT = /^[\x20-\x7e]+$/;
+
+/** 卡片標題、第二行名稱、地址不可溢出卡片／詳細資料（水平方向），且卡片不可超出視窗 */
+async function latinOverflow(p) {
+  return p.evaluate(() => {
+    const bad = [];
+    const vw = document.documentElement.clientWidth;
+    for (const e of document.querySelectorAll('.card__title, .card__alt, .card__meta, .detail__name, .detail__alt, .detail__addr, .detail__addr-alt, .detail__sub')) {
+      const r = e.getBoundingClientRect();
+      if (!r.width) continue;
+      const box = (e.closest('.card, .detail') || document.body).getBoundingClientRect();
+      if (e.scrollWidth > e.clientWidth + 1 || r.right > box.right + 1 || r.right > vw + 1) bad.push(`${e.className}: "${e.textContent.slice(0, 40)}"`);
+    }
+    return bad;
+  });
+}
+
+async function runLatinFlow(browser, baseUrl) {
+  console.log('\n=== Latin-script data (nameEn / addrEn) ===');
+  const taipei = encodeURIComponent('臺北市');
+  const beitou = encodeURIComponent('北投區');
+  const mobile = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true };
+  const open = async (opts, locale, hash) => {
+    const c = await browser.newContext({ ...opts, locale });
+    const p = await c.newPage();
+    const errs = await collectConsoleErrors(p, true);
+    await p.goto(`${baseUrl}#${hash}`, { waitUntil: 'load' });
+    await waitCount(p);
+    await p.waitForTimeout(600);
+    return { c, p, errs };
+  };
+  // 手機：把清單拉到全高再截圖（點把手循環 peek → half → full）
+  const expandSheet = async (p) => {
+    for (let i = 0; i < 3 && (await p.locator('#sheet').getAttribute('data-state')) !== 'full'; i++) {
+      await p.locator('#sheet-handle').tap();
+      await p.waitForTimeout(450);
+    }
+  };
+  const cardInfo = (p) => p.locator('.card').evaluateAll((els) => els.slice(0, 8).map((e) => ({
+    title: e.querySelector('.card__title')?.innerText || '',
+    titleLang: e.querySelector('.card__title')?.getAttribute('lang'),
+    alt: e.querySelector('.card__alt')?.innerText || '',
+    altLang: e.querySelector('.card__alt')?.getAttribute('lang'),
+    meta: e.querySelector('.card__meta')?.innerText || '',
+  })));
+
+  // en（桌機）：北投區清單 → 詳細資料
+  {
+    const { c, p, errs } = await open({ viewport: { width: 1440, height: 900 } }, 'en-US', `lang=en&city=${taipei}&dist=${beitou}`);
+    const cards = await cardInfo(p);
+    ok('en: card titles are Latin (nameEn)', cards.length > 0 && cards.every((x) => ASCII_TEXT.test(x.title)), JSON.stringify(cards.slice(0, 2)));
+    ok('en: Chinese name shown underneath, tagged lang=zh-Hant-TW', cards.every((x) => CJK.test(x.alt) && x.altLang === 'zh-Hant-TW'), JSON.stringify(cards.slice(0, 2)));
+    ok('en: area line is "Taipei City · Beitou District"', cards.every((x) => x.meta.includes('Taipei City · Beitou District')), cards[0]?.meta);
+    ok('en: district dropdown lists English names', (await p.locator('#dist-select option:checked').innerText()) === 'Beitou District',
+      await p.locator('#dist-select option:checked').innerText());
+    ok('en: district filter token is English', (await p.locator('#tokens').innerText()).includes('Beitou District'), await p.locator('#tokens').innerText());
+    await p.locator('.card__btn').first().click();
+    await p.waitForSelector('#detail-name');
+    await p.waitForTimeout(500);
+    const d = await p.evaluate(() => ({
+      name: document.querySelector('.detail__name')?.textContent, alt: document.querySelector('.detail__alt')?.textContent,
+      addr: document.querySelector('.detail__addr')?.textContent, addrAlt: document.querySelector('.detail__addr-alt')?.textContent,
+      addrAltLang: document.querySelector('.detail__addr-alt')?.getAttribute('lang'), sub: document.querySelector('.detail__sub')?.textContent,
+    }));
+    ok('en detail: English name + Chinese name', ASCII_TEXT.test(d.name || '') && CJK.test(d.alt || ''), JSON.stringify(d));
+    ok('en detail: English address, then Chinese address (lang=zh-Hant-TW)', /^.*No\. .*Beitou District, Taipei City$/.test(d.addr || '')
+      && CJK.test(d.addrAlt || '') && d.addrAltLang === 'zh-Hant-TW', JSON.stringify(d));
+    const of = await latinOverflow(p);
+    ok('en desktop detail: no horizontal overflow', of.length === 0, JSON.stringify(of));
+    await p.screenshot({ path: path.join(SCREEN_DIR, 'latin-en-desktop-detail.png') });
+    // 英文關鍵字搜尋（北投、明德路、耳鼻喉科）
+    await p.goto(`${baseUrl}#lang=en`, { waitUntil: 'load' });
+    await waitCount(p);
+    for (const [q, want] of [['Beitou', 'Beitou District'], ['Mingde ENT', 'ENT']]) {
+      await p.locator('#search-input').fill(q);
+      await p.waitForTimeout(500);
+      const n = await countFromResultsHeading(p);
+      const texts = await p.locator('.card').evaluateAll((els) => els.slice(0, 10).map((e) => e.innerText));
+      ok(`en: search "${q}" finds clinics via the English fields`, n > 0 && texts.every((x) => x.includes(want)), `${n} ${texts[0]}`);
+    }
+    ok('en: no console errors', errs.length === 0, errs.slice(0, 3).join(' || '));
+    await c.close();
+  }
+
+  // 繁中介面也能以英文搜尋；卡片不顯示英文
+  {
+    const { c, p } = await open({ viewport: { width: 1440, height: 900 } }, 'zh-TW', '');
+    await p.locator('#search-input').fill('Linwenzheng');
+    await p.waitForTimeout(500);
+    const cards = await cardInfo(p);
+    ok('zh-Hant: Latin query "Linwenzheng" finds 林文正耳鼻喉科診所', cards.some((x) => x.title.includes('林文正')), JSON.stringify(cards.slice(0, 2)));
+    ok('zh-Hant: no secondary (English) line on cards', cards.every((x) => !x.alt), JSON.stringify(cards.slice(0, 2)));
+    await c.close();
+  }
+
+  // en（手機）清單
+  {
+    const { c, p, errs } = await open(mobile, 'en-US', `lang=en&g=covid&city=${taipei}`);
+    const cards = await cardInfo(p);
+    ok('en mobile: cards show nameEn + Chinese name', cards.length > 0 && cards.every((x) => ASCII_TEXT.test(x.title) && CJK.test(x.alt)), JSON.stringify(cards.slice(0, 2)));
+    const of = await latinOverflow(p);
+    ok('en mobile list: no horizontal overflow', of.length === 0, JSON.stringify(of));
+    await expandSheet(p);
+    await p.screenshot({ path: path.join(SCREEN_DIR, 'latin-en-mobile-list.png') });
+    ok('en mobile: no console errors', errs.length === 0, errs.slice(0, 3).join(' || '));
+    await c.close();
+  }
+
+  // ja（手機）清單：中文名稱為主、英文為第二行；縣市用日文、行政區用中文
+  {
+    const { c, p, errs } = await open(mobile, 'ja-JP', `lang=ja&g=covid&city=${taipei}`);
+    const cards = await cardInfo(p);
+    ok('ja: Chinese name primary (lang=zh-Hant-TW), English second line (lang=en)', cards.length > 0
+      && cards.every((x) => CJK.test(x.title) && x.titleLang === 'zh-Hant-TW' && ASCII_TEXT.test(x.alt) && x.altLang === 'en'), JSON.stringify(cards.slice(0, 2)));
+    ok('ja: area uses the Japanese city name + Chinese district', cards.every((x) => /台北市\S+區/.test(x.meta)), cards[0]?.meta);
+    const of = await latinOverflow(p);
+    ok('ja mobile list: no horizontal overflow', of.length === 0, JSON.stringify(of));
+    await expandSheet(p);
+    await p.screenshot({ path: path.join(SCREEN_DIR, 'latin-ja-mobile-list.png') });
+    ok('ja: no console errors', errs.length === 0, errs.slice(0, 3).join(' || '));
+    await c.close();
+  }
+
+  // vi（手機）詳細資料
+  {
+    const { c, p, errs } = await open(mobile, 'vi-VN', `lang=vi&g=covid&city=${taipei}`);
+    await p.locator('.card__btn').first().click();
+    await p.waitForSelector('#detail-name');
+    await p.waitForTimeout(700);
+    const d = await p.evaluate(() => ({
+      name: document.querySelector('.detail__name')?.textContent, alt: document.querySelector('.detail__alt')?.textContent,
+      addr: document.querySelector('.detail__addr')?.textContent, addrAlt: document.querySelector('.detail__addr-alt')?.textContent,
+      sub: document.querySelector('.detail__sub')?.textContent,
+    }));
+    ok('vi detail: English name/address primary (address ends "… District, Taipei City"), Chinese underneath',
+      ASCII_TEXT.test(d.name || '') && CJK.test(d.alt || '') && /District, Taipei City$/.test(d.addr || '') && CJK.test(d.addrAlt || ''), JSON.stringify(d));
+    const of = await latinOverflow(p);
+    ok('vi mobile detail: no horizontal overflow', of.length === 0, JSON.stringify(of));
+    await p.screenshot({ path: path.join(SCREEN_DIR, 'latin-vi-mobile-detail.png') });
+    ok('vi: no console errors', errs.length === 0, errs.slice(0, 3).join(' || '));
+    await c.close();
+  }
+}
+
 async function main() {
   const port = await getFreePort();
   const baseUrl = `http://127.0.0.1:${port}/`;
@@ -503,6 +753,8 @@ async function main() {
     await runMobileFlow(browser, baseUrl);
     await runI18nFlow(browser, baseUrl);
     await i18nScreenshots(browser, baseUrl);
+    await runLatinFlow(browser, baseUrl);
+    await runBasemapFlow(browser, baseUrl);
   } finally {
     if (browser) await browser.close();
     server.kill();

@@ -14,7 +14,7 @@ import { execFile, execFileSync, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import {
-  cleanText, cleanTel, cleanHttpsUrl, cleanInt, cleanTimestamp, sanitizeDataset, sanitizeHospital, LIMITS,
+  cleanText, cleanTel, cleanHttpsUrl, cleanInt, cleanTimestamp, cleanLatin, sanitizeDataset, sanitizeHospital, LIMITS,
 } from '../scripts/sanitize.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -162,6 +162,26 @@ test('sanitizeDataset：只輸出契約內欄位，meta.count 重新計算，sou
   assert.equal('evil' in out.meta, false);
 });
 
+const VALID_H = { id: 1, code: '0101010010', name: '林文正耳鼻喉科診所', city: '臺北市', dist: '北投區', addr: '臺北市北投區明德路92號', tel: '02-12345678', lat: 25.1, lng: 121.5, hours: [1, 1, 1, 1, 1, 0, 0], stock: { flu: 1 } };
+test('cleanLatin：英文欄位只接受拉丁字母、數字與 \' . , - ( )，其餘整欄捨棄', () => {
+  assert.equal(cleanLatin("No. 5-1, Sec. 2, Ren'ai Rd. (1F)", 100), "No. 5-1, Sec. 2, Ren'ai Rd. (1F)");
+  assert.equal(cleanLatin('Tiếng Việt Clinic', 100), 'Tiếng Việt Clinic'); // 拉丁字母含變音符號可接受
+  assert.equal(cleanLatin('林文正 Clinic', 100), undefined); // 漢字不可
+  assert.equal(cleanLatin('<img src=x onerror=alert(1)>', 100), undefined); // = 不允許
+  assert.equal(cleanLatin(`EVIL${RLO}Clinic`, 100), 'EVILClinic'); // bidi 字元先被清掉
+  assert.equal(cleanLatin('javascript:alert(1)', 100), undefined); // 冒號不允許
+  assert.equal(cleanLatin('1234', 100), undefined); // 至少要有一個字母
+  assert.equal(cleanLatin(42, 100), undefined);
+  assert.equal(cleanLatin('a'.repeat(300), LIMITS.nameEn).length, LIMITS.nameEn);
+  const h = sanitizeHospital({ ...VALID_H, nameEn: 'Linwenzheng ENT Clinic', addrEn: 'No. 92, 明德路', cityEn: 'Taipei City', distEn: '北投區' }, new Set(['flu']));
+  assert.equal(h.nameEn, 'Linwenzheng ENT Clinic');
+  assert.equal(h.cityEn, 'Taipei City');
+  assert.equal('addrEn' in h, false);
+  assert.equal('distEn' in h, false);
+  const old = sanitizeHospital({ ...VALID_H }, new Set(['flu'])); // 舊版資料沒有英文欄位：仍合格
+  assert.equal('nameEn' in old, false);
+});
+
 /* ------------------------------------------------------------------ *
  * normalize.mjs：惡意原始檔
  * ------------------------------------------------------------------ */
@@ -198,6 +218,10 @@ test('normalize.mjs：惡意原始檔不會把危險內容寫進 hospitals.json'
     const out = JSON.parse(text);
     assert.ok(!/javascript:|data:text|<img|<script/i.test(text), '輸出含危險字串（標籤與危險網址；純文字的 onerror= 無害，前端只用 textContent）');
     for (const h of out.hospitals) {
+      for (const k of ['nameEn', 'addrEn', 'cityEn', 'distEn']) {
+        assert.equal(typeof h[k], 'string', `${h.id}.${k} 缺少`);
+        assert.match(h[k], /^[A-Za-z0-9 '.,\-()]+$/, `${h.id}.${k} 含非 ASCII 或不允許的字元：${h[k]}`);
+      }
       for (const k of ['name', 'addr', 'tel', 'city', 'dist', 'code', 'apptTel', 'note']) {
         if (h[k] !== undefined) {
           assert.equal(typeof h[k], 'string', `${h.id}.${k}`);
@@ -426,4 +450,22 @@ test('dev-server.mjs：路徑穿越、NUL、反斜線、開放式轉址；預設
 test('public/vendor 內的 Leaflet／markercluster 與釘選的雜湊值（及 node_modules 原檔）一致', async () => {
   const { verifyVendor } = await import('../scripts/verify-vendor.mjs');
   assert.deepEqual(verifyVendor({ log: () => {} }), []);
+});
+
+/* ------------------------------------------------------------------ *
+ * Trusted Types：底圖版權字串必須在允許清單內（否則底圖切換時版權列會被擋、主控台報錯）
+ * ------------------------------------------------------------------ */
+
+test('trusted-types.js 放行 map.js 的所有底圖版權字串，並擋下其他 HTML', async () => {
+  const vm = await import('node:vm');
+  let policy = null;
+  const window = { trustedTypes: { createPolicy: (name, p) => { assert.equal(name, 'default'); policy = p; } } };
+  const ROOT_ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  vm.runInNewContext(fs.readFileSync(path.join(ROOT_, 'public/js/trusted-types.js'), 'utf8'), { window });
+  assert.ok(policy, 'default policy 未建立');
+  const { ATTRIBUTION, BASEMAP_CHAINS } = await import('../public/js/map.js');
+  for (const [k, s] of Object.entries(ATTRIBUTION)) assert.equal(policy.createHTML(s), s, `ATTRIBUTION.${k} 未在允許清單`);
+  for (const list of Object.values(BASEMAP_CHAINS)) for (const [, s] of list) assert.equal(policy.createHTML(s), s);
+  assert.equal(policy.createHTML('<img src=x onerror=alert(1)>'), null);
+  assert.equal(policy.createScriptURL, undefined, '不應放行任何 script URL');
 });

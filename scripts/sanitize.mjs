@@ -8,6 +8,7 @@
 //   - 數字：必須是有限整數且在合理範圍。
 //   - 網址：只接受 https，不得含帳密。
 //   - 電話：只保留數字、空白、+ - ( ) # ~ , 、 / 與「轉」「分機」「或」「ext」。
+//   - 英文欄位（nameEn、addrEn、cityEn、distEn）：只允許拉丁字母、數字、空白與 ' . , - ( )；選填（舊版資料沒有）。
 //   - 必要欄位不合格 → 捨棄該院所（記入 warn）；選填欄位不合格 → 捨棄該欄位。
 //   - 結構性錯誤（非物件、數量超過上限、時間不合理）→ 丟出例外，整份資料不予發布。
 
@@ -23,6 +24,9 @@ export const LIMITS = Object.freeze({
   note: 300,
   url: 500,
   short: 60,
+  nameEn: 160, // 英文名稱、地址較中文長
+  addrEn: 240,
+  areaEn: 40, // cityEn、distEn
 });
 
 // C0/C1 控制字元、軟連字號、阿拉伯字母標記、零寬字元、行／段分隔、bidi embedding/override/isolate、
@@ -52,6 +56,13 @@ export function cleanText(v, max) {
   let s = v.replace(SPACE_CTRL_RE, ' ').replace(STRIP_RE, '').trim();
   if (s.length > max) s = [...s].slice(0, max).join('').trim();
   return s;
+}
+
+const LATIN_RE = /^[\p{Script=Latin}0-9 '.,\-()]+$/u;
+/** 英文（拉丁字母）文字：清理後只能含拉丁字母、數字、空白與 ' . , - ( )，否則回傳 undefined */
+export function cleanLatin(v, max) {
+  const s = cleanText(v, max);
+  return s && LATIN_RE.test(s) && /\p{Script=Latin}/u.test(s) ? s.replace(/ {2,}/g, ' ') : undefined;
 }
 
 /** 電話：去除不允許的字元；至少要有 3 個數字，否則回傳 undefined */
@@ -141,6 +152,12 @@ export function sanitizeHospital(h, vaccineIds, warn = () => {}) {
   }
 
   const o = { id, code, name, city, dist, addr, tel, lat, lng, hours, stock };
+  // 英文欄位（選填）：不合格只捨棄該欄位，前端會退回顯示中文
+  for (const [k, max] of [['nameEn', LIMITS.nameEn], ['addrEn', LIMITS.addrEn], ['cityEn', LIMITS.areaEn], ['distEn', LIMITS.areaEn]]) {
+    if (h[k] === undefined) continue;
+    const v = cleanLatin(h[k], max);
+    if (v) o[k] = v; else warn(`${tag} ${k} 不合格（只允許拉丁字母、數字與 ' . , - ( )），已略過`);
+  }
   if (h.apptTel !== undefined) {
     const t = cleanTel(h.apptTel);
     if (t) o.apptTel = t; else warn(`${tag} 預約電話不合格，已略過`);

@@ -235,6 +235,33 @@ const ALIASES = {
   三總: ['三軍總'],
 };
 
+/**
+ * 拉丁字母的比對形式：去變音符號與隔音號（Ren'ai → renai）、小寫，非字母數字一律視為字界（單一空白）。
+ * 用於英文轉寫欄位 nameEn／addrEn／cityEn／distEn（見 docs/DATA_SCHEMA.md）。
+ */
+export function normalizeLatin(s) {
+  return String(s ?? '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/['’‘`]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+// 英文轉寫中常見的一般詞：只以「整個字的開頭」比對，不在字中間比對
+// （否則輸入 "ENT" 會命中 Dental、Center；輸入 "st" 會命中所有路名）
+const LATIN_WORD_ONLY = new Set([
+  'ent', 'st', 'rd', 'ln', 'aly', 'no', 'sec', 'blvd', 'ob', 'gyn', 'obgyn', 'clinic', 'hospital', 'dental', 'center',
+  'medical', 'general', 'united', 'national', 'city', 'county', 'district', 'township', 'village', 'branch', 'health',
+  'public', 'family', 'medicine', 'internal', 'surgery', 'pediatric', 'memorial', 'university', 'municipal', 'and',
+]);
+
+function latinField(s) {
+  const words = normalizeLatin(s);
+  return words ? { words: ` ${words} `, compact: words.replace(/ /g, '') } : null;
+}
+
 const searchCache = new WeakMap();
 function searchFields(h) {
   let f = searchCache.get(h);
@@ -243,14 +270,42 @@ function searchFields(h) {
       name: normalizeText(h.name),
       area: normalizeText(`${h.city || ''}${h.dist || ''}`),
       addr: normalizeText(h.addr),
+      // 英文轉寫（舊版資料沒有 → null）：不論介面語言都可搜尋，例如 "Beitou"、"Mingde"、"ENT"、"Lin Wen Zheng"
+      nameEn: latinField(h.nameEn),
+      areaEn: latinField(`${h.cityEn || ''} ${h.distEn || ''}`),
+      addrEn: latinField(h.addrEn),
     };
     searchCache.set(h, f);
   }
   return f;
 }
 
+/** 以英文轉寫欄位比對單一 token（token 須為拉丁字母／數字；中文 token → 0） */
+function latinTokenScore(fields, token) {
+  const tok = normalizeLatin(token).replace(/ /g, '');
+  // 含中文等非拉丁字元的 token 不比對英文欄位（normalizeLatin 會把它們當字界丟掉，造成誤中）
+  const folded = token.normalize('NFKD').replace(/[\u0300-\u036f'’‘`]/g, '');
+  if (!tok || !/[a-z]/.test(tok) || /[^\x00-\x7f]/.test(folded)) return 0;
+  const inner = tok.length >= 3 && !LATIN_WORD_ONLY.has(tok); // 允許命中字的中間（拼音連寫：Linwenzheng 的 "wen"）
+  let best = 0;
+  const n = fields.nameEn;
+  if (n) {
+    if (n.compact === tok) best = 100;
+    else if (n.words.startsWith(` ${tok}`)) best = 80;
+    else if (n.words.includes(` ${tok}`)) best = 60;
+    else if (inner && n.compact.includes(tok)) best = 20;
+  }
+  if (fields.areaEn?.words.includes(` ${tok}`)) best = Math.max(best, 40);
+  const a = fields.addrEn;
+  if (a) {
+    if (a.words.includes(` ${tok}`)) best = Math.max(best, 30);
+    else if (inner && a.compact.includes(tok)) best = Math.max(best, 10);
+  }
+  return best;
+}
+
 function tokenScore(fields, token) {
-  const direct = plainTokenScore(fields, token);
+  const direct = Math.max(plainTokenScore(fields, token), latinTokenScore(fields, token));
   if (direct > 0) return direct;
   // 俗稱夾在較長的詞中（例如「臺大醫院」）：拆成「俗稱」與其餘部分，各部分都須命中
   for (const key of Object.keys(ALIASES)) {
@@ -312,7 +367,7 @@ export function tokenizeQuery(query, opts) {
 }
 
 /**
- * 搜尋分數：每個 token 都必須命中名稱、縣市行政區或地址之一（AND），
+ * 搜尋分數：每個 token 都必須命中名稱、縣市行政區或地址之一（AND；中文欄位與英文轉寫欄位皆可），
  * 分數為各 token 最佳命中分數之和；任何 token 未命中 → 0。空查詢 → 1。
  */
 export function searchScore(h, query, opts) {

@@ -544,6 +544,9 @@ html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
 .card:focus-within { border-color: var(--brand); }
 .card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .card__title { font-size: 1.0625rem; font-weight: 700; line-height: 1.4; min-width: 0; }
+/* 名稱的第二種寫法（外文介面下的中文原名、日文介面下的英文轉寫） */
+.card__titles { flex: 1 1 auto; min-width: 0; }
+.card__alt { margin-top: 1px; font-size: .8125rem; line-height: 1.35; color: var(--muted); overflow-wrap: anywhere; }
 .card__btn {
   all: unset;
   cursor: pointer;
@@ -674,6 +677,9 @@ html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
 .detail__name:focus { outline: none; }
 .detail__status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
 .detail__addr { margin-top: 10px; font-size: 1rem; color: var(--text); overflow-wrap: anywhere; }
+.detail__alt { margin-top: 2px; font-size: .9375rem; line-height: 1.4; color: var(--muted); overflow-wrap: anywhere; }
+/* 外文介面：英文地址下方附中文原址（可選取複製、給計程車司機看） */
+.detail__addr-alt { margin-top: 2px; font-size: .9375rem; color: var(--muted); overflow-wrap: anywhere; user-select: all; }
 .detail__sub { font-size: .875rem; color: var(--muted); margin-top: 2px; }
 
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }

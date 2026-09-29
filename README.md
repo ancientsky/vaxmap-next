@@ -29,10 +29,12 @@ public/                 網站本體（唯一需要部署的目錄）
   vendor/leaflet, vendor/markercluster   第三方地圖函式庫（打包好的靜態檔，隨 public/ 一起部署）
 
 data/raw/               原始擷取檔（.json.gz），僅用於產生 public/data/hospitals.json，不隨網站部署
+data/districts-en.json  22 縣市與 369 個行政區的官方英文名稱（romanize.mjs 使用，不以拼音產生）
 scripts/
   dev-server.mjs        本地開發用零相依靜態伺服器
   harvest.mjs           從現站擷取全國院所資料 → data/raw/*.json.gz（過渡作法，見 docs/HARVEST.md）
   normalize.mjs         data/raw/*.json.gz → public/data/hospitals.json 的轉換腳本
+  romanize.mjs          院所名稱／地址／行政區的英文（拉丁字母）轉寫，normalize.mjs 呼叫
   keep-live-data.mjs    部署時採用 data 分支（或線上）較新的資料，先清理再使用（供 GitHub Actions 使用）
   publish-data.sh       在國內機器執行：擷取 → 檢查 → 推到 data 分支 → 觸發部署
   install-updater.sh    在國內的 Linux 機器安裝每日排程（systemd 使用者計時器）
@@ -43,6 +45,7 @@ docs/
   DATA_SCHEMA.md        public/data/hospitals.json 的格式契約
   HARVEST.md            2026-09-21 快照的擷取方式與已知限制
   I18N.md               多語系規則、醫療用語對照、完整 key 清單（給翻譯者）
+  BASEMAP.md            底圖地名語言的評估、實測證據與決策
 tests/
   logic.test.mjs        logic.js 單元測試（node:test）
   i18n.test.mjs         語系檔一致性（key、參數、佔位檔）
@@ -50,6 +53,7 @@ tests/
   e2e.spec.mjs          Playwright 端對端煙霧測試（桌面＋手機）
   a11y.spec.mjs         無障礙檢查（僅回報，不修正）
   harvest.test.mjs      以模擬來源伺服器（mock-source.mjs）驗證 harvest.mjs
+  romanize.test.mjs     英文轉寫的人工核對範例（名稱、地址、邊界情況）
 ```
 
 ## 本地執行
@@ -59,6 +63,8 @@ tests/
 需求：Node.js 18 以上（`"type": "module"`，使用 ES modules 與 `node:test`）。本專案**沒有建置流程**——
 `public/` 底下就是可直接部署的成品，`leaflet`／`leaflet.markercluster` 僅列於 `devDependencies`，
 是給日後要重新產生 `public/vendor/` 底下打包檔時用的，正式運行不需要 `npm install`。
+唯一例外是**產生資料**：`scripts/normalize.mjs` 以 `pinyin-pro`（devDependency，本機字典、不連網）產生英文轉寫，
+執行 `npm run normalize`／`update-data` 前需先 `npm install`（`publish-data.sh` 缺套件時會自動 `npm ci`）。
 
 ```bash
 npm run dev        # 啟動 http://localhost:5173/（PORT 環境變數可覆寫）
@@ -86,7 +92,7 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 - **MIME 類型**：確認 `.json` 對應到 `application/json`（IIS 預設通常已內建；若無則於
   `web.config` 新增 `<staticContent><mimeMap fileExtension=".json" mimeType="application/json" /></staticContent>`）。
 - **靜態壓縮**：啟用 IIS 的 Static Compression（`httpCompression`／`urlCompression`），
-  `hospitals.json` 未壓縮約 1.2 MB，啟用 gzip 後可降至約 240 KB，對行動網路使用者體驗影響很大。
+  `hospitals.json` 未壓縮約 1.9 MB，啟用 gzip 後可降至約 330 KB，對行動網路使用者體驗影響很大。
 - **建議 HTTP 標頭**：
   | 標頭 | 建議值 | 原因 |
   |---|---|---|
@@ -120,8 +126,15 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 
 介面支援繁體中文（預設）、English、日本語、한국어、Bahasa Indonesia、Tiếng Việt、ไทย、Filipino，
 由頁首的地球圖示選單切換（不重新載入頁面）。語系依序取自網址 `#lang=en`、上次的選擇（localStorage）、
-瀏覽器語言，否則為繁中；非預設語系會寫進可分享的網址。院所名稱、地址、行政區等資料維持中文，
-縣市名稱會翻譯，且可用外文縣市名搜尋（例如 “Taipei”）。
+瀏覽器語言，否則為繁中；非預設語系會寫進可分享的網址。縣市名稱會翻譯，且可用外文縣市名搜尋（例如 “Taipei”）。
+
+**院所名稱與地址的英文轉寫**：`hospitals.json` 每筆院所另有 `nameEn`、`addrEn`、`cityEn`、`distEn`
+（`scripts/romanize.mjs` 以規則產生：醫療用語查詞彙表翻成英文、專有名詞用漢語拼音、縣市與行政區用官方英文、
+地址依郵局英文順序，例如「林文正耳鼻喉科診所」→ “Linwenzheng ENT Clinic”、「臺北市北投區明德路92號1樓」→
+“1F, No. 92, Mingde Rd., Beitou District, Taipei City”）。語系檔的 `meta.script` 決定顯示方式：`latin`（en、ko、id、vi、th、tl）
+以英文為主、中文原文放第二行（方便出示給計程車司機或櫃檯）；`han`（繁中、日文）以中文為主，日文另附英文名稱。
+搜尋在任何語系都同時比對中文與英文欄位（“Beitou”、“Mingde”、“ENT”、“Lin Wen Zheng” 都找得到）。轉寫為機器規則產生，
+不是官方譯名，少數名稱或地址可能不完全正確。
 
 - **字串位置**：`public/i18n/<lang>.json`，扁平的 key → 字串，`zh-Hant.json` 為原文。
 - **key 規則**：以功能分命名空間（`filters.today`、`detail.call`、`status.ok.text`）；`{n}` 等參數必須保留；
@@ -181,7 +194,7 @@ Pages 對所有檔案固定快取約 10 分鐘，資料更新後最多 10 分鐘
 
 **建議做法**：在後端（現站所在的伺服器或有權限存取來源資料庫的環境）建立一個**排程工作**，
 每隔 N 分鐘（例如 5–15 分鐘，依資料更新頻率決定）直接從資料庫匯出並輸出符合
-`docs/DATA_SCHEMA.md` 格式的 `hospitals.json`（正規化後約 1.2 MB，gzip 壓縮後約 240 KB），
+`docs/DATA_SCHEMA.md` 格式的 `hospitals.json`（正規化後約 1.9 MB，gzip 壓縮後約 330 KB；英文轉寫可沿用 `scripts/romanize.mjs`），
 發布到靜態檔案主機或 CDN。
 
 另一個可行方案是由現站團隊新增一支**回傳全量資料的 JSON 端點**（分頁或不分頁皆可，但需開放
@@ -218,16 +231,24 @@ CORS 或部署在同網域），效果等同於上述排程匯出。
 
 ## 底圖
 
-預設底圖為 OpenStreetMap 官方圖磚，連續載入失敗時自動改用國土測繪中心（NLSC）「通用版電子地圖」
-WMTS 圖磚。順序由 `public/js/map.js` 開頭的 `TILES` 陣列決定（第一個是預設，其後依序備援）；
-`index.html` 的 CSP `img-src` 也對應開放了這兩個網域。測試時可在網址加 `?tiles=nlsc` 直接使用備援底圖，
-或加 `?tiles=fail` 模擬預設底圖失效。**正式上線前**請務必：
+底圖依介面語系選擇，地名才看得懂（評估過程與實測證據見 `docs/BASEMAP.md`）：
+
+- **繁體中文**：OpenStreetMap 官方圖磚（中文地名），失敗時改用國土測繪中心（NLSC）「通用版電子地圖」`EMAP`。
+- **日文**：與繁中相同（日文使用者看得懂漢字路名，且與路牌一致）。
+- **其他語系**（en、ko、id、vi、th、tl）：NLSC「臺灣通用電子地圖EN」`EMAP8`（全臺英文地名），失敗時改用 OpenStreetMap，並提示「地名可能以中文顯示」。目前沒有免金鑰的來源提供韓文街道名稱，因此 ko 也用英文。
+
+
+切換語系時底圖立即換掉，不重新載入頁面。順序由 `public/js/map.js` 的 `BASEMAP_CHAINS` 決定（每條鏈第一個是預設，
+其後依序備援）；`index.html` 的 CSP `img-src` 只開放這兩個網域（EMAP8 與 EMAP 同主機）。測試時可在網址加
+`?tiles=nlsc`／`?tiles=osm`／`?tiles=nlscEn` 指定起始底圖（須在目前語系的鏈中），或加 `?tiles=fail` 模擬預設底圖失效。
+**正式上線前**請務必：
 
 - 確認 [OSM 圖磚使用政策](https://operations.osmfoundation.org/policies/tiles/)。OSM 官方圖磚伺服器
   由捐款維運、不保證可用性，政策明訂大流量用途不得依賴它，違反時可能被無預警封鎖。
   原型與低流量展示沒有問題；若要作為正式對外服務的預設底圖，建議改用自建圖磚或商業圖磚供應商
   （MapTiler、Stadia、Mapbox 等，多數仍以 OSM 資料製圖），或把順序換回 NLSC 優先；
-- 確認 NLSC 電子地圖的[使用規範](https://maps.nlsc.gov.tw/)是否需要申請或標示來源。
+- NLSC 的 WMTS 官方說明為「使用者無需申請」即可介接，但沒有公開的流量上限或服務水準；外文介面完全依賴 EMAP8，
+  正式上線、流量變大前建議以疾管署名義向國土測繪中心確認（見 `docs/BASEMAP.md`）。
 
 ## 瀏覽器支援
 
@@ -249,7 +270,7 @@ WMTS 圖磚。順序由 `public/js/map.js` 開頭的 `TILES` 陣列決定（第�
 | 現站問題 | 本原型的作法 |
 |---|---|
 | 進站需先關閉阻擋式公告視窗 | 公告改為可關閉的頁首橫幅（banner），不阻擋操作 |
-| 資料以「每 20 筆」同步 XHR 分批索取 | 一次載入單一 JSON（約 240 KB gzip），前端在本地端篩選／排序 |
+| 資料以「每 20 筆」同步 XHR 分批索取 | 一次載入單一 JSON（約 330 KB gzip，含英文轉寫），前端在本地端篩選／排序 |
 | 地圖圖釘只顯示「有看診／休診」 | 圖釘以形狀＋顏色同時表達「今日有看診」與「所選品項是否有庫存」三種狀態 |
 | 沒有清單，只能點地圖上的圖釘 | 提供依距離排序的院所清單，與地圖同步互動 |
 | 篩選為單選式彈出視窗 | 篩選改為可複選的 chips（品項、群組、地區、只看有庫存、今日有看診等） |

@@ -60,6 +60,30 @@ test('every hospital has required fields with correct types', () => {
   assert.deepEqual(problems.slice(0, 30), [], `${problems.length} problem(s) found`);
 });
 
+// 英文（拉丁字母）欄位：由 scripts/romanize.mjs 產生，供非中文介面顯示與搜尋（見 docs/DATA_SCHEMA.md）
+test('every hospital has nameEn/addrEn/cityEn/distEn: non-empty, ASCII only', () => {
+  const ASCII = /^[A-Za-z0-9 '.,\-()]+$/;
+  const problems = [];
+  for (const h of hospitals) {
+    for (const k of ['nameEn', 'addrEn', 'cityEn', 'distEn']) {
+      if (typeof h[k] !== 'string' || !h[k].trim()) problems.push(`id=${h.id}: ${k} missing/empty`);
+      else if (!ASCII.test(h[k])) problems.push(`id=${h.id}: ${k} not ASCII: ${h[k]}`);
+    }
+  }
+  assert.deepEqual(problems.slice(0, 30), [], `${problems.length} problem(s) found`);
+});
+
+test('English fields are consistent: addrEn ends with "distEn, cityEn"; nameEn contains no leftover CJK', () => {
+  const offenders = hospitals.filter((h) => !h.addrEn.endsWith(`${h.distEn}, ${h.cityEn}`) || /\p{Script=Han}/u.test(h.nameEn));
+  assert.deepEqual(offenders.map((h) => `${h.id} ${h.addrEn}`).slice(0, 20), []);
+});
+
+test('English cityEn/distEn match data/districts-en.json for every record', () => {
+  const table = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/districts-en.json'), 'utf8'));
+  const bad = hospitals.filter((h) => table.cities[h.city] !== h.cityEn || table.districts[`${h.city}|${h.dist}`] !== h.distEn);
+  assert.deepEqual(bad.map((h) => `${h.id} ${h.city}|${h.dist} → ${h.cityEn}|${h.distEn}`).slice(0, 20), []);
+});
+
 test('ids are unique', () => {
   const ids = hospitals.map((h) => h.id);
   assert.equal(new Set(ids).size, ids.length);

@@ -50,6 +50,9 @@ for (const lang of SUPPORTED_LANGS) {
     if (lang === DEFAULT_LANG) assert.equal(c._status, 'source');
     else assert.notEqual(c._status, 'source');
     assert.ok(['ltr', 'rtl'].includes(c['meta.dir']));
+    // 院所資料的顯示文字系統：han = 中文為主（zh-Hant、ja），latin = 英文轉寫為主（見 i18n.js displayParts）
+    assert.ok(['han', 'latin'].includes(c['meta.script']), `meta.script=${c['meta.script']}`);
+    if (lang === DEFAULT_LANG) assert.equal(c['meta.script'], 'han');
     assert.doesNotThrow(() => Intl.getCanonicalLocales(c['meta.locale']));
     assert.doesNotThrow(() => new Intl.DateTimeFormat(c['meta.locale'], { timeZone: 'Asia/Taipei' }));
     assert.ok(c['meta.short'].length <= 4, 'meta.short must fit the mobile switcher');

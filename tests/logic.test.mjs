@@ -510,3 +510,30 @@ test('distanceParts: numeric parts used by the localized formatter; formatDistan
   assert.equal(distanceParts(NaN), null);
   assert.equal(formatDistance(1), '1.0 公里');
 });
+
+test('searchScore: English (Latin) fields are searchable in any UI language, accent/apostrophe-insensitive', async () => {
+  const { normalizeLatin } = await import('../public/js/logic.js');
+  const lin = {
+    name: '林文正耳鼻喉科診所', city: '臺北市', dist: '北投區', addr: '臺北市北投區明德路92號1樓',
+    nameEn: 'Linwenzheng ENT Clinic', cityEn: 'Taipei City', distEn: 'Beitou District',
+    addrEn: '1F, No. 92, Mingde Rd., Beitou District, Taipei City',
+  };
+  const dental = {
+    name: '陳牙醫診所', city: '臺北市', dist: '大安區', addr: '臺北市大安區仁愛路4段1號',
+    nameEn: 'Chen Dental Clinic', cityEn: 'Taipei City', distEn: "Da'an District",
+    addrEn: "No. 1, Sec. 4, Ren'ai Rd., Da'an District, Taipei City",
+  };
+  assert.ok(searchScore(lin, 'Beitou') > 0, 'district');
+  assert.ok(searchScore(lin, 'mingde') > 0, 'road');
+  assert.ok(searchScore(lin, 'ENT') > 0, 'specialty');
+  assert.ok(searchScore(lin, 'Lin Wen Zheng') > 0, 'pinyin syllables typed separately');
+  assert.ok(searchScore(lin, 'linwenzheng') >= 80, 'name prefix ranks like a Chinese name prefix');
+  assert.ok(searchScore(lin, '北投 ENT') > 0, 'Chinese and Latin tokens mix (AND)');
+  assert.equal(searchScore(dental, 'ENT'), 0, '"ENT" must not hit "Dental"');
+  assert.ok(searchScore(dental, 'renai') > 0 && searchScore(dental, "Ren'ai") > 0 && searchScore(dental, 'daan') > 0);
+  assert.ok(searchScore(dental, 'Rén’ài') > 0, 'accents / curly apostrophe ignored');
+  assert.equal(searchScore(lin, 'Kaohsiung'), 0);
+  // 舊版資料（沒有英文欄位）行為不變
+  assert.equal(searchScore({ name: '林文正耳鼻喉科診所', city: '臺北市', dist: '北投區', addr: '明德路' }, 'Beitou'), 0);
+  assert.equal(normalizeLatin("  Ren'ai Rd., Da'an  "), 'renai rd daan');
+});

@@ -1,6 +1,6 @@
 // DOM 產生器：所有資料字串一律經由 textContent / 屬性設定，不使用 innerHTML。
 import { PERIODS, WEEKDAY_IDS } from './logic.js';
-import { t, tParts, tVaccine, placeLabel, formatDistanceL, closedGlyph, fmtNum as fmtNumL } from './i18n.js';
+import { t, tParts, tVaccine, formatDistanceL, closedGlyph, fmtNum as fmtNumL, displayParts, displayArea } from './i18n.js';
 
 /** el('div', {class:'x', onclick: fn, 'aria-label': '…'}, child, 'text', …) */
 export function el(tag, attrs, ...children) {
@@ -112,15 +112,20 @@ export function card(item, { catalog, ctx, onOpen, showDistance = false }) {
   const productList = catalog.filter((v) => item.products.includes(v.id));
   const btnId = `card-${h.id}`;
 
+  const name = displayParts(h, 'name');
+
   return el('li', { class: 'card', dataset: { id: h.id } },
     el('div', { class: 'card__head' },
-      el('h3', { class: 'card__title' },
-        el('button', { type: 'button', class: 'card__btn', id: btnId, onclick: () => onOpen(h.id) }, h.name)),
+      el('div', { class: 'card__titles' },
+        el('h3', { class: 'card__title', lang: name.lang },
+          el('button', { type: 'button', class: 'card__btn', id: btnId, onclick: () => onOpen(h.id) }, name.text)),
+        // 第二種寫法（外文介面的中文原名／日文介面的英文）：給櫃檯、計程車司機看
+        name.alt ? el('p', { class: 'card__alt', lang: name.altLang, text: name.alt }) : null),
       statusBadge(status)),
     el('p', { class: 'card__meta' },
       showDistance && item.distance != null ? el('span', { class: 'dist', text: formatDistanceL(item.distance) }) : null,
       showDistance && item.distance != null ? ' · ' : null,
-      placeLabel(h.city, h.dist)),
+      displayArea(h)),
     el('div', { class: 'card__row' },
       el('span', { class: 'card__row-label', 'aria-hidden': 'true', text: t('card.today') }),
       el('span', { class: 'sr-only', text: pills.label }),
@@ -227,8 +232,15 @@ export function detail(item, { catalog, ctx, selectedIds, distanceLabel }) {
             el('span', { class: 'sr-only', text: t(on ? 'detail.open' : 'detail.closed') }));
         }))))));
 
+  const name = displayParts(h, 'name');
+  const addr = displayParts(h, 'addr');
+  // 所在地＋距離；英文地址已含「行政區, 縣市」時不再重複所在地，只留距離（去掉開頭的「 · 」）
+  const area = addr.alt ? '' : displayArea(h);
+  const distText = distanceLabel ? t('detail.distance', { distance: distanceLabel }) : '';
+  const sub = area ? area + distText : distText.replace(/^\s*[·・]\s*/, '');
   return [
-    el('h2', { class: 'detail__name', id: 'detail-name', tabindex: '-1', text: h.name }),
+    el('h2', { class: 'detail__name', id: 'detail-name', tabindex: '-1', lang: name.lang, text: name.text }),
+    name.alt ? el('p', { class: 'detail__alt', lang: name.altLang, text: name.alt }) : null,
     el('div', { class: 'detail__status' },
       statusBadge(status),
       el('span', { class: 'sr-only', text: STATUS[status].long }),
@@ -237,8 +249,9 @@ export function detail(item, { catalog, ctx, selectedIds, distanceLabel }) {
       el('span', { class: 'card__row-label', 'aria-hidden': 'true', text: t('card.today') }),
       el('span', { class: 'sr-only', text: pills.label }),
       pills.nodes),
-    el('p', { class: 'detail__addr', text: h.addr }),
-    el('p', { class: 'detail__sub' }, placeLabel(h.city, h.dist), distanceLabel ? t('detail.distance', { distance: distanceLabel }) : ''),
+    el('p', { class: 'detail__addr', lang: addr.lang, text: addr.text }),
+    addr.alt ? el('p', { class: 'detail__addr-alt', lang: addr.altLang, text: addr.alt }) : null,
+    sub ? el('p', { class: 'detail__sub', text: sub }) : null,
     el('div', { class: 'actions' }, actions),
     el('h3', { class: 'section-title', text: t('detail.stockTitle') }),
     offered.length ? stockTable : el('p', { text: t('detail.noProducts') }),

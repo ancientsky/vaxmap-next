@@ -222,17 +222,84 @@ export function tGroup(id, field = 'name', fallback) {
   return cur[key] ?? base[key] ?? fallback ?? id;
 }
 
-/** 縣市名稱翻譯（行政區維持中文）；未知縣市原樣回傳 */
+/** 縣市名稱翻譯；未知縣市原樣回傳 */
 export function tCity(zh) {
   if (!zh) return '';
   return cur[`city.${zh}`] ?? zh;
 }
 
-/** 「縣市 行政區」：繁中為「臺北市中正區」，其他語系為「Taipei City · 中正區」 */
+/* ---------------- 院所資料的顯示文字（中文原文／英文轉寫） ---------------- */
+
+// 資料檔的院所名稱、地址、行政區是中文；hospitals.json 另附英文轉寫 nameEn、addrEn、cityEn、distEn
+// （scripts/romanize.mjs 產生，見 docs/DATA_SCHEMA.md）。語系檔的 meta.script 決定畫面以哪一種為主：
+//   "han"   （zh-Hant、ja）：中文為主；ja 另以英文為第二行（名稱）
+//   "latin" （其他語系）：英文為主，中文放第二行（給計程車司機、櫃檯看）
+// 舊版資料沒有英文欄位時一律退回中文。
+const ZH_TAG = 'zh-Hant-TW';
+const distEnMap = new Map(); // "臺北市|北投區" → "Beitou District"（由 learnPlaceNames 從資料建立）
+
+/** 目前語系的資料文字系統：'han' | 'latin' */
+export function getScript() {
+  return lookup('meta.script') === 'latin' ? 'latin' : 'han';
+}
+
+/** 載入資料後呼叫一次：記下行政區的英文名稱，供 placeLabel()、行政區選單使用 */
+export function learnPlaceNames(hospitals) {
+  distEnMap.clear();
+  for (const h of hospitals || []) {
+    if (h && typeof h.distEn === 'string' && h.distEn && h.city && h.dist) distEnMap.set(`${h.city}|${h.dist}`, h.distEn);
+  }
+}
+
+/** 行政區名稱：latin 語系用英文（Beitou District），其餘維持中文 */
+export function tDist(city, dist) {
+  if (!dist) return '';
+  return (getScript() === 'latin' && distEnMap.get(`${city}|${dist}`)) || dist;
+}
+
+/**
+ * 院所名稱或地址的顯示文字。
+ * @param {object} h 院所（hospitals.json 的一筆）
+ * @param {'name'|'addr'} field
+ * @returns {{text: string, lang: string|null, alt: string, altLang: string|null}}
+ *   text：主要顯示文字；alt：第二行（沒有則為 ''）；lang／altLang：與頁面語言不同時應設定的 lang 屬性（null = 沿用頁面）
+ */
+export function displayParts(h, field = 'name') {
+  const zh = String(h?.[field] ?? '');
+  const en = typeof h?.[`${field}En`] === 'string' ? h[`${field}En`] : '';
+  if (lang === DEFAULT_LANG || !en) return { text: zh, lang: lang === DEFAULT_LANG ? null : ZH_TAG, alt: '', altLang: null };
+  if (getScript() === 'latin') return { text: en, lang: null, alt: zh, altLang: ZH_TAG };
+  // han（ja）：漢字可讀，中文為主；名稱另附英文，地址只顯示中文
+  return { text: zh, lang: ZH_TAG, alt: field === 'name' ? en : '', altLang: 'en' };
+}
+
+/** 院所名稱（主要顯示文字）：清單、詳細資料標題、地圖圖釘的 aria-label／title 都用這個 */
+export function displayName(h) {
+  return displayParts(h, 'name').text;
+}
+
+/** 院所地址（主要顯示文字） */
+export function displayAddr(h) {
+  return displayParts(h, 'addr').text;
+}
+
+/**
+ * 院所所在地：繁中「臺北市北投區」；ja「台北市北投區」（日文縣市名＋中文行政區）；
+ * latin 語系「Taipei City · Beitou District」（資料的 cityEn、distEn，與英文地址一致）
+ */
+export function displayArea(h) {
+  if (!h) return '';
+  if (lang !== DEFAULT_LANG && getScript() === 'latin' && h.cityEn) {
+    return h.distEn ? t('place.cityDist', { city: h.cityEn, dist: h.distEn }) : h.cityEn;
+  }
+  return placeLabel(h.city, h.dist);
+}
+
+/** 「縣市 行政區」（篩選標籤等）：繁中為「臺北市中正區」，latin 語系為「Taipei City · Zhongzheng District」 */
 export function placeLabel(city, dist) {
   if (!city) return dist || '';
   if (!dist) return tCity(city);
-  return t('place.cityDist', { city: tCity(city), dist });
+  return t('place.cityDist', { city: tCity(city), dist: tDist(city, dist) });
 }
 
 /** 距離：依語系的單位字樣與數字格式 */
