@@ -128,7 +128,7 @@ async function collectConsoleErrors(page, ignoreTiles) {
 
 async function runDesktopFlow(browser, baseUrl) {
   console.log('\n=== Desktop 1440x900 ===');
-  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
   const page = await context.newPage();
   const errors = await collectConsoleErrors(page, true);
 
@@ -222,7 +222,7 @@ async function runDesktopFlow(browser, baseUrl) {
   }));
 
   // 分享連結：帶次要條件的 hash 開啟時面板收合、以標籤顯示
-  const shareCtx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const shareCtx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
   const sharePage = await shareCtx.newPage();
   await sharePage.goto(`${baseUrl}#g=covid&p=mod_adult&stock=1&city=${encodeURIComponent('臺北市')}&dist=${encodeURIComponent('中山區')}`, { waitUntil: 'load' });
   await sharePage.waitForFunction(() => /\d/.test(document.getElementById('results-heading')?.textContent || ''), { timeout: 15000 });
@@ -287,6 +287,7 @@ async function runMobileFlow(browser, baseUrl) {
   console.log('\n=== Mobile 390x844 ===');
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
+    locale: 'zh-TW',
     isMobile: true,
     hasTouch: true,
   });
@@ -346,6 +347,147 @@ async function runMobileFlow(browser, baseUrl) {
   await context.close();
 }
 
+// ---------------- 多語系 ----------------
+const waitCount = (page) => page.waitForFunction(() => /\d/.test(document.getElementById('results-heading')?.textContent || ''), { timeout: 15000 });
+const htmlLang = (page) => page.evaluate(() => document.documentElement.lang);
+
+async function runI18nFlow(browser, baseUrl) {
+  console.log('\n=== i18n ===');
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
+  const page = await context.newPage();
+  const errors = await collectConsoleErrors(page, true);
+  await page.goto(`${baseUrl}#g=covid&stock=1&city=${encodeURIComponent('臺北市')}`, { waitUntil: 'load' });
+  await waitCount(page);
+  ok('zh-TW browser starts in zh-Hant (<html lang>)', (await htmlLang(page)) === 'zh-Hant-TW', await htmlLang(page));
+  ok('switcher has an accessible name', !!(await page.locator('#lang-select').getAttribute('aria-label')));
+  const zhCount = await countFromResultsHeading(page);
+  ok('zh-Hant hash has no lang=', !page.url().includes('lang='), page.url());
+
+  // 切換為英文：不重新載入頁面
+  await page.evaluate(() => { window.__noReload = 1; });
+  await page.locator('#lang-select').selectOption('en');
+  await page.waitForFunction(() => document.documentElement.lang === 'en');
+  await page.waitForTimeout(400);
+  ok('switching to en does not reload the page', await page.evaluate(() => window.__noReload === 1));
+  ok('<html lang> becomes en', (await htmlLang(page)) === 'en');
+  ok('document.title is English', /Vaccine/.test(await page.title()), await page.title());
+  const head = await page.locator('#results-heading').innerText();
+  ok('result-count text is English and the count is unchanged', /results?/.test(head) && (await countFromResultsHeading(page)) === zhCount, head);
+  const badge = await page.locator('.card .badge').first().innerText();
+  ok('card status label is English', /In stock|Out of stock|Closed today/.test(badge), badge);
+  ok('card place shows translated city + Chinese district', /Taipei City · \S+/.test(await page.locator('.card__meta').first().innerText()));
+  const tokenLabels = await page.locator('#tokens .token').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')));
+  ok('token labels are English', tokenLabels.includes('Remove filter: In stock only') && tokenLabels.includes('Remove filter: Taipei City'), JSON.stringify(tokenLabels));
+  ok('chips are English', (await page.locator('.chip--group').first().innerText()).includes('Flu'));
+  ok('filter button label is English', (await page.locator('#filter-toggle').innerText()).includes('Filters'));
+  ok('placeholder is English', (await page.locator('#search-input').getAttribute('placeholder')) === 'Clinic, address, city');
+  await page.waitForTimeout(400);
+  ok('hash gets lang=en', page.url().includes('lang=en'), page.url());
+  ok('snapshot uses the English label', (await page.locator('#snapshot').innerText()).startsWith('Data snapshot'));
+  ok('announcement link is preserved', (await page.locator('#banner-detail a').getAttribute('href')) === 'https://vaxmap.cdc.gov.tw/'
+    && (await page.locator('#banner-detail a').innerText()) === 'Taiwan CDC official map');
+
+  // 外文縣市名搜尋
+  await page.locator('#clear-btn').click();
+  await page.locator('#search-input').fill('Kaohsiung');
+  await page.waitForTimeout(500);
+  const khCount = await countFromResultsHeading(page);
+  const metas = await page.locator('.card__meta').allInnerTexts();
+  ok('searching "Kaohsiung" finds 高雄市 clinics', khCount > 0 && metas.length > 0 && metas.every((m) => m.includes('Kaohsiung City')), `${khCount} ${metas.slice(0, 3)}`);
+  await page.locator('#search-clear').click();
+  await page.waitForTimeout(300);
+
+  // 詳細資料開著時切換語系
+  await page.locator('.card__btn').first().click();
+  await page.waitForSelector('#detail-name');
+  ok('detail actions are English', (await page.locator('.actions').innerText()).includes('Directions'));
+  await page.locator('#lang-select').selectOption('zh-Hant');
+  await page.waitForFunction(() => document.documentElement.lang === 'zh-Hant-TW');
+  await page.waitForTimeout(400);
+  ok('open detail re-renders in zh-Hant', (await page.locator('.actions').innerText()).includes('Google 地圖導航'));
+  ok('back to zh-Hant drops lang= from the hash', !page.url().includes('lang='), page.url());
+  await page.locator('#lang-select').selectOption('en');
+  await page.waitForFunction(() => document.documentElement.lang === 'en');
+  await page.waitForTimeout(400);
+
+  // 重新整理後維持英文（網址 + localStorage）
+  await page.reload({ waitUntil: 'load' });
+  await waitCount(page);
+  ok('reload keeps English', (await htmlLang(page)) === 'en' && (await page.locator('#lang-select').inputValue()) === 'en');
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  await waitCount(page);
+  ok('language persists without the hash (localStorage)', (await htmlLang(page)) === 'en');
+  ok('no console errors during language switching', errors.length === 0, errors.slice(0, 5).join(' || '));
+  await context.close();
+
+  // 分享連結 #lang=en 在繁中瀏覽器中還原英文
+  const c2 = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
+  const p2 = await c2.newPage();
+  await p2.goto(`${baseUrl}#lang=en`, { waitUntil: 'load' });
+  await waitCount(p2);
+  ok('hash lang=en restores English in a zh-TW browser', (await htmlLang(p2)) === 'en' && /results?/.test(await p2.locator('#results-heading').innerText()));
+  await c2.close();
+
+  // 瀏覽器語言偵測（無網址、無儲存）
+  const c3 = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'en-US' });
+  const p3 = await c3.newPage();
+  await p3.goto(baseUrl, { waitUntil: 'load' });
+  await waitCount(p3);
+  ok('navigator.languages en-US → English', (await htmlLang(p3)) === 'en');
+  await c3.close();
+
+  // 待翻譯的語系檔（英文佔位）能正常載入
+  for (const l of ['ja', 'ko', 'id', 'vi', 'th', 'tl']) {
+    const c = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: 'zh-TW', isMobile: true, hasTouch: true });
+    const p = await c.newPage();
+    const errs = await collectConsoleErrors(p, true);
+    await p.goto(`${baseUrl}#lang=${l}`, { waitUntil: 'load' });
+    await waitCount(p);
+    const info = await p.evaluate(() => ({ lang: document.documentElement.lang, sel: document.getElementById('lang-select').value }));
+    ok(`${l} placeholder loads without errors`, info.sel === l && !!info.lang && errs.length === 0, `${JSON.stringify(info)} ${errs.slice(0, 3).join(' || ')}`);
+    await c.close();
+  }
+}
+
+async function i18nScreenshots(browser, baseUrl) {
+  console.log('\n=== i18n screenshots ===');
+  const hash = `#g=covid&stock=1&city=${encodeURIComponent('臺北市')}`;
+  for (const [lang, locale] of [['zh', 'zh-TW'], ['en', 'en-US']]) {
+    for (const [dev, opts] of [['desktop', { viewport: { width: 1440, height: 900 } }], ['mobile', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
+      const c = await browser.newContext({ ...opts, locale });
+      const p = await c.newPage();
+      await p.goto(`${baseUrl}${hash}`, { waitUntil: 'load' });
+      await waitCount(p);
+      await p.waitForTimeout(800);
+      await p.screenshot({ path: path.join(SCREEN_DIR, `i18n-${lang}-${dev}-initial.png`) });
+      // 版面檢查：主列 chip 與「篩選」按鈕的文字不可溢出
+      // 量文字元素本身（控制項的 ::before 觸控延伸區與 ✓ 徽章是刻意超出的，不算）：
+      // 文字不可被截斷（scrollWidth > clientWidth），也不可超出所屬按鈕的外框
+      const overflow = await p.evaluate(() => {
+        const bad = [];
+        const sel = '.chip__label, .btn--filter__label, #filter-toggle .count-badge, .token__text, .card .badge, .lang__name, .lang__short';
+        for (const e of document.querySelectorAll(sel)) {
+          const r = e.getBoundingClientRect();
+          if (!r.width) continue;
+          const box = (e.closest('button, .lang') || e).getBoundingClientRect();
+          const clipped = e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).display !== 'inline';
+          const outside = r.left < box.left - 1 || r.right > box.right + 1 || r.top < box.top - 1 || r.bottom > box.bottom + 1;
+          if (clipped || outside) bad.push(`${e.className}: "${e.textContent}"`);
+        }
+        return bad;
+      });
+      ok(`${lang}/${dev}: no text overflow in chips / filter button / tokens / badges / switcher`, overflow.length === 0, JSON.stringify(overflow));
+      const tops = await p.locator('.chip--group').evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+      ok(`${lang}/${dev}: 4 group chips stay on one row`, new Set(tops).size === 1, JSON.stringify(tops));
+      await p.locator('.card__btn').first().click();
+      await p.waitForSelector('#detail-name');
+      await p.waitForTimeout(600);
+      await p.screenshot({ path: path.join(SCREEN_DIR, `i18n-${lang}-${dev}-detail.png`) });
+      await c.close();
+    }
+  }
+}
+
 async function main() {
   const port = await getFreePort();
   const baseUrl = `http://127.0.0.1:${port}/`;
@@ -359,6 +501,8 @@ async function main() {
     browser = await chromium.launch();
     await runDesktopFlow(browser, baseUrl);
     await runMobileFlow(browser, baseUrl);
+    await runI18nFlow(browser, baseUrl);
+    await i18nScreenshots(browser, baseUrl);
   } finally {
     if (browser) await browser.close();
     server.kill();

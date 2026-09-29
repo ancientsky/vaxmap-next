@@ -1,5 +1,6 @@
 // Leaflet 地圖封裝：底圖（含自動備援）、院所標記、群集、定位點。
 /* global L */
+import { t, tn, closedGlyph } from './i18n.js';
 
 const TW_BOUNDS = [[21.8, 119.9], [25.4, 122.1]];
 
@@ -22,7 +23,8 @@ const TILES = [
   },
 ];
 
-const GLYPH = { ok: '✓', nostock: '–', closed: '休' };
+// 休診符號依語系（'休' 或 '×'，兩者都在 trusted-types.js 的允許清單內）
+const glyphFor = (status) => (status === 'closed' ? closedGlyph() : status === 'ok' ? '✓' : '–');
 // 視覺尺寸 30/26px，但圖示元素（觸控範圍）一律 44px
 const HIT = 44;
 
@@ -30,19 +32,28 @@ function makeIcon(status, active) {
   const s = HIT;
   return L.divIcon({
     className: `mk mk--${status}${active ? ' mk--active' : ''}`,
-    html: `<span class="mk__b"><span class="mk__g" aria-hidden="true">${GLYPH[status]}</span></span>`,
+    html: `<span class="mk__b"><span class="mk__g" aria-hidden="true">${glyphFor(status)}</span></span>`,
     iconSize: [s, s],
     iconAnchor: [s / 2, s / 2],
   });
 }
 
-const ICONS = {};
-for (const st of ['ok', 'nostock', 'closed']) {
-  ICONS[st] = makeIcon(st, false);
-  ICONS[`${st}:active`] = makeIcon(st, true);
+// 依休診符號快取圖示（切換語系時才可能換符號）
+const ICON_CACHE = {};
+function icons() {
+  const g = closedGlyph();
+  if (!ICON_CACHE[g]) {
+    const set = {};
+    for (const st of ['ok', 'nostock', 'closed']) {
+      set[st] = makeIcon(st, false);
+      set[`${st}:active`] = makeIcon(st, true);
+    }
+    ICON_CACHE[g] = set;
+  }
+  return ICON_CACHE[g];
 }
 
-const STATUS_TEXT = { ok: '有庫存', nostock: '無庫存', closed: '今日休診' };
+const statusText = (s) => t(`status.${s}.text`);
 
 function clusterIcon(cluster) {
   const children = cluster.getAllChildMarkers();
@@ -68,7 +79,7 @@ function clusterIcon(cluster) {
   num.textContent = n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
   ring.appendChild(num);
   root.appendChild(ring);
-  root.title = `${n} 家院所：有庫存 ${ok}、無庫存 ${no}、今日休診 ${closed}（點擊放大）`;
+  root.title = tn('map.clusterTitle', n, { ok, no, closed });
   const hit = Math.max(HIT, size);
   if (hit > size) ring.style.inset = `${(hit - size) / 2}px`;
   return L.divIcon({ html: root, className: 'cl', iconSize: [hit, hit] });
@@ -85,7 +96,7 @@ export function createMap(el, handlers = {}) {
     maxBoundsViscosity: 0.6,
     keyboard: true,
   });
-  L.control.zoom({ position: 'topleft', zoomInTitle: '放大', zoomOutTitle: '縮小' }).addTo(map);
+  L.control.zoom({ position: 'topleft', zoomInTitle: t('map.zoomIn'), zoomOutTitle: t('map.zoomOut') }).addTo(map);
   map.attributionControl.setPrefix(false);
   map.fitBounds(TW_BOUNDS);
 
@@ -111,7 +122,7 @@ export function createMap(el, handlers = {}) {
         if (tileIdx + 1 < tiles.length) {
           const from = tiles[tileIdx].name;
           useTiles(tileIdx + 1);
-          handlers.onTileStatus?.('fallback', { from, to: tiles[tileIdx].name });
+          handlers.onTileStatus?.('fallback', { from, to: tiles[tileIdx].name, fromId: tiles[i].id, toId: tiles[tileIdx].id });
         } else {
           handlers.onTileStatus?.('failed');
         }
@@ -148,14 +159,14 @@ export function createMap(el, handlers = {}) {
 
   function iconFor(m) {
     const active = m._vxId === activeId || m._vxId === selectedId;
-    return ICONS[active ? `${m._vxStatus}:active` : m._vxStatus];
+    return icons()[active ? `${m._vxStatus}:active` : m._vxStatus];
   }
 
   function getMarker(h) {
     let m = markers.get(h.id);
     if (!m) {
       m = L.marker([h.lat, h.lng], {
-        icon: ICONS.ok,
+        icon: icons().ok,
         title: h.name,
         alt: h.name,
         keyboard: true,
@@ -170,7 +181,7 @@ export function createMap(el, handlers = {}) {
         const icon = m.getElement();
         if (icon) {
           icon.setAttribute('role', 'button');
-          icon.setAttribute('aria-label', `${h.name}，${STATUS_TEXT[m._vxStatus]}`);
+          icon.setAttribute('aria-label', t('map.markerLabel', { name: h.name, status: statusText(m._vxStatus) }));
           if (!icon._vxBound) {
             icon._vxBound = true;
             icon.addEventListener('focus', () => handlers.onMarkerHover?.(h.id));
@@ -252,7 +263,7 @@ export function createMap(el, handlers = {}) {
   function applyIcon(m) {
     m.setIcon(iconFor(m));
     const el = m.getElement();
-    if (el) el.setAttribute('aria-label', `${m.options.title}，${STATUS_TEXT[m._vxStatus]}`);
+    if (el) el.setAttribute('aria-label', t('map.markerLabel', { name: m.options.title, status: statusText(m._vxStatus) }));
   }
 
   function refreshIcon(id) {
@@ -397,6 +408,23 @@ export function createMap(el, handlers = {}) {
 
   map.on('moveend', () => handlers.onMoveEnd?.());
 
+  /** 切換語系後：縮放按鈕、圖釘（休診符號與 aria-label）、群集提示文字 */
+  function relabel() {
+    const zin = el.querySelector('.leaflet-control-zoom-in');
+    const zout = el.querySelector('.leaflet-control-zoom-out');
+    for (const [a, key] of [[zin, 'map.zoomIn'], [zout, 'map.zoomOut']]) {
+      if (!a) continue;
+      a.title = t(key);
+      a.setAttribute('aria-label', t(key));
+    }
+    for (const m of markers.values()) {
+      if (m.options.icon !== iconFor(m)) m.setIcon(iconFor(m));
+      const e = m.getElement();
+      if (e) e.setAttribute('aria-label', t('map.markerLabel', { name: m.options.title, status: statusText(m._vxStatus) }));
+    }
+    cluster.refreshClusters();
+  }
+
   return {
     map,
     update,
@@ -409,6 +437,7 @@ export function createMap(el, handlers = {}) {
     visibleCenter,
     setUserLocation,
     getView,
+    relabel,
     setView: (v) => map.setView([v.lat, v.lng], v.z, { animate: false }),
     invalidate: () => map.invalidateSize({ pan: false }),
     panIntoView,

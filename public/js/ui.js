@@ -1,5 +1,6 @@
 // DOM 產生器：所有資料字串一律經由 textContent / 屬性設定，不使用 innerHTML。
-import { PERIODS, WEEKDAYS, formatDistance } from './logic.js';
+import { PERIODS, WEEKDAY_IDS } from './logic.js';
+import { t, tParts, tVaccine, placeLabel, formatDistanceL, closedGlyph, fmtNum as fmtNumL } from './i18n.js';
 
 /** el('div', {class:'x', onclick: fn, 'aria-label': '…'}, child, 'text', …) */
 export function el(tag, attrs, ...children) {
@@ -46,10 +47,16 @@ export function icon(name) {
   return svg;
 }
 
+// 狀態文字依目前語系即時取得（getter），切換語系後不需重新 import
+const statusEntry = (id, glyph) => ({
+  get glyph() { return typeof glyph === 'function' ? glyph() : glyph; },
+  get text() { return t(`status.${id}.text`); },
+  get long() { return t(`status.${id}.long`); },
+});
 export const STATUS = {
-  ok: { glyph: '✓', text: '有庫存', long: '今日有看診・有庫存' },
-  nostock: { glyph: '–', text: '無庫存', long: '今日有看診・所選品項無庫存' },
-  closed: { glyph: '休', text: '今日休診', long: '今日休診' },
+  ok: statusEntry('ok', '✓'),
+  nostock: statusEntry('nostock', '–'),
+  closed: statusEntry('closed', closedGlyph),
 };
 
 export function statusBadge(status) {
@@ -60,8 +67,12 @@ export function statusBadge(status) {
 }
 
 export function fmtNum(n) {
-  return Number(n).toLocaleString('zh-TW');
+  return fmtNumL(n);
 }
+
+/** 品項在畫面上的名稱（繁中用資料檔，其他語系用語系檔） */
+export const vName = (v) => tVaccine(v.id, 'name', v.name);
+export const vShort = (v) => tVaccine(v.id, 'short', v.short);
 
 /** 今日時段 pills：填滿 = 有看診（●），虛線 = 休（○）。文字不只靠顏色。 */
 export function sessionPills(bits, currentBit) {
@@ -70,23 +81,24 @@ export function sessionPills(bits, currentBit) {
   for (const p of PERIODS) {
     const on = (bits & p.bit) !== 0;
     const now = on && p.bit === currentBit;
-    spoken.push(`${p.label}${on ? '有看診' : '休診'}`);
+    const label = t(`period.${p.id}`);
+    spoken.push(t(on ? 'pills.open' : 'pills.closed', { period: label }));
     frag.push(el('span', { class: `pill ${on ? 'pill--on' : 'pill--off'}${now ? ' pill--now' : ''}`, 'aria-hidden': 'true' },
-      on ? '●' : '○', ` ${p.label}`));
+      on ? '●' : '○', ` ${t(`period.${p.id}.short`)}`));
   }
-  return { nodes: frag, label: `今日時段：${spoken.join('、')}` };
+  return { nodes: frag, label: t('pills.label', { list: spoken.join(t('list.sep')) }) };
 }
 
 /** 庫存圖示：綠圈 ✓ = 有庫存、琥珀菱形 – = 無庫存（形狀＋顏色雙重編碼，並附螢幕閱讀器文字） */
 export function stockMark(has) {
   return el('span', { class: `stkm ${has ? 'stkm--ok' : 'stkm--zero'}` },
     el('span', { class: 'stkm__g', 'aria-hidden': 'true' }, el('span', { text: has ? '✓' : '–' })),
-    el('span', { class: 'sr-only', text: has ? '有庫存' : '無庫存' }));
+    el('span', { class: 'sr-only', text: t(has ? 'stock.has' : 'stock.none') }));
 }
 
 export function stockChip(v, qty) {
   const zero = !(qty > 0);
-  return el('span', { class: `stk${zero ? ' stk--zero' : ''}` }, v.short, stockMark(!zero));
+  return el('span', { class: `stk${zero ? ' stk--zero' : ''}` }, vShort(v), stockMark(!zero));
 }
 
 /**
@@ -106,17 +118,17 @@ export function card(item, { catalog, ctx, onOpen, showDistance = false }) {
         el('button', { type: 'button', class: 'card__btn', id: btnId, onclick: () => onOpen(h.id) }, h.name)),
       statusBadge(status)),
     el('p', { class: 'card__meta' },
-      showDistance && item.distance != null ? el('span', { class: 'dist', text: formatDistance(item.distance) }) : null,
+      showDistance && item.distance != null ? el('span', { class: 'dist', text: formatDistanceL(item.distance) }) : null,
       showDistance && item.distance != null ? ' · ' : null,
-      `${h.city}${h.dist}`),
+      placeLabel(h.city, h.dist)),
     el('div', { class: 'card__row' },
-      el('span', { class: 'card__row-label', 'aria-hidden': 'true', text: '今日' }),
+      el('span', { class: 'card__row-label', 'aria-hidden': 'true', text: t('card.today') }),
       el('span', { class: 'sr-only', text: pills.label }),
       pills.nodes,
-      item.openNow ? el('span', { class: 'now-tag', text: '本時段有看診' }) : null),
+      item.openNow ? el('span', { class: 'now-tag', text: t('card.openNow') }) : null),
     productList.length
       ? el('div', { class: 'card__row' },
-        el('span', { class: 'sr-only', text: '庫存：' }),
+        el('span', { class: 'sr-only', text: t('card.stockLabel') }),
         productList.map((v) => stockChip(v, h.stock[v.id])))
       : null,
   );
@@ -164,52 +176,55 @@ export function detail(item, { catalog, ctx, selectedIds, distanceLabel }) {
   const tel = telHref(h.tel);
   if (tel) {
     actions.push(el('a', { class: 'action action--primary', href: tel },
-      icon('phone'), el('span', {}, '撥打電話', el('span', { class: 'action__sub', text: h.tel }))));
+      icon('phone'), el('span', {}, t('detail.call'), el('span', { class: 'action__sub', text: h.tel }))));
   }
   const nav = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${h.lat},${h.lng}`)}`;
   actions.push(el('a', { class: 'action', href: nav, target: '_blank', rel: 'noopener noreferrer' },
-    icon('nav'), el('span', {}, 'Google 地圖導航', el('span', { class: 'sr-only', text: '（開啟新分頁）' }))));
+    icon('nav'), el('span', {}, t('detail.navigate'), el('span', { class: 'sr-only', text: t('detail.newTab') }))));
   const appt = h.apptUrl && safeHttpUrl(h.apptUrl);
   if (appt) {
     actions.push(el('a', { class: 'action', href: appt, target: '_blank', rel: 'noopener noreferrer' },
-      icon('cal'), el('span', {}, '線上預約', el('span', { class: 'sr-only', text: '（開啟新分頁）' }))));
+      icon('cal'), el('span', {}, t('detail.book'), el('span', { class: 'sr-only', text: t('detail.newTab') }))));
   }
   const apptTel = h.apptTel && telHref(h.apptTel);
   if (apptTel) {
     actions.push(el('a', { class: 'action', href: apptTel },
-      icon('phone'), el('span', {}, '預約電話', el('span', { class: 'action__sub', text: h.apptTel }))));
+      icon('phone'), el('span', {}, t('detail.bookTel'), el('span', { class: 'action__sub', text: h.apptTel }))));
   }
   if (actions.length % 2 === 1) actions[actions.length - 1].classList.add('action--wide');
 
   const offered = catalog.filter((v) => Object.prototype.hasOwnProperty.call(h.stock || {}, v.id));
   const stockTable = el('table', { class: 'tbl' },
-    el('caption', { class: 'sr-only', text: '品項庫存' }),
+    el('caption', { class: 'sr-only', text: t('detail.stockCaption') }),
     el('thead', {}, el('tr', {},
-      el('th', { scope: 'col', text: '品項' }),
-      el('th', { scope: 'col', class: 'num', text: '庫存' }))),
+      el('th', { scope: 'col', text: t('detail.colItem') }),
+      el('th', { scope: 'col', class: 'num', text: t('detail.colStock') }))),
     el('tbody', {}, offered.map((v) => {
       const q = h.stock[v.id];
       const sel = selectedIds.includes(v.id);
       return el('tr', { class: sel ? 'is-selected' : null },
-        el('th', { scope: 'row' }, v.name, sel ? el('span', { class: 'sr-only', text: '（已選）' }) : null),
+        el('th', { scope: 'row' }, vName(v), sel ? el('span', { class: 'sr-only', text: t('detail.selected') }) : null),
         el('td', { class: 'num' }, stockMark(q > 0)));
     })));
 
   const schedule = el('div', { class: 'sched-wrap' },
     el('table', { class: 'sched' },
-      el('caption', { text: '✓ 有看診　– 休診　（框線為今天）' }),
+      el('caption', { text: t('detail.schedCaption') }),
       el('thead', {}, el('tr', {},
         el('td', {}),
-        WEEKDAYS.map((w, i) => el('th', { scope: 'col', class: i === ctx.day ? 'today' : null },
-          w.replace('週', ''),
-          i === ctx.day ? el('span', { class: 'today-tag', text: '今天' }) : el('span', { class: 'sr-only', text: w }))))),
+        WEEKDAY_IDS.map((w, i) => el('th', { scope: 'col', class: i === ctx.day ? 'today' : null },
+          el('span', { 'aria-hidden': 'true', text: t(`weekday.${w}.short`) }),
+          el('span', { class: 'sr-only', text: t(`weekday.${w}.long`) }),
+          i === ctx.day ? el('span', { class: 'today-tag', text: t('detail.today') }) : null)))),
       el('tbody', {}, PERIODS.map((p) => el('tr', {},
-        el('th', { scope: 'row', text: p.label }),
-        WEEKDAYS.map((w, i) => {
+        el('th', { scope: 'row' },
+          el('span', { 'aria-hidden': 'true', text: t(`period.${p.id}.short`) }),
+          el('span', { class: 'sr-only', text: t(`period.${p.id}`) })),
+        WEEKDAY_IDS.map((w, i) => {
           const on = ((h.hours?.[i] || 0) & p.bit) !== 0;
           return el('td', { class: `${on ? 'on' : 'off'}${i === ctx.day ? ' today' : ''}` },
             el('span', { 'aria-hidden': 'true', text: on ? '✓' : '–' }),
-            el('span', { class: 'sr-only', text: on ? '有看診' : '休診' }));
+            el('span', { class: 'sr-only', text: t(on ? 'detail.open' : 'detail.closed') }));
         }))))));
 
   return [
@@ -217,21 +232,21 @@ export function detail(item, { catalog, ctx, selectedIds, distanceLabel }) {
     el('div', { class: 'detail__status' },
       statusBadge(status),
       el('span', { class: 'sr-only', text: STATUS[status].long }),
-      item.openNow ? el('span', { class: 'now-tag', text: '本時段有看診' }) : null),
+      item.openNow ? el('span', { class: 'now-tag', text: t('card.openNow') }) : null),
     el('div', { class: 'card__row' },
-      el('span', { class: 'card__row-label', 'aria-hidden': 'true', text: '今日' }),
+      el('span', { class: 'card__row-label', 'aria-hidden': 'true', text: t('card.today') }),
       el('span', { class: 'sr-only', text: pills.label }),
       pills.nodes),
     el('p', { class: 'detail__addr', text: h.addr }),
-    el('p', { class: 'detail__sub' }, `${h.city}${h.dist}`, distanceLabel ? `・${distanceLabel}` : ''),
+    el('p', { class: 'detail__sub' }, placeLabel(h.city, h.dist), distanceLabel ? t('detail.distance', { distance: distanceLabel }) : ''),
     el('div', { class: 'actions' }, actions),
-    el('h3', { class: 'section-title', text: '庫存' }),
-    offered.length ? stockTable : el('p', { text: '此院所目前未提供本地圖所列品項。' }),
-    el('h3', { class: 'section-title', text: '每週看診時段' }),
+    el('h3', { class: 'section-title', text: t('detail.stockTitle') }),
+    offered.length ? stockTable : el('p', { text: t('detail.noProducts') }),
+    el('h3', { class: 'section-title', text: t('detail.scheduleTitle') }),
     schedule,
-    h.note ? el('p', { class: 'detail__note' }, el('strong', { text: '院所備註：' }), h.note) : null,
-    el('p', { class: 'caveat', text: '庫存與門診時段為院所每日回報，實際情形請先電洽院所確認。' }),
-    el('p', { class: 'hotline' }, '疫苗相關諮詢：疾管署 ', el('a', { href: 'tel:1922', text: '1922' }), ' 防疫專線'),
-    h.code ? el('p', { class: 'detail__code', text: `醫事機構代碼 ${h.code}` }) : null,
+    h.note ? el('p', { class: 'detail__note' }, el('strong', { text: t('detail.note') }), h.note) : null,
+    el('p', { class: 'caveat', text: t('detail.caveat') }),
+    el('p', { class: 'hotline' }, tParts('detail.hotline', { tel: el('a', { href: 'tel:1922', text: '1922' }) })),
+    h.code ? el('p', { class: 'detail__code', text: t('detail.code', { code: h.code }) }) : null,
   ].filter(Boolean);
 }

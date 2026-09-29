@@ -1,11 +1,15 @@
 // 應用程式：狀態、篩選、清單、詳細資料、bottom sheet、URL 狀態。
 import {
-  DEFAULT_STATE, decodeState, encodeState, deriveStatus, formatDistance, formatTaipei,
+  DEFAULT_LANG, DEFAULT_STATE, decodeState, encodeState, deriveStatus,
   haversineKm, matchesFilters, resolveVaccineIds, searchScore, sortResults, timeContext, tokenizeQuery,
 } from './logic.js';
 import { loadData } from './data-source.js';
 import { createMap } from './map.js';
-import { el, card, detail, skeletonCards, fmtNum } from './ui.js';
+import { el, card, detail, skeletonCards, fmtNum, vShort } from './ui.js';
+import {
+  initI18n, getLang, setLang, onLangChange, t, tn, tParts, tGroup, tCity, placeLabel,
+  formatDistanceL, formatTaipeiL, cityAliases,
+} from './i18n.js';
 
 const PAGE = 50;
 const $ = (id) => document.getElementById(id);
@@ -27,6 +31,7 @@ const dom = {
   listScroll: $('list-scroll'), notice: $('list-notice'), results: $('results'), footer: $('list-footer'),
   back: $('back-btn'), detailScroll: $('detail-scroll'), detail: $('detail'),
   announcer: $('announcer'), mapStatus: $('map-status'), legend: $('legend'),
+  langSelect: $('lang-select'),
 };
 
 const mqMobile = window.matchMedia('(max-width: 899.98px)');
@@ -78,34 +83,48 @@ dom.bannerClose.addEventListener('click', () => {
   dom.search.focus();
   afterLayoutChange();
 });
+function bannerMoreText() {
+  dom.bannerMore.textContent = t(dom.bannerMore.getAttribute('aria-expanded') === 'true' ? 'banner.less' : 'banner.more');
+}
 dom.bannerMore.addEventListener('click', () => {
   const open = dom.bannerMore.getAttribute('aria-expanded') !== 'true';
   dom.bannerMore.setAttribute('aria-expanded', String(open));
-  dom.bannerMore.textContent = open ? '收合' : '詳情';
+  bannerMoreText();
   dom.banner.classList.toggle('is-expanded', open);
   afterLayoutChange();
 });
 
 // ---------------- 初始化 ----------------
+let loadError = null; // 顯示中的載入錯誤（切換語系時重繪）
+
 function showLoading() {
+  loadError = null;
   initSheet();
-  dom.count.textContent = '資料載入中…';
+  dom.count.textContent = t('status.loading');
   dom.results.replaceChildren(...skeletonCards(4));
   dom.notice.hidden = true;
   dom.footer.replaceChildren();
 }
 
+function errorMessage(err) {
+  if (err?.status) return t('error.http', { status: String(err.status) });
+  if (err?.code === 'format') return t('error.format');
+  return err?.message || '';
+}
+
 function showError(err) {
-  dom.count.textContent = '無法載入資料';
+  loadError = err || {};
+  dom.count.textContent = t('error.count');
   dom.results.replaceChildren();
   dom.footer.replaceChildren();
   dom.notice.hidden = false;
   dom.notice.className = 'notice notice--warn';
+  const msg = errorMessage(err);
   dom.notice.replaceChildren(el('div', { class: 'error-box', role: 'alert' },
-    el('h3', { text: '院所資料暫時無法載入' }),
-    el('p', { text: `請檢查網路連線後再試一次。${err?.message ? `（${err.message}）` : ''}` }),
-    el('button', { type: 'button', class: 'btn btn--primary', onclick: start }, '重新載入')));
-  setMapStatus('院所資料載入失敗', 0);
+    el('h3', { text: t('error.title') }),
+    el('p', { text: `${t('error.body')}${msg ? t('error.detail', { message: msg }) : ''}` }),
+    el('button', { type: 'button', class: 'btn btn--primary', onclick: start }, t('error.retry'))));
+  setMapStatus({ key: 'map.dataFailed' }, 0);
   if (isMobile()) setSheet('half', { animate: false });
 }
 
@@ -127,12 +146,7 @@ function init() {
   catalog = data.vaccines;
   groupsMeta = data.groups;
   byId = new Map(data.hospitals.map((h) => [h.id, h]));
-  const snap = formatTaipei(data.meta?.generatedAt);
-  // 自動更新若連續失敗，資料會停在舊快照；超過 36 小時就明白告訴使用者
-  const ageH = (Date.now() - Date.parse(data.meta?.generatedAt)) / 3600000;
-  const stale = Number.isFinite(ageH) && ageH > 36 ? `・已 ${Math.floor(ageH / 24) || 1} 天未更新` : '';
-  dom.snapshot.textContent = `資料快照：${snap}（臺北時間）${stale}`;
-  dom.snapshotMap.textContent = `資料快照 ${snap}${stale}`;
+  renderSnapshot();
   buildChips();
   buildCityOptions();
 
@@ -142,9 +156,9 @@ function init() {
       onMarkerHover: (id) => highlightCard(id),
       onMoveEnd: () => { onMapMoved(); },
       onTileStatus: (s, info) => {
-        if (s === 'fallback') setMapStatus(`${info?.from || '預設'}底圖無法載入，已改用${info?.to || '備援'}底圖`, 6000);
-        if (s === 'failed') setMapStatus('底圖暫時無法載入，院所標示與清單仍可使用', 0);
-        if (s === 'ok') setMapStatus('', 0);
+        if (s === 'fallback') setMapStatus({ key: 'map.tileFallback', tiles: info }, 6000);
+        if (s === 'failed') setMapStatus({ key: 'map.tileFailed' }, 0);
+        if (s === 'ok') setMapStatus(null, 0);
       },
     });
   }
@@ -182,17 +196,24 @@ function init() {
   }, 60000);
 }
 
-// ---------------- 篩選 UI ----------------
-// 主列 4 等分用的短標籤（完整名稱放在 aria-label）
-const SHORT_GROUP = { flu: '流感疫苗', covid: 'COVID-19', pcv: '肺鏈疫苗', antiviral: '流感藥劑' };
+/** 資料快照時間；自動更新若連續失敗，資料會停在舊快照，超過 36 小時就明白告訴使用者 */
+function renderSnapshot() {
+  const snap = formatTaipeiL(data.meta?.generatedAt);
+  const ageH = (Date.now() - Date.parse(data.meta?.generatedAt)) / 3600000;
+  const stale = Number.isFinite(ageH) && ageH > 36 ? tn('snapshot.stale', Math.floor(ageH / 24) || 1) : '';
+  dom.snapshot.textContent = t('snapshot.label', { time: snap, stale });
+  dom.snapshotMap.textContent = t('snapshot.short', { time: snap, stale });
+}
 
+// ---------------- 篩選 UI ----------------
+// 主列 4 等分用的短標籤（group.<id>.chip；完整名稱放在 aria-label）
 function buildChips() {
   dom.groupChips.replaceChildren(...groupsMeta.map((g) => el('button', {
     type: 'button', class: 'chip chip--group', 'aria-pressed': 'false', dataset: { group: g.id },
-    'aria-label': g.name, onclick: () => toggleGroup(g.id),
+    'aria-label': tGroup(g.id, 'name', g.name), onclick: () => toggleGroup(g.id),
   },
   el('span', { class: 'chip__check', 'aria-hidden': 'true' }),
-  el('span', { class: 'chip__label', 'aria-hidden': 'true', text: SHORT_GROUP[g.id] || g.name }))));
+  el('span', { class: 'chip__label', 'aria-hidden': 'true', text: tGroup(g.id, 'chip', g.name) }))));
   buildProductChoices();
 }
 
@@ -204,13 +225,13 @@ function buildProductChoices() {
     if (items.length < 2) continue;
     const labelId = `prod-label-${g.id}`;
     sections.push(el('div', { class: 'panel__sub' },
-      el('h4', { class: 'panel__label', id: labelId }, `${g.name}細項`,
-        el('span', { class: 'panel__hint', text: '（未選＝全部）' })),
+      el('h4', { class: 'panel__label', id: labelId }, t('filters.subitems', { group: tGroup(g.id, 'name', g.name) }),
+        el('span', { class: 'panel__hint', text: t('filters.subitemsHint') })),
       el('div', { class: 'panel__row', role: 'group', 'aria-labelledby': labelId },
         items.map((v) => el('button', {
           type: 'button', class: 'opt', 'aria-pressed': 'false', dataset: { product: v.id },
           onclick: () => toggleProduct(v.id),
-        }, el('span', { class: 'opt__box', 'aria-hidden': 'true' }), v.short)))));
+        }, el('span', { class: 'opt__box', 'aria-hidden': 'true' }), vShort(v))))));
   }
   dom.productChoices.replaceChildren(...sections);
   dom.productChoices.hidden = sections.length === 0;
@@ -292,23 +313,27 @@ function renderTokens() {
   const tokens = [];
   const add = (label, remove, key) => tokens.push({ label, remove, key });
   for (const v of catalog) {
-    if (state.products.includes(v.id)) add(v.short, () => { state.products = state.products.filter((p) => p !== v.id); }, `p:${v.id}`);
+    if (state.products.includes(v.id)) add(vShort(v), () => { state.products = state.products.filter((p) => p !== v.id); }, `p:${v.id}`);
   }
-  if (state.openToday) add('今日有看診', () => { state.openToday = false; }, 'today');
-  if (state.inStock) add('只看有庫存', () => { state.inStock = false; }, 'stock');
-  if (state.city) add(`${state.city}${state.dist ? ` ${state.dist}` : ''}`, () => { state.city = ''; state.dist = ''; }, 'region');
+  if (state.openToday) add(t('filters.today'), () => { state.openToday = false; }, 'today');
+  if (state.inStock) add(t('filters.stock'), () => { state.inStock = false; }, 'stock');
+  if (state.city) {
+    // 繁中維持「臺北市 中山區」（中間空格）；其他語系為「Taipei City · 中山區」
+    const label = getLang() === DEFAULT_LANG ? `${state.city}${state.dist ? ` ${state.dist}` : ''}` : placeLabel(state.city, state.dist);
+    add(label, () => { state.city = ''; state.dist = ''; }, 'region');
+  }
 
-  dom.tokens.replaceChildren(...tokens.map((t, i) => el('li', {},
+  dom.tokens.replaceChildren(...tokens.map((tok, i) => el('li', {},
     el('button', {
-      type: 'button', class: 'token', 'aria-label': `移除條件：${t.label}`, dataset: { key: t.key },
+      type: 'button', class: 'token', 'aria-label': t('tokens.remove', { label: tok.label }), dataset: { key: tok.key },
       onclick: () => {
-        t.remove();
+        tok.remove();
         onFiltersChanged();
         // 焦點移到下一個標籤；沒有了就回到「篩選」按鈕
         const btns = dom.tokens.querySelectorAll('.token');
         (btns[Math.min(i, btns.length - 1)] || dom.filterToggle).focus();
       },
-    }, el('span', { class: 'token__text', text: t.label }),
+    }, el('span', { class: 'token__text', text: tok.label }),
     el('span', { class: 'token__x', 'aria-hidden': 'true', text: '×' })))));
 }
 
@@ -327,13 +352,13 @@ function buildCityOptions() {
     const ia = CITY_ORDER.indexOf(a), ib = CITY_ORDER.indexOf(b);
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b, 'zh-Hant-TW');
   });
-  dom.city.replaceChildren(el('option', { value: '', text: '全部縣市' }),
-    ...cities.map((c) => el('option', { value: c, text: c })));
+  dom.city.replaceChildren(el('option', { value: '', text: t('filters.allCities') }),
+    ...cities.map((c) => el('option', { value: c, text: tCity(c) })));
 }
 
 function buildDistOptions() {
   const dists = state.city ? [...(distsByCity.get(state.city) || [])].sort((a, b) => a.localeCompare(b, 'zh-Hant-TW')) : [];
-  dom.dist.replaceChildren(el('option', { value: '', text: '全部行政區' }),
+  dom.dist.replaceChildren(el('option', { value: '', text: t('filters.allDists') }),
     ...dists.map((d) => el('option', { value: d, text: d })));
   dom.dist.disabled = !state.city;
 }
@@ -424,7 +449,7 @@ function syncControls() {
   const n = secondaryCount();
   dom.filterCount.textContent = String(n);
   dom.filterCount.hidden = n === 0;
-  dom.filterCountSr.textContent = n ? `（已套用 ${n} 項）` : '';
+  dom.filterCountSr.textContent = n ? tn('filters.activeCount', n) : '';
   dom.filterToggle.classList.toggle('has-active', n > 0);
   renderTokens();
 }
@@ -463,7 +488,8 @@ function fitToRegion() {
 function recompute() {
   ctx = timeContext();
   vaccineIds = resolveVaccineIds(state, catalog);
-  const tokens = tokenizeQuery(state.q);
+  // 非繁中介面：可輸入外文縣市名（"Taipei"），先換成中文再比對
+  const tokens = tokenizeQuery(state.q, { aliases: cityAliases() });
   const filters = {
     vaccineIds, openToday: state.openToday, inStock: state.inStock, city: state.city, dist: state.dist,
   };
@@ -506,20 +532,24 @@ function renderList() {
   const sorted = sortResults(items, { byScore: !!state.q });
 
   // 摘要
-  dom.count.replaceChildren('符合 ', el('span', { class: 'num', text: fmtNum(matches.length) }), ' 家');
+  dom.count.replaceChildren(...tParts('results.count',
+    { n: el('span', { class: 'num', text: fmtNum(matches.length) }) }, { plural: matches.length }));
   const scopeBits = [];
   if (all) {
-    scopeBits.push(el('span', {}, state.q ? '列出所有搜尋結果（不限地圖範圍）' : `列出${state.city}${state.dist}全部結果`));
+    scopeBits.push(el('span', {}, state.q ? t('scope.allSearch')
+      : t('scope.allIn', { place: getLang() === DEFAULT_LANG ? `${state.city}${state.dist}` : placeLabel(state.city, state.dist) })));
   } else {
+    const label = [el('span', { class: 'lbl-long', text: t('scope.inMap') }), el('span', { class: 'lbl-short', text: t('scope.inMapShort') })];
+    const frag = document.createDocumentFragment();
+    frag.append(...label);
     scopeBits.push(el('span', {}, el('span', { class: 'scope-dot', 'aria-hidden': 'true' }),
-      el('span', { class: 'lbl-long', text: '地圖範圍內' }), el('span', { class: 'lbl-short', text: '地圖內' }),
-      ` ${fmtNum(cands.length)} 家`));
+      tParts('scope.inMapCount', { label: frag, n: cands.length }, { plural: cands.length })));
   }
-  scopeBits.push(el('span', { text: userLoc ? '・依與您的距離排序' : '・依地圖中心排序' }));
+  scopeBits.push(el('span', { text: t(userLoc ? 'scope.byUser' : 'scope.byCenter') }));
   if (!userLoc) {
     scopeBits.push(el('button', {
       type: 'button', class: 'btn btn--text btn--cta', onclick: locate,
-    }, '定位後可依距離排序'));
+    }, t('scope.locateCta')));
   }
   dom.scope.replaceChildren(...scopeBits);
 
@@ -546,15 +576,15 @@ function renderList() {
     footer.push(emptyState());
   } else if (sorted.length === 0) {
     footer.push(el('div', { class: 'empty' },
-      el('h3', { text: '目前地圖範圍內沒有符合的院所' }),
-      el('p', { text: '請移動或縮小地圖，或直接前往符合條件的院所。' }),
+      el('h3', { text: t('list.emptyInMap.title') }),
+      el('p', { text: t('list.emptyInMap.body') }),
       el('div', { class: 'empty__actions' },
         el('button', {
           type: 'button', class: 'btn btn--primary',
           onclick: () => mapApi.fitTo(matches.map((m) => m.h), { bottomInset: sheetInset(), maxZoom: 14 }),
-        }, `顯示全部 ${fmtNum(matches.length)} 家符合院所`))));
+        }, tn('list.showAll', matches.length)))));
   } else if (sorted.length > shown.length) {
-    footer.push(el('p', { text: `已顯示 ${fmtNum(shown.length)} / ${fmtNum(sorted.length)} 家` }));
+    footer.push(el('p', { text: t('list.shown', { shown: shown.length, total: sorted.length }) }));
     footer.push(el('button', {
       type: 'button', class: 'btn',
       onclick: () => {
@@ -564,9 +594,9 @@ function renderList() {
         // 將焦點移到新載入的第一筆
         dom.results.children[focusIdx]?.querySelector('.card__btn')?.focus();
       },
-    }, `顯示更多（再 ${Math.min(PAGE, sorted.length - shown.length)} 家）`));
+    }, t('list.more', { n: Math.min(PAGE, sorted.length - shown.length) })));
   } else if (sorted.length > 3) {
-    footer.push(el('p', { text: `共 ${fmtNum(sorted.length)} 家` }));
+    footer.push(el('p', { text: tn('list.total', sorted.length) }));
   }
   dom.footer.replaceChildren(...footer);
   fitPeek();
@@ -587,8 +617,8 @@ function renderNotice() {
     const n = data.hospitals.filter((h) => h.stock && 'flu' in h.stock).length;
     if (n < 50) {
       notes.push(el('div', {},
-        el('strong', { text: '公費流感疫苗 10月1日起開打' }),
-        `目前僅 ${fmtNum(n)} 家院所登錄流感疫苗，開打後將陸續增加。`));
+        el('strong', { text: t('fluNotice.title') }),
+        tn('fluNotice.body', n)));
     }
   }
   if (!notes.length) { dom.notice.hidden = true; dom.notice.replaceChildren(); return; }
@@ -600,16 +630,16 @@ function renderNotice() {
 function emptyState() {
   const actions = [];
   const btn = (label, fn) => el('button', { type: 'button', class: 'btn', onclick: fn }, label);
-  if (state.inStock) actions.push(btn('取消「只看有庫存」', () => { state.inStock = false; onFiltersChanged(); }));
-  if (state.openToday) actions.push(btn('取消「今日有看診」', () => { state.openToday = false; onFiltersChanged(); }));
-  if (state.q) actions.push(btn('清除搜尋文字', () => { dom.search.value = ''; state.q = ''; onFiltersChanged(); }));
-  if (state.dist) actions.push(btn(`改看整個${state.city}`, () => { state.dist = ''; onFiltersChanged({ fit: true }); }));
-  else if (state.city) actions.push(btn('不限縣市', () => { state.city = ''; onFiltersChanged(); }));
-  if (state.groups.length) actions.push(btn('不限品項', () => { state.groups = []; state.products = []; onFiltersChanged(); }));
-  if (actions.length > 1) actions.push(el('button', { type: 'button', class: 'btn btn--primary', onclick: clearAll }, '清除所有條件'));
+  if (state.inStock) actions.push(btn(t('empty.unStock'), () => { state.inStock = false; onFiltersChanged(); }));
+  if (state.openToday) actions.push(btn(t('empty.unToday'), () => { state.openToday = false; onFiltersChanged(); }));
+  if (state.q) actions.push(btn(t('empty.clearSearch'), () => { dom.search.value = ''; state.q = ''; onFiltersChanged(); }));
+  if (state.dist) actions.push(btn(t('empty.wholeCity', { city: tCity(state.city) }), () => { state.dist = ''; onFiltersChanged({ fit: true }); }));
+  else if (state.city) actions.push(btn(t('empty.anyCity'), () => { state.city = ''; onFiltersChanged(); }));
+  if (state.groups.length) actions.push(btn(t('empty.anyGroup'), () => { state.groups = []; state.products = []; onFiltersChanged(); }));
+  if (actions.length > 1) actions.push(el('button', { type: 'button', class: 'btn btn--primary', onclick: clearAll }, t('empty.clearAll')));
   return el('div', { class: 'empty' },
-    el('h3', { text: '沒有符合條件的院所' }),
-    el('p', { text: '可以試著放寬條件：' }),
+    el('h3', { text: t('empty.title') }),
+    el('p', { text: t('empty.hint') }),
     el('div', { class: 'empty__actions' }, actions));
 }
 
@@ -620,10 +650,10 @@ function highlightCard(id) {
 
 const announce = debounce(() => {
   if (!ready) return;
-  let msg = `符合 ${matches.length} 家院所`;
+  let msg = tn('announce.count', matches.length);
   if (!listAllMode()) {
     const b = mapApi.visibleBounds(sheetInset());
-    msg += `，地圖範圍內 ${matches.filter((m) => b.contains([m.h.lat, m.h.lng])).length} 家`;
+    msg += tn('announce.inMap', matches.filter((m) => b.contains([m.h.lat, m.h.lng])).length);
   }
   dom.announcer.textContent = msg;
 }, 700);
@@ -638,11 +668,26 @@ const onMapMoved = debounce(() => {
   writeHash();
 }, 120);
 
-function setMapStatus(text, ms) {
+// 地圖提示以 {key, tiles} 描述保存，切換語系時可重繪
+let mapStatusMsg = null;
+function mapStatusText(m) {
+  if (!m) return '';
+  if (m.key === 'map.tileFallback') {
+    const name = (id, fb) => (id ? t(`map.tiles.${id}`) : fb);
+    return t(m.key, {
+      from: name(m.tiles?.fromId, m.tiles?.from || t('map.tiles.default')),
+      to: name(m.tiles?.toId, m.tiles?.to || t('map.tiles.backup')),
+    });
+  }
+  return t(m.key);
+}
+function setMapStatus(msg, ms) {
   clearTimeout(setMapStatus.t);
+  mapStatusMsg = msg;
+  const text = mapStatusText(msg);
   dom.mapStatus.textContent = text;
   dom.mapStatus.hidden = !text;
-  if (text && ms) setMapStatus.t = setTimeout(() => { dom.mapStatus.hidden = true; }, ms);
+  if (text && ms) setMapStatus.t = setTimeout(() => { dom.mapStatus.hidden = true; mapStatusMsg = null; }, ms);
 }
 
 // ---------------- 詳細資料 ----------------
@@ -655,11 +700,7 @@ function openDetail(id, { push = true, fromMap = false, reveal = true } = {}) {
     returnFocusId = fromMap ? null : id;
   }
   state.id = id;
-  const m = matches.find((x) => x.h.id === id);
-  const st = deriveStatus(h, vaccineIds, ctx);
-  const item = m || { h, status: st.status, openNow: st.openNow, products: st.products };
-  const distLabel = userLoc ? `距您 ${formatDistance(haversineKm(userLoc.lat, userLoc.lng, h.lat, h.lng))}` : '';
-  dom.detail.replaceChildren(...detail(item, { catalog, ctx, selectedIds: vaccineIds, distanceLabel: distLabel }));
+  renderDetail(h);
   dom.viewList.hidden = true;
   dom.viewDetail.hidden = false;
 
@@ -680,6 +721,14 @@ function openDetail(id, { push = true, fromMap = false, reveal = true } = {}) {
   }
   dom.detail.querySelector('#detail-name')?.focus({ preventScroll: true });
   dom.announcer.textContent = '';
+}
+
+function renderDetail(h) {
+  const m = matches.find((x) => x.h.id === h.id);
+  const st = deriveStatus(h, vaccineIds, ctx);
+  const item = m || { h, status: st.status, openNow: st.openNow, products: st.products };
+  const distLabel = userLoc ? formatDistanceL(haversineKm(userLoc.lat, userLoc.lng, h.lat, h.lng)) : '';
+  dom.detail.replaceChildren(...detail(item, { catalog, ctx, selectedIds: vaccineIds, distanceLabel: distLabel }));
 }
 
 function closeDetail({ fromHistory = false } = {}) {
@@ -736,6 +785,8 @@ function onHistoryNav() {
   if (raw === lastHash) return;
   lastHash = raw;
   const s = decodeState(raw);
+  // 網址帶了不同語系（例如手動修改 #lang=）：切換，但不記住為個人偏好
+  if (s.lang && s.lang !== getLang()) setLang(s.lang, { persist: false });
   const before = encodeState({ ...state, id: null });
   applyFilterState(s);
   if (encodeState({ ...state, id: null }) !== before) {
@@ -760,7 +811,10 @@ window.addEventListener('popstate', onHistoryNav);
 window.addEventListener('hashchange', onHistoryNav);
 
 // ---------------- 定位 ----------------
-function geoMessage(text, info = false) {
+let geoKey = null; // 目前顯示的定位訊息 key（切換語系時重繪）
+function geoMessage(key, info = false) {
+  geoKey = key || null;
+  const text = key ? t(key) : '';
   dom.geoMsg.textContent = text;
   dom.geoMsg.hidden = !text;
   dom.geoMsg.classList.toggle('is-info', info);
@@ -770,39 +824,33 @@ function geoMessage(text, info = false) {
 dom.locate.addEventListener('click', locate);
 function locate() {
   if (!('geolocation' in navigator)) {
-    geoMessage('此瀏覽器不支援定位功能。請改用搜尋或「篩選」中的地區。');
+    geoMessage('geo.unsupported');
     return;
   }
   if (!window.isSecureContext) {
-    geoMessage('定位功能需透過安全連線（HTTPS）使用。請改用搜尋或「篩選」中的地區。');
+    geoMessage('geo.insecure');
     return;
   }
   dom.locate.setAttribute('aria-busy', 'true');
-  geoMessage('正在取得您的位置…', true);
+  geoMessage('geo.locating', true);
   navigator.geolocation.getCurrentPosition((pos) => {
     dom.locate.removeAttribute('aria-busy');
     dom.locate.classList.add('is-active');
     userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     if (isMobile() && sheet.state === 'full') setSheet('half');
     mapApi.setUserLocation(userLoc.lat, userLoc.lng, pos.coords.accuracy, sheetInset());
-    geoMessage('已定位，清單改依與您的距離排序。', true);
+    geoMessage('geo.located', true);
     setTimeout(() => { if (dom.geoMsg.classList.contains('is-info')) geoMessage(''); }, 5000);
     renderList();
   }, (err) => {
     dom.locate.removeAttribute('aria-busy');
-    const msg = {
-      1: '您未允許網站取得位置。可在瀏覽器設定中開啟定位權限，或改用搜尋、「篩選」中的地區。',
-      2: '目前無法取得您的位置（可能是訊號不佳）。請稍後再試，或改用搜尋、「篩選」中的地區。',
-      3: '取得位置逾時，請再試一次，或改用搜尋、「篩選」中的地區。',
-    }[err.code] || '無法取得您的位置，請改用搜尋或「篩選」中的地區。';
-    geoMessage(msg);
+    geoMessage({ 1: 'geo.denied', 2: 'geo.unavailable', 3: 'geo.timeout' }[err.code] || 'geo.failed');
   }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 });
 }
 
 // ---------------- Bottom sheet（行動版） ----------------
 const sheet = { state: 'peek', dragging: false };
 const SHEET_STATES = ['peek', 'half', 'full'];
-const SHEET_LABEL = { peek: '收合', half: '半開', full: '全開' };
 
 function stageHeight() { return dom.stage.clientHeight; }
 
@@ -840,7 +888,7 @@ function setSheet(s, { animate = true } = {}) {
   dom.sheet.classList.toggle('is-animating', animate && !reduce);
   dom.sheet.style.height = `${h}px`;
   dom.stage.style.setProperty('--sheet-h', `${h}px`);
-  dom.handle.setAttribute('aria-label', `調整清單高度（目前：${SHEET_LABEL[s]}；按下切換，或用上下方向鍵）`);
+  dom.handle.setAttribute('aria-label', t('sheet.labelState', { state: t(`sheet.${s}`) }));
   dom.handle.setAttribute('aria-expanded', String(s !== 'peek'));
   const changed = sheet.lastH !== h;
   sheet.lastH = h;
@@ -936,5 +984,38 @@ bindDrag(dom.handle);
 bindDrag(dom.viewList.querySelector('.summary'));
 bindDrag(dom.viewDetail.querySelector('.detail-bar'));
 
+// ---------------- 語系 ----------------
+dom.langSelect.addEventListener('change', () => { setLang(dom.langSelect.value); });
+
+/** 切換語系後重繪所有動態內容（靜態 [data-i18n] 節點已由 i18n.js 處理） */
+function onLanguageChanged(lang) {
+  state.lang = lang === DEFAULT_LANG ? null : lang;
+  dom.langSelect.value = lang;
+  bannerMoreText();
+  if (geoKey) geoMessage(geoKey, dom.geoMsg.classList.contains('is-info'));
+  if (mapStatusMsg) dom.mapStatus.textContent = mapStatusText(mapStatusMsg);
+  mapApi?.relabel();
+  if (!data || !ready) {
+    if (loadError) showError(loadError);
+    else if (!data) showLoading();
+    return;
+  }
+  renderSnapshot();
+  buildChips();
+  buildCityOptions();
+  syncControls();
+  initSheet();
+  recompute(); // 外文地名搜尋對照可能改變
+  if (!dom.viewDetail.hidden && state.id != null && byId.has(state.id)) renderDetail(byId.get(state.id));
+  renderList();
+  writeHash();
+}
+onLangChange(onLanguageChanged);
+
 // ---------------- 開始 ----------------
-start();
+initI18n().then((lang) => {
+  state.lang = lang === DEFAULT_LANG ? null : lang;
+  dom.langSelect.value = lang;
+  bannerMoreText();
+  start();
+});

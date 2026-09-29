@@ -1,7 +1,8 @@
 /* 疫苗及流感藥劑地圖（概念原型） */
 
 :root {
-  --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  /* 只用系統字型（CSP font-src 'self'、離線可用，不載入網路字型）；依語系調整優先順序 */
+  --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, "Noto Sans", "Noto Sans JP", "Noto Sans KR", "Noto Sans Thai", "Leelawadee UI", "Tahoma", sans-serif;
 
   --bg: #eef2f1;
   --surface: #ffffff;
@@ -145,6 +146,42 @@ h1, h2, h3, p { margin: 0; }
   border-radius: 4px;
   font-weight: 700;
 }
+
+html:lang(ja) { --font: "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, "Noto Sans TC", sans-serif; }
+html:lang(ko) { --font: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, "Noto Sans TC", sans-serif; }
+html:lang(th) { --font: "Noto Sans Thai", "Leelawadee UI", "Thonburi", "Tahoma", system-ui, "Noto Sans TC", sans-serif; }
+html:lang(en), html:lang(id), html:lang(vi), html:lang(fil) {
+  --font: system-ui, -apple-system, "Segoe UI", "Noto Sans", "Roboto", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+/* 語言切換：原生 <select> 透明覆蓋在「地球圖示＋語言名稱」上（仍是可聚焦、具名稱的真正控制項） */
+.lang {
+  position: relative;
+  margin-left: auto;
+  flex: none;
+  display: inline-flex; align-items: center; gap: 4px;
+  min-width: var(--tap); height: var(--tap);
+  padding: 0 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--brand-strong);
+  font-size: .875rem; font-weight: 600;
+  background: var(--surface);
+}
+.lang:hover { border-color: var(--brand); }
+.lang:has(.lang__select:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lang__icon { width: 20px; height: 20px; flex: none; }
+.lang__caret { width: 14px; height: 14px; flex: none; color: var(--muted); }
+.lang__short { display: none; }
+.lang__select {
+  position: absolute; inset: -1.5px; /* 蓋住外框，觸控範圍 = 整個 44px 外框 */
+  width: auto; height: auto;
+  margin: 0; padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 1rem; /* iOS：16px 以上不會觸發自動放大 */
+}
+.lang__select:focus-visible { outline: none; }
 
 /* ---------------- Banner ---------------- */
 
@@ -314,9 +351,14 @@ h1, h2, h3, p { margin: 0; }
   color: var(--text);
   font-size: .875rem;
   font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
   white-space: nowrap;
   transition: background-color .15s, border-color .15s, color .15s;
 }
+/* 較長的外文標籤（Pneumococcal、Flu antivirals）允許斷成兩行，不溢出、不被截斷 */
+html:not(:lang(zh)) .chip { white-space: normal; }
+html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
 /* 視覺 40px，觸控範圍延伸至 44px */
 .chip::before { content: ""; position: absolute; left: 0; right: 0; top: -2px; bottom: -2px; }
 .chip:hover { border-color: var(--brand); }
@@ -844,7 +886,7 @@ h1, h2, h3, p { margin: 0; }
   border-radius: 8px;
 }
 .lbl-short { display: none; }
-.btn--cta { position: relative; min-height: 32px; padding: 0 4px; font-size: .8125rem; font-weight: 700; }
+.btn--cta { position: relative; min-height: 32px; padding: 0 4px; font-size: .8125rem; font-weight: 700; white-space: normal; text-align: left; line-height: 1.25; }
 .btn--cta::before { content: ""; position: absolute; left: 0; right: 0; top: -6px; bottom: -6px; }
 
 /* ---------------- Desktop ---------------- */
@@ -903,6 +945,16 @@ h1, h2, h3, p { margin: 0; }
   .btn--locate { width: var(--tap); padding: 0; }
   .btn__label-long { display: none; }
   .btn--filter { padding: 0 10px; }
+  .lang { padding: 0 6px; gap: 3px; }
+  .lang__name { display: none; }
+  .lang__short { display: inline; }
+  .lang__caret { display: none; }
+  html:not(:lang(zh)) .chip { font-size: .8125rem; padding: 0 3px; }
+  /* 外文標題較長：縮小字級，避免頁首佔去地圖高度 */
+  html:not(:lang(zh)) .brand__title { font-size: .9375rem; line-height: 1.25; }
+  html:not(:lang(zh)) .banner__list { font-size: .8125rem; }
+  /* 地圖左下的快照文字不可蓋到右下的版權列：最多佔左半邊，超過就換行 */
+  .map-snapshot { max-width: 55%; }
   .group-chips { padding: 8px 12px 0; }
   /* 行動版：面板浮在地圖與清單上方（不推擠地圖、不與 bottom sheet 搶高度） */
   .filters { position: relative; z-index: 700; }

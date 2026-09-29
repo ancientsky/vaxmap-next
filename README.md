@@ -22,8 +22,10 @@ public/                 網站本體（唯一需要部署的目錄）
     ui.js               DOM 產生器（純函式，不含商業邏輯）
     map.js              Leaflet 地圖封裝
     logic.js            純函式（時間、篩選、排序、URL 狀態）— 無 DOM 相依，可單元測試
+    i18n.js             多語系：語系偵測、字串查詢、切換語系（見 docs/I18N.md）
     data-source.js       資料來源 adapter（目前讀本地 JSON；換即時 API 只改這個檔）
   data/hospitals.json   正規化後的院所資料（前端唯一讀取的資料檔）
+  i18n/<lang>.json      介面字串（zh-Hant 原文、en、ja、ko、id、vi、th、tl）
   vendor/leaflet, vendor/markercluster   第三方地圖函式庫（打包好的靜態檔，隨 public/ 一起部署）
 
 data/raw/               原始擷取檔（.json.gz），僅用於產生 public/data/hospitals.json，不隨網站部署
@@ -40,8 +42,10 @@ scripts/
 docs/
   DATA_SCHEMA.md        public/data/hospitals.json 的格式契約
   HARVEST.md            2026-09-21 快照的擷取方式與已知限制
+  I18N.md               多語系規則、醫療用語對照、完整 key 清單（給翻譯者）
 tests/
   logic.test.mjs        logic.js 單元測試（node:test）
+  i18n.test.mjs         語系檔一致性（key、參數、佔位檔）
   data.test.mjs         hospitals.json 資料品質測試，並對照 data/raw 交叉驗證
   e2e.spec.mjs          Playwright 端對端煙霧測試（桌面＋手機）
   a11y.spec.mjs         無障礙檢查（僅回報，不修正）
@@ -111,6 +115,21 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 **一天更新 1–2 次就足夠，請勿調高頻率或調低請求間隔**。現站不接受境外連線，擷取必須在國內的機器上執行；搭配 GitHub Pages 的自動更新作法見下一節。
 
 這仍是**過渡作法**；正式作法是由伺服器端直接匯出資料（見「建議的正式資料串接方式」）。
+
+## 多語系
+
+介面支援繁體中文（預設）、English、日本語、한국어、Bahasa Indonesia、Tiếng Việt、ไทย、Filipino，
+由頁首的地球圖示選單切換（不重新載入頁面）。語系依序取自網址 `#lang=en`、上次的選擇（localStorage）、
+瀏覽器語言，否則為繁中；非預設語系會寫進可分享的網址。院所名稱、地址、行政區等資料維持中文，
+縣市名稱會翻譯，且可用外文縣市名搜尋（例如 “Taipei”）。
+
+- **字串位置**：`public/i18n/<lang>.json`，扁平的 key → 字串，`zh-Hant.json` 為原文。
+- **key 規則**：以功能分命名空間（`filters.today`、`detail.call`、`status.ok.text`）；`{n}` 等參數必須保留；
+  數量剛好為 1 時使用 `<key>.one`；不可含 HTML。每個語系檔必須與繁中有完全相同的 key（`npm test` 會檢查）。
+- **新增語系**：`logic.js` 的 `SUPPORTED_LANGS` 加代碼 → 複製 `en.json`、改 `meta.*`、設 `"_status": "placeholder"`
+  → `index.html` 的 `#lang-select` 加選項 → `npm test`。詳細步驟與醫療用語對照見 `docs/I18N.md`。
+- **審閱狀態**（檔案內 `_status`）：`zh-Hant` 原文、`en` 已完成；`ja`、`ko`、`id`、`vi`、`th`、`tl` 為
+  `placeholder`（暫以英文顯示，待翻譯）。
 
 ## 部署到 GitHub Pages（含每日自動更新資料）
 

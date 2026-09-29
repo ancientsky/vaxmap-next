@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <a class="skip-link" href="#search-input">跳到搜尋</a>
-  <a class="skip-link" href="#results-heading">跳到查詢結果</a>
+  <a class="skip-link" href="#search-input" data-i18n="skip.search">跳到搜尋</a>
+  <a class="skip-link" href="#results-heading" data-i18n="skip.results">跳到查詢結果</a>
 
   <header class="app-header">
     <div class="brand">
@@ -24,109 +24,125 @@
         <path d="M16 8.5v8.5M11.8 12.75h8.4" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
       </svg>
       <div>
-        <h1 class="brand__title">疫苗及流感藥劑地圖</h1>
-        <p class="brand__sub"><strong>非官方概念原型</strong>・資料取自疾管署公開網站</p>
+        <h1 class="brand__title" data-i18n="brand.title">疫苗及流感藥劑地圖</h1>
+        <p class="brand__sub"><strong data-i18n="brand.unofficial">非官方概念原型</strong><span data-i18n="brand.source">・資料取自疾管署公開網站</span></p>
       </div>
+    </div>
+    <div class="lang">
+      <svg class="lang__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+      <span class="lang__name" aria-hidden="true" data-i18n="meta.langName">繁體中文</span>
+      <span class="lang__short" aria-hidden="true" data-i18n="meta.short">中文</span>
+      <svg class="lang__caret" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <select id="lang-select" class="lang__select" aria-label="語言（Language）" data-i18n-attr="aria-label:lang.label">
+        <option value="zh-Hant" lang="zh-Hant-TW">繁體中文</option>
+        <option value="en" lang="en">English</option>
+        <option value="ja" lang="ja">日本語</option>
+        <option value="ko" lang="ko">한국어</option>
+        <option value="id" lang="id">Bahasa Indonesia</option>
+        <option value="vi" lang="vi">Tiếng Việt</option>
+        <option value="th" lang="th">ไทย</option>
+        <option value="tl" lang="fil">Filipino</option>
+      </select>
     </div>
   </header>
 
-  <section class="banner" id="banner" aria-label="公告" hidden>
+  <section class="banner" id="banner" aria-label="公告" data-i18n-attr="aria-label:banner.label" hidden>
     <div class="banner__body">
       <svg class="banner__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v6M12 16.5v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       <ul class="banner__list">
-        <li><strong>10月1日起公費流感疫苗開打</strong></li>
-        <li id="banner-detail">看診時段資料來源為中央健康保險署，僅供參考，接種前建議先電洽院所。本站為非官方概念原型，資料可能延遲；正式資訊請見 <a href="https://vaxmap.cdc.gov.tw/" target="_blank" rel="noopener noreferrer">疾管署官方地圖</a>。</li>
+        <li><strong data-i18n="banner.headline">10月1日起公費流感疫苗開打</strong></li>
+        <li id="banner-detail"><span data-i18n="notice.before">看診時段資料來源為中央健康保險署，僅供參考，接種前建議先電洽院所。本站為非官方概念原型，資料可能延遲；正式資訊請見 </span><a href="https://vaxmap.cdc.gov.tw/" target="_blank" rel="noopener noreferrer" data-i18n="notice.link">疾管署官方地圖</a><span data-i18n="notice.after">。</span></li>
       </ul>
     </div>
     <button type="button" class="banner__more" id="banner-more" aria-expanded="false" aria-controls="banner-detail">詳情</button>
-    <button type="button" class="icon-btn banner__close" id="banner-close" aria-label="關閉公告">
+    <button type="button" class="icon-btn banner__close" id="banner-close" aria-label="關閉公告" data-i18n-attr="aria-label:banner.close">
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
     </button>
   </section>
 
   <main class="layout" id="main">
     <section class="filters" id="filters" aria-labelledby="filters-heading">
-      <h2 class="sr-only" id="filters-heading">搜尋與篩選</h2>
+      <h2 class="sr-only" id="filters-heading" data-i18n="filters.heading">搜尋與篩選</h2>
 
       <div class="search-row">
         <div class="search">
-          <label for="search-input" class="sr-only">搜尋院所名稱、地址或行政區</label>
+          <label for="search-input" class="sr-only" data-i18n="search.label">搜尋院所名稱、地址或行政區</label>
           <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5L20 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
           <input id="search-input" class="search__input" type="search" inputmode="search" enterkeyhint="search"
-                 autocomplete="off" spellcheck="false" maxlength="60" placeholder="院所、地址、行政區">
-          <button type="button" class="search__clear" id="search-clear" aria-label="清除搜尋文字" hidden>
+                 autocomplete="off" spellcheck="false" maxlength="60" placeholder="院所、地址、行政區" data-i18n-attr="placeholder:search.placeholder">
+          <button type="button" class="search__clear" id="search-clear" aria-label="清除搜尋文字" data-i18n-attr="aria-label:search.clear" hidden>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
           </button>
         </div>
         <button type="button" class="btn btn--filter" id="filter-toggle" aria-expanded="false" aria-controls="filter-panel">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-          <span>篩選</span><span class="count-badge" id="filter-count" aria-hidden="true" hidden></span><span class="sr-only" id="filter-count-sr"></span>
+          <span class="btn--filter__label" data-i18n="filters.toggle">篩選</span><span class="count-badge" id="filter-count" aria-hidden="true" hidden></span><span class="sr-only" id="filter-count-sr"></span>
         </button>
-        <button type="button" class="btn btn--locate" id="locate-btn" aria-label="定位我的位置">
+        <button type="button" class="btn btn--locate" id="locate-btn" aria-label="定位我的位置" data-i18n-attr="aria-label:locate.label">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <span class="btn__label-long">定位我的位置</span>
+          <span class="btn__label-long" data-i18n="locate.label">定位我的位置</span>
         </button>
       </div>
       <p class="geo-msg" id="geo-msg" role="status" hidden></p>
 
-      <div class="group-chips" role="group" aria-label="品項（可複選）" id="group-chips"></div>
+      <div class="group-chips" role="group" aria-label="品項（可複選）" data-i18n-attr="aria-label:filters.groupsLabel" id="group-chips"></div>
 
       <div class="panel-wrap" id="panel-wrap">
         <section class="panel" id="filter-panel" aria-labelledby="panel-title" hidden>
           <div class="panel__inner">
-          <h3 class="sr-only" id="panel-title">更多篩選條件</h3>
+          <h3 class="sr-only" id="panel-title" data-i18n="filters.more">更多篩選條件</h3>
           <div class="panel__section" id="product-choices"></div>
           <div class="panel__section">
-            <h4 class="panel__label" id="avail-label">看診與庫存</h4>
+            <h4 class="panel__label" id="avail-label" data-i18n="filters.availability">看診與庫存</h4>
             <div class="panel__row" role="group" aria-labelledby="avail-label">
-              <button type="button" class="opt" id="toggle-today" aria-pressed="false"><span class="opt__box" aria-hidden="true"></span>今日有看診</button>
-              <button type="button" class="opt" id="toggle-stock" aria-pressed="false"><span class="opt__box" aria-hidden="true"></span>只看有庫存</button>
+              <button type="button" class="opt" id="toggle-today" aria-pressed="false"><span class="opt__box" aria-hidden="true"></span><span data-i18n="filters.today">今日有看診</span></button>
+              <button type="button" class="opt" id="toggle-stock" aria-pressed="false"><span class="opt__box" aria-hidden="true"></span><span data-i18n="filters.stock">只看有庫存</span></button>
             </div>
           </div>
           <div class="panel__section">
-            <h4 class="panel__label">地區（縣市・行政區）</h4>
+            <h4 class="panel__label" data-i18n="filters.region">地區（縣市・行政區）</h4>
             <div class="region-row">
               <div class="field">
-                <label for="city-select" class="sr-only">縣市</label>
+                <label for="city-select" class="sr-only" data-i18n="filters.city">縣市</label>
                 <select id="city-select"><option value="">全部縣市</option></select>
               </div>
               <div class="field">
-                <label for="dist-select" class="sr-only">行政區</label>
+                <label for="dist-select" class="sr-only" data-i18n="filters.dist">行政區</label>
                 <select id="dist-select" disabled><option value="">全部行政區</option></select>
               </div>
             </div>
           </div>
           <div class="panel__footer">
-            <button type="button" class="btn btn--text" id="panel-clear">清除全部條件</button>
-            <button type="button" class="btn btn--primary" id="filter-done">完成</button>
+            <button type="button" class="btn btn--text" id="panel-clear" data-i18n="filters.clearAll">清除全部條件</button>
+            <button type="button" class="btn btn--primary" id="filter-done" data-i18n="filters.done">完成</button>
           </div>
           </div>
         </section>
       </div>
 
-      <ul class="tokens" id="tokens" aria-label="已套用的篩選條件"></ul>
+      <ul class="tokens" id="tokens" aria-label="已套用的篩選條件" data-i18n-attr="aria-label:tokens.label"></ul>
     </section>
 
     <div class="stage" id="stage">
       <div class="map-wrap">
-        <div id="map" class="map" role="region" aria-label="院所地圖" aria-describedby="map-help"></div>
-        <p id="map-help" class="sr-only">地圖上的院所也列在查詢結果清單中，建議使用清單操作。</p>
+        <div id="map" class="map" role="region" aria-label="院所地圖" data-i18n-attr="aria-label:map.label" aria-describedby="map-help"></div>
+        <p id="map-help" class="sr-only" data-i18n="map.help">地圖上的院所也列在查詢結果清單中，建議使用清單操作。</p>
         <div class="map-status" id="map-status" hidden></div>
         <p class="map-snapshot" id="snapshot-map"></p>
         <details class="legend" id="legend">
-          <summary class="legend__summary">圖例</summary>
+          <summary class="legend__summary" data-i18n="legend.title">圖例</summary>
           <ul class="legend__list">
-            <li><span class="mk mk--ok mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g">✓</span></span></span>今日有看診・有庫存</li>
-            <li><span class="mk mk--nostock mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g">–</span></span></span>今日有看診・無庫存</li>
-            <li><span class="mk mk--closed mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g">休</span></span></span>今日休診</li>
-            <li><span class="cl-sample" aria-hidden="true">12</span>院所群集（外圈比例為上述狀態）</li>
+            <li><span class="mk mk--ok mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g">✓</span></span></span><span data-i18n="legend.ok">今日有看診・有庫存</span></li>
+            <li><span class="mk mk--nostock mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g">–</span></span></span><span data-i18n="legend.nostock">今日有看診・無庫存</span></li>
+            <li><span class="mk mk--closed mk--static" aria-hidden="true"><span class="mk__b"><span class="mk__g" data-i18n="glyph.closed">休</span></span></span><span data-i18n="legend.closed">今日休診</span></li>
+            <li><span class="cl-sample" aria-hidden="true">12</span><span data-i18n="legend.cluster">院所群集（外圈比例為上述狀態）</span></li>
           </ul>
-          <p class="legend__note">庫存依所選品項判定；未選品項時以任一品項判定。</p>
+          <p class="legend__note" data-i18n="legend.note">庫存依所選品項判定；未選品項時以任一品項判定。</p>
         </details>
       </div>
 
       <section class="sheet" id="sheet" aria-labelledby="results-heading" data-state="peek">
-        <button type="button" class="sheet__handle" id="sheet-handle" aria-label="調整清單高度" aria-controls="sheet">
+        <button type="button" class="sheet__handle" id="sheet-handle" aria-label="調整清單高度" data-i18n-attr="aria-label:sheet.label" aria-controls="sheet">
           <span class="sheet__grip" aria-hidden="true"></span>
         </button>
 
@@ -134,7 +150,7 @@
           <div class="summary">
             <div class="summary__main">
               <h2 class="summary__count" id="results-heading" tabindex="-1">載入中…</h2>
-              <button type="button" class="btn btn--text" id="clear-btn" hidden>清除條件</button>
+              <button type="button" class="btn btn--text" id="clear-btn" data-i18n="filters.clear" hidden>清除條件</button>
             </div>
             <p class="summary__scope" id="scope-line"></p>
             <p class="summary__snapshot" id="snapshot"></p>
@@ -150,7 +166,7 @@
           <div class="detail-bar">
             <button type="button" class="btn btn--back" id="back-btn">
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              返回清單
+              <span data-i18n="detail.back">返回清單</span>
             </button>
           </div>
           <div class="detail-scroll" id="detail-scroll">
@@ -163,7 +179,7 @@
 
   <p class="sr-only" id="announcer" aria-live="polite" aria-atomic="true"></p>
 
-  <noscript><p class="noscript">此網站需要啟用 JavaScript 才能顯示地圖與院所清單。疫苗相關諮詢請撥 1922 防疫專線。</p></noscript>
+  <noscript><p class="noscript">此網站需要啟用 JavaScript 才能顯示地圖與院所清單。疫苗相關諮詢請撥 1922 防疫專線。</p><p class="noscript" lang="en">This site needs JavaScript to show the map and clinic list. For vaccine questions, call the Taiwan CDC hotline 1922.</p></noscript>
 
   <script src="js/trusted-types.js"></script>
   <script src="vendor/leaflet/leaflet.js"></script>

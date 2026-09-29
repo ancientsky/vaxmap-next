@@ -96,7 +96,7 @@ async function main() {
     browser = await chromium.launch();
 
     /* ---------------- Desktop pass: names, lang, h1, images, tab order, contrast ---------------- */
-    const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'zh-TW' });
     const page = await context.newPage();
     await page.goto(baseUrl, { waitUntil: 'load' });
     await page.waitForSelector('#results-heading');
@@ -125,6 +125,14 @@ async function main() {
     walk(snapshot);
     if (unnamed.length) report('accessible-name', `${unnamed.length} 個互動元素缺少可存取名稱：${unnamed.slice(0, 10).join(', ')}`);
     else console.log('  ok - every button/link/input has an accessible name (via a11y tree)');
+
+    // 語言切換：原生 select，須有可存取名稱，且目前語系為選取值
+    const langSel = await page.evaluate(() => {
+      const s = document.getElementById('lang-select');
+      return s && { tag: s.tagName, name: s.getAttribute('aria-label') || '', value: s.value, options: s.options.length };
+    });
+    if (!langSel || langSel.tag !== 'SELECT' || !langSel.name.trim() || langSel.options < 8) report('lang-switcher', `語言切換應為具名稱的 select：${JSON.stringify(langSel)}`);
+    else console.log(`  ok - language switcher is a named <select> ("${langSel.name}", ${langSel.options} options, value=${langSel.value})`);
 
     // Chips / panel options expose aria-pressed.
     const chipCount = await page.locator('.chip--group, .opt').count();
@@ -258,8 +266,8 @@ async function main() {
 
     /* ---------------- Mobile pass: tap target sizes ---------------- */
     console.log('\n=== Mobile 最小點擊區域 (>=44x44 CSS px) ===');
-    const mctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-    const mpage = await mctx.newPage();
+    const mctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, locale: 'zh-TW' });
+    let mpage = await mctx.newPage();
     await mpage.goto(baseUrl, { waitUntil: 'load' });
     await mpage.waitForSelector('#results-heading');
     await mpage.waitForFunction(() => /\d/.test(document.getElementById('results-heading')?.textContent || ''));
@@ -316,6 +324,40 @@ async function main() {
       if (inline.length) console.log(`  info - [${label}] ${inline.length} 個地圖版權列行內連結適用 WCAG 2.5.8 inline 例外：${inline.join(', ')}`);
     }
     await mctx.close();
+
+    /* ---------------- English pass: lang, names, tap targets (longer strings) ---------------- */
+    console.log('\n=== English (lang=en) ===');
+    const ectx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, locale: 'zh-TW' });
+    const epage = await ectx.newPage();
+    await epage.goto(`${baseUrl}#lang=en&g=covid&p=mod_adult&stock=1&city=%E8%87%BA%E5%8C%97%E5%B8%82`, { waitUntil: 'load' });
+    await epage.waitForFunction(() => /\d/.test(document.getElementById('results-heading')?.textContent || ''));
+    await epage.waitForTimeout(400);
+    const elang = await epage.evaluate(() => document.documentElement.lang);
+    if (elang !== 'en') report('lang', `英文介面的 html[lang] 應為 en（實際 ${elang}）`);
+    else console.log('  ok - html[lang]="en" after switching');
+    const esnap = await epage.accessibility.snapshot({ interestingOnly: true });
+    const eunnamed = [];
+    (function walkE(n) {
+      if (!n) return;
+      if (['button', 'link', 'textbox', 'combobox', 'searchbox'].includes(n.role) && !(n.name || '').trim()) eunnamed.push(n.role);
+      (n.children || []).forEach(walkE);
+    })(esnap);
+    if (eunnamed.length) report('accessible-name', `[en] ${eunnamed.length} 個互動元素缺少可存取名稱`);
+    else console.log('  ok - [en] every button/link/input has an accessible name');
+    const cjkNames = await epage.evaluate(() => [...document.querySelectorAll('[aria-label]')]
+      .map((e) => e.getAttribute('aria-label'))
+      .filter((l) => /[\u4e00-\u9fff]/.test(l) && !/[A-Za-z]/.test(l)));
+    if (cjkNames.length) report('i18n', `[en] 仍有中文的 aria-label：${cjkNames.slice(0, 5).join(' | ')}`);
+    else console.log('  ok - [en] no Chinese-only aria-labels left');
+    const prevPage = mpage;
+    mpage = epage;
+    const { bad: ebad } = await measureTargets();
+    mpage = prevPage;
+    if (ebad.length) {
+      report('tap-target', `[en] ${ebad.length} 個互動元素在手機寬度下小於 44x44px`);
+      for (const o of ebad.slice(0, 30)) console.log(`    - ${o.sel}: ${o.w}x${o.h}`);
+    } else console.log('  ok - [en] no tap targets under 44x44px');
+    await ectx.close();
   } finally {
     if (browser) await browser.close();
     server.kill();

@@ -447,3 +447,66 @@ test('searchScore: 俗稱夾在較長的詞中也能命中（台大醫院 → �
   assert.ok(searchScore(ntuh, '台大醫院') > 0);
   assert.equal(searchScore(clinic, '台大醫院'), 0);
 });
+
+/* ------------------------------------------------------------------ *
+ * 多語系：網址 lang、語系比對、外文地名搜尋、距離數值
+ * ------------------------------------------------------------------ */
+
+test('encodeState/decodeState: lang round trip; default zh-Hant is kept out of the hash', async () => {
+  const { DEFAULT_LANG } = await import('../public/js/logic.js');
+  const hash = encodeState({ city: '臺北市', lang: 'en' });
+  assert.ok(hash.includes('lang=en'), hash);
+  assert.equal(decodeState(hash).lang, 'en');
+  assert.equal(decodeState(hash).city, '臺北市');
+  assert.ok(!encodeState({ lang: DEFAULT_LANG }).includes('lang'));
+  assert.equal(encodeState({ lang: DEFAULT_LANG }), '');
+  assert.equal(decodeState('').lang, null);
+  for (const l of ['ja', 'ko', 'id', 'vi', 'th', 'tl']) assert.equal(decodeState(encodeState({ lang: l })).lang, l);
+});
+
+test('decodeState: lang is case-insensitive and unknown / hostile values are ignored', () => {
+  assert.equal(decodeState('lang=EN').lang, 'en');
+  assert.equal(decodeState('lang=zh-hant').lang, 'zh-Hant');
+  assert.equal(decodeState('lang=fr').lang, null);
+  assert.equal(decodeState('lang=' + encodeURIComponent('<script>')).lang, null);
+  assert.equal(decodeState('lang=' + 'e'.repeat(5000)).lang, null);
+  assert.equal(decodeState('lang=__proto__').lang, null);
+});
+
+test('matchLang / pickLang: navigator.languages mapping', async () => {
+  const { matchLang, pickLang } = await import('../public/js/logic.js');
+  assert.equal(matchLang('zh'), 'zh-Hant');
+  assert.equal(matchLang('zh-TW'), 'zh-Hant');
+  assert.equal(matchLang('zh-HK'), 'zh-Hant');
+  assert.equal(matchLang('zh-Hant-TW'), 'zh-Hant');
+  assert.equal(matchLang('en-GB'), 'en');
+  assert.equal(matchLang('ja-JP'), 'ja');
+  assert.equal(matchLang('fil-PH'), 'tl');
+  assert.equal(matchLang('tl'), 'tl');
+  assert.equal(matchLang('in'), 'id');
+  assert.equal(matchLang('fr-FR'), null);
+  assert.equal(matchLang(null), null);
+  assert.equal(pickLang(['fr', 'de', 'vi-VN', 'en']), 'vi');
+  assert.equal(pickLang(['fr']), null);
+});
+
+test('tokenizeQuery: injected city aliases (longest first, whole words only); no aliases = old behaviour', () => {
+  const aliases = { 'taipei city': '臺北市', taipei: '臺北市', 'new taipei city': '新北市', 'new taipei': '新北市', chiayi: '嘉義' };
+  assert.deepEqual(tokenizeQuery('New Taipei  City clinic', { aliases }), ['新北市', 'clinic']);
+  assert.deepEqual(tokenizeQuery('taipei', { aliases }), ['臺北市']);
+  assert.deepEqual(tokenizeQuery('TAIPEI CITY 中山區', { aliases }), ['臺北市', '中山區']);
+  assert.deepEqual(tokenizeQuery('taipeix', { aliases }), ['taipeix'], 'partial word is not an alias');
+  assert.deepEqual(tokenizeQuery('Taipei'), ['taipei']);
+  const h = { name: '某診所', city: '嘉義縣', dist: '民雄鄉', addr: '嘉義縣民雄鄉1號' };
+  assert.ok(searchScore(h, 'Chiayi', { aliases }) > 0);
+  assert.equal(searchScore(h, 'Chiayi'), 0);
+});
+
+test('distanceParts: numeric parts used by the localized formatter; formatDistance unchanged', async () => {
+  const { distanceParts } = await import('../public/js/logic.js');
+  assert.deepEqual(distanceParts(0.35), { unit: 'm', value: 350, digits: 0 });
+  assert.deepEqual(distanceParts(5.54), { unit: 'km', value: 5.5, digits: 1 });
+  assert.deepEqual(distanceParts(12.4), { unit: 'km', value: 12, digits: 0 });
+  assert.equal(distanceParts(NaN), null);
+  assert.equal(formatDistance(1), '1.0 公里');
+});

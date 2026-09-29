@@ -7,12 +7,48 @@
 
 const TAIPEI_OFFSET_MS = 8 * 3600 * 1000;
 
+// id 對應語系檔的 key（period.am / period.pm / period.eve）；label 為繁中原文（保留供相容）
 export const PERIODS = [
-  { bit: 1, label: '上午', from: 8, to: 12 },
-  { bit: 2, label: '下午', from: 12, to: 18 },
-  { bit: 4, label: '晚上', from: 18, to: 22 },
+  { bit: 1, id: 'am', label: '上午', from: 8, to: 12 },
+  { bit: 2, id: 'pm', label: '下午', from: 12, to: 18 },
+  { bit: 4, id: 'eve', label: '晚上', from: 18, to: 22 },
 ];
 export const WEEKDAYS = ['週一', '週二', '週三', '週四', '週五', '週六', '週日'];
+// 週一=0 … 週日=6 對應語系檔的 key（weekday.mon.short …）
+export const WEEKDAY_IDS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+/* ------------------------------------------------------------------ *
+ * 語系（僅清單與比對規則；字串本身在 public/i18n/*.json，由 i18n.js 載入）
+ * ------------------------------------------------------------------ */
+
+export const DEFAULT_LANG = 'zh-Hant';
+export const SUPPORTED_LANGS = Object.freeze(['zh-Hant', 'en', 'ja', 'ko', 'id', 'vi', 'th', 'tl']);
+
+/**
+ * 將 BCP 47 語言標籤（navigator.languages、網址參數）對應到本站支援的語系；不支援 → null。
+ * zh / zh-TW / zh-HK / zh-Hant-* / zh-CN 一律 → zh-Hant（本站唯一的中文版本）；fil / tl → tl；in（舊碼）→ id。
+ */
+export function matchLang(tag) {
+  if (typeof tag !== 'string') return null;
+  const t = tag.trim().toLowerCase().replace(/_/g, '-');
+  if (!t || t.length > 35) return null;
+  const exact = SUPPORTED_LANGS.find((l) => l.toLowerCase() === t);
+  if (exact) return exact;
+  const base = t.split('-')[0];
+  if (base === 'zh') return 'zh-Hant';
+  if (base === 'fil' || base === 'tl') return 'tl';
+  if (base === 'in') return 'id';
+  return SUPPORTED_LANGS.find((l) => l === base) || null;
+}
+
+/** 依序比對多個偏好語言，回傳第一個支援的；都不支援 → null */
+export function pickLang(tags) {
+  for (const t of tags || []) {
+    const m = matchLang(t);
+    if (m) return m;
+  }
+  return null;
+}
 
 function toDate(now) {
   if (now instanceof Date) return now;
@@ -155,12 +191,22 @@ export function haversineKm(lat1, lng1, lat2, lng2) {
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
 }
 
-/** 1.234 → "1.2 公里"；0.35 → "350 公尺" */
+/**
+ * 距離的數值與單位（不含文字，供各語系自行格式化）：
+ * 0.35 → {unit:'m', value:350}；1.234 → {unit:'km', value:1.2, digits:1}；12.4 → {unit:'km', value:12, digits:0}
+ */
+export function distanceParts(km) {
+  if (km == null || !Number.isFinite(km)) return null;
+  if (km < 1) return { unit: 'm', value: Math.max(10, Math.round((km * 1000) / 10) * 10), digits: 0 };
+  if (km < 10) return { unit: 'km', value: Number(km.toFixed(1)), digits: 1 };
+  return { unit: 'km', value: Math.round(km), digits: 0 };
+}
+
+/** 1.234 → "1.2 公里"；0.35 → "350 公尺"（繁中；其他語系由 i18n.js 的 formatDistanceL 處理） */
 export function formatDistance(km) {
-  if (km == null || !Number.isFinite(km)) return '';
-  if (km < 1) return `${Math.max(10, Math.round((km * 1000) / 10) * 10)} 公尺`;
-  if (km < 10) return `${km.toFixed(1)} 公里`;
-  return `${Math.round(km)} 公里`;
+  const d = distanceParts(km);
+  if (!d) return '';
+  return d.unit === 'm' ? `${d.value} 公尺` : `${d.value.toFixed(d.digits)} 公里`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -231,10 +277,35 @@ function plainTokenScore(fields, token) {
   return best;
 }
 
-/** 將搜尋字串切成 token（以空白分隔，每個 token 正規化） */
-export function tokenizeQuery(query) {
-  return String(query ?? '')
-    .normalize('NFKC')
+const aliasReCache = new WeakMap();
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * 將查詢字串中的「外文地名」換成中文（例如 "Taipei City" → "臺北市"），之後才切 token。
+ * aliases：{ 小寫外文: 中文 }，由呼叫端注入（本檔不依賴語系檔）。以完整詞比對、長者優先，
+ * 所以 "New Taipei" 不會被當成 "Taipei"。
+ */
+export function applyQueryAliases(query, aliases) {
+  const s = String(query ?? '').normalize('NFKC').replace(/\s+/g, ' ');
+  if (!aliases || typeof aliases !== 'object') return s;
+  let re = aliasReCache.get(aliases);
+  if (re === undefined) {
+    const keys = Object.keys(aliases).filter((k) => k && typeof aliases[k] === 'string').sort((a, b) => b.length - a.length);
+    re = keys.length
+      ? new RegExp(`(^|[^\\p{L}\\p{N}])(${keys.map(escapeRe).join('|')})(?=$|[^\\p{L}\\p{N}])`, 'giu')
+      : null;
+    aliasReCache.set(aliases, re);
+  }
+  if (!re) return s;
+  return s.replace(re, (m, pre, word) => `${pre} ${aliases[word.toLowerCase()] ?? word} `);
+}
+
+/**
+ * 將搜尋字串切成 token（以空白分隔，每個 token 正規化）。
+ * opts.aliases：外文地名對照（見 applyQueryAliases），未提供時行為與原本相同。
+ */
+export function tokenizeQuery(query, opts) {
+  return applyQueryAliases(query, opts?.aliases)
     .split(/[\s　,，、]+/)
     .map(normalizeText)
     .filter(Boolean);
@@ -244,8 +315,8 @@ export function tokenizeQuery(query) {
  * 搜尋分數：每個 token 都必須命中名稱、縣市行政區或地址之一（AND），
  * 分數為各 token 最佳命中分數之和；任何 token 未命中 → 0。空查詢 → 1。
  */
-export function searchScore(h, query) {
-  const tokens = Array.isArray(query) ? query : tokenizeQuery(query);
+export function searchScore(h, query, opts) {
+  const tokens = Array.isArray(query) ? query : tokenizeQuery(query, opts);
   if (tokens.length === 0) return 1;
   const fields = searchFields(h);
   let sum = 0;
@@ -299,6 +370,7 @@ export const DEFAULT_STATE = Object.freeze({
   q: '',
   id: null,
   view: null, // {lat, lng, z}
+  lang: null, // 介面語系；預設語系（zh-Hant）不寫入網址
 });
 
 const ID_RE = /^[a-z0-9_]{1,32}$/i;
@@ -318,6 +390,8 @@ export function encodeState(state) {
   if (s.view && Number.isFinite(s.view.lat) && Number.isFinite(s.view.lng) && Number.isFinite(s.view.z)) {
     p.set('map', `${s.view.lat.toFixed(5)},${s.view.lng.toFixed(5)},${Math.round(s.view.z)}`);
   }
+  const lang = matchLang(s.lang);
+  if (lang && lang !== DEFAULT_LANG) p.set('lang', lang);
   return p.toString();
 }
 
@@ -342,7 +416,14 @@ export function decodeState(hash) {
     q: text('q', 60),
     id: null,
     view: null,
+    lang: null,
   };
+  // 只接受支援清單內的語系（大小寫不拘），其餘忽略
+  const lang = p.get('lang');
+  if (lang && lang.length <= 35) {
+    const exact = SUPPORTED_LANGS.find((l) => l.toLowerCase() === lang.trim().toLowerCase());
+    if (exact) state.lang = exact;
+  }
   const id = p.get('id');
   if (id && /^\d{1,10}$/.test(id)) state.id = Number(id);
   const m = (p.get('map') || '').split(',').map(Number);

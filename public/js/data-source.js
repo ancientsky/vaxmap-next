@@ -5,10 +5,11 @@ const DATA_URL = './data/hospitals.json';
 
 export async function loadData({ signal } = {}) {
   const res = await fetch(DATA_URL, { signal, cache: 'no-cache' });
-  if (!res.ok) throw new Error(`資料載入失敗（HTTP ${res.status}）`);
+  // status / code 供畫面依語系顯示錯誤（message 維持繁中，供主控台與除錯）
+  if (!res.ok) throw Object.assign(new Error(`資料載入失敗（HTTP ${res.status}）`), { status: res.status });
   const data = await res.json();
   if (!data || !Array.isArray(data.hospitals) || !Array.isArray(data.vaccines)) {
-    throw new Error('資料格式不正確');
+    throw Object.assign(new Error('資料格式不正確'), { code: 'format' });
   }
   // 最後一道防線：欄位型別不對的紀錄直接捨棄，避免單筆壞資料讓整個畫面壞掉
   const s = (v) => typeof v === 'string';
