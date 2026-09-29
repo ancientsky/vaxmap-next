@@ -8,11 +8,20 @@
 //       node scripts/translate-info.mjs --export <檔案>          匯出繁中「翻譯投影」（送 API 的內容），供離線／人工翻譯
 //       node scripts/translate-info.mjs --import <lang> <檔案>   匯入同格式的譯文：逐區塊驗證後存入快取（source:"manual"），
 //                                                                 再重建 public/data/info/*.json；不呼叫 API
+//       node scripts/translate-info.mjs --merge-cache <檔案>     把另一份 translations.json（通常是 repo 內含人工譯文的那份）
+//                                                                 併入 INFO_DATA_DIR/translations.json：source:"manual" 的項目優先，
+//                                                                 其餘只補缺；不呼叫 API、不輸出語言檔
 // 環境變數：
-//   ANTHROPIC_API_KEY   沒有設定（或空白）時不翻譯：8 個檔案照樣產生，未翻譯區塊帶原文、translated:false，結束代碼 0
-//   TRANSLATE_MODEL     模型（預設 claude-sonnet-5-5）
-//   TRANSLATE_EFFORT    output_config.effort（預設 low；翻譯不需要長推理）
-//   TRANSLATE_ENDPOINT  Messages API 網址（預設 https://api.anthropic.com/v1/messages；測試時指向 tests/mock-translate.mjs）
+//   TRANSLATE_PROVIDER  翻譯服務：gemini（預設，Google Gemini API）或 anthropic（Anthropic Messages API）
+//   GEMINI_API_KEY      provider=gemini 的金鑰（以 x-goog-api-key 標頭送出，絕不放進網址）
+//   ANTHROPIC_API_KEY   provider=anthropic 的金鑰
+//                       對應的金鑰沒有設定（或空白）時不翻譯：8 個檔案照樣產生，未翻譯區塊帶原文、translated:false，結束代碼 0
+//   TRANSLATE_MODEL     模型（預設 gemini：gemini-3.5-flash-lite；anthropic：claude-sonnet-5-5）
+//   TRANSLATE_TEMPERATURE  取樣溫度（預設不送出，使用模型預設值；Google 建議 Gemini 3 系列維持預設 1.0）
+//   TRANSLATE_EFFORT    anthropic 專用：output_config.effort（預設 low；翻譯不需要長推理）
+//   TRANSLATE_ENDPOINT  API 網址。gemini：API 根網址（預設 https://generativelanguage.googleapis.com/v1beta，
+//                       實際請求 <根網址>/models/<模型>:generateContent）；anthropic：Messages API 完整網址
+//                       （預設 https://api.anthropic.com/v1/messages）。測試時指向 tests/mock-translate.mjs
 //   TRANSLATE_LANGS     要翻譯的語言（逗號分隔，預設 en,ja,ko,id,vi,th,tl）
 //   TRANSLATE_CONCURRENCY  同時請求數（預設 3）
 //   TRANSLATE_MAX_CHARS    單一區塊原文字數上限，超過不送（成本保險絲，預設 20000）
@@ -26,13 +35,22 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { sanitizeInfo, INFO_LANGS, INFO_LIMITS } from './sanitize-info.mjs';
 import { projectSection } from './harvest-info.mjs';
 
-export const DEFAULT_MODEL = 'claude-sonnet-5-5';
-const DEFAULT_ENDPOINT = 'https://api.anthropic.com/v1/messages';
+/** 各翻譯服務的預設值。金鑰變數名稱也在這裡，錯誤訊息據此提示該檢查哪個變數 */
+export const PROVIDERS = Object.freeze({
+  gemini: Object.freeze({ model: 'gemini-3.5-flash-lite', endpoint: 'https://generativelanguage.googleapis.com/v1beta', keyVar: 'GEMINI_API_KEY' }),
+  anthropic: Object.freeze({ model: 'claude-sonnet-5-5', endpoint: 'https://api.anthropic.com/v1/messages', keyVar: 'ANTHROPIC_API_KEY' }),
+});
+export const DEFAULT_PROVIDER = 'gemini';
+export const DEFAULT_MODEL = PROVIDERS[DEFAULT_PROVIDER].model;
 const ANTHROPIC_VERSION = '2023-06-01';
 const MAX_CACHE_BYTES = 20 * 1024 * 1024;
 const MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
-// 每百萬 token 美元（輸入, 輸出），只用於記錄檔中的費用估算
-const PRICES = { 'claude-sonnet-5-5': [2, 10], 'claude-opus-5-5': [4, 20], 'claude-haiku-4-5': [1, 5] };
+// 每百萬 token 美元（輸入, 輸出；付費層級標準價），只用於記錄檔中的費用估算
+const PRICES = {
+  'gemini-3.5-flash-lite': [0.30, 2.50], 'gemini-3.1-flash-lite': [0.25, 1.50],
+  'claude-sonnet-5-5': [2, 10], 'claude-opus-5-5': [4, 20], 'claude-haiku-4-5': [1, 5],
+};
+const MODEL_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/; // 模型名稱會放進 Gemini 的網址路徑，只允許這些字元
 export const LANG_NAMES = Object.freeze({
   en: 'English', ja: 'Japanese (日本語)', ko: 'Korean (한국어)', id: 'Indonesian (Bahasa Indonesia)',
   vi: 'Vietnamese (Tiếng Việt)', th: 'Thai (ภาษาไทย)', tl: 'Filipino (Tagalog)',
@@ -214,45 +232,116 @@ async function readCapped(res, max) {
 }
 
 class FatalApiError extends Error {}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+/** 把金鑰從任何要印出的字串中移除（API 的錯誤訊息理論上不會回顯金鑰，這裡再保險一次） */
+const redact = (s, key) => (key && key.length >= 4 ? String(s).split(key).join('***') : String(s));
 
-/** 呼叫一次 Messages API（含 429／5xx 退避重試）；回傳 { text, usage, stop } */
-async function callApi(cfg, system, messages, maxTokens) {
+/** Gemini 429 回應的 details 可能帶 RetryInfo.retryDelay（例如 "12s"）；回傳毫秒或 NaN */
+function geminiRetryDelay(errObj) {
+  for (const d of errObj?.details || []) {
+    const m = typeof d?.retryDelay === 'string' && /^(\d+(?:\.\d+)?)s$/.exec(d.retryDelay);
+    if (m) return Number(m[1]) * 1000;
+  }
+  return NaN;
+}
+
+/**
+ * 依翻譯服務組出請求。messages 為 [{ role: 'user'|'assistant', text }]。
+ * @returns {{ url: string, headers: object, body: object }}
+ */
+function buildRequest(cfg, system, messages, maxTokens) {
+  if (cfg.provider === 'gemini') {
+    const generationConfig = { responseMimeType: 'application/json', maxOutputTokens: maxTokens };
+    if (Number.isFinite(cfg.temperature)) generationConfig.temperature = cfg.temperature;
+    return {
+      // 金鑰只放在 x-goog-api-key 標頭，不用 ?key=（網址可能出現在代理伺服器或錯誤記錄中）
+      url: `${cfg.endpoint.replace(/\/+$/, '')}/models/${encodeURIComponent(cfg.model)}:generateContent`,
+      headers: { 'content-type': 'application/json', 'x-goog-api-key': cfg.key },
+      body: {
+        systemInstruction: { parts: [{ text: system }] },
+        contents: messages.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.text }] })),
+        generationConfig,
+      },
+    };
+  }
   const body = {
     model: cfg.model,
     max_tokens: maxTokens,
     system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
-    messages,
+    messages: messages.map((m) => ({ role: m.role, content: m.text })),
   };
   if (cfg.effort) body.output_config = { effort: cfg.effort };
+  if (Number.isFinite(cfg.temperature)) body.temperature = cfg.temperature;
+  return { url: cfg.endpoint, headers: { 'content-type': 'application/json', 'x-api-key': cfg.key, 'anthropic-version': ANTHROPIC_VERSION }, body };
+}
+
+/** 把成功回應轉成共同格式 { text, usage: { in, out }, stop: 'end'|'max_tokens'|其他原因 } */
+function parseResponse(cfg, data) {
+  if (cfg.provider === 'gemini') {
+    const c = (data.candidates || [])[0];
+    if (!c) {
+      const why = data.promptFeedback?.blockReason || '沒有候選回覆';
+      return { text: '', usage: geminiUsage(data), stop: `blocked:${why}` };
+    }
+    const text = (c.content?.parts || []).filter((p) => typeof p?.text === 'string' && !p.thought).map((p) => p.text).join('');
+    const fr = c.finishReason || 'STOP';
+    return { text, usage: geminiUsage(data), stop: fr === 'STOP' ? 'end' : fr === 'MAX_TOKENS' ? 'max_tokens' : `blocked:${fr}` };
+  }
+  const u = data.usage || {};
+  return {
+    text: (data.content || []).filter((c) => c?.type === 'text').map((c) => c.text).join(''),
+    usage: { in: (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0), out: u.output_tokens || 0 },
+    stop: data.stop_reason === 'max_tokens' ? 'max_tokens' : 'end',
+  };
+}
+// Gemini 的思考 token（thoughtsTokenCount）以輸出價計費，一併算進輸出
+const geminiUsage = (d) => ({ in: d.usageMetadata?.promptTokenCount || 0, out: (d.usageMetadata?.candidatesTokenCount || 0) + (d.usageMetadata?.thoughtsTokenCount || 0) });
+
+/** 呼叫一次翻譯 API（含 429／5xx 退避重試）；回傳 parseResponse 的結果 */
+async function callApi(cfg, system, messages, maxTokens) {
+  const { url, headers, body } = buildRequest(cfg, system, messages, maxTokens);
+  const keyVar = PROVIDERS[cfg.provider].keyVar;
+  const attempts = cfg.maxAttempts ?? 5;
   let lastErr;
-  for (let attempt = 0; attempt < 4; attempt++) {
+  let rateLimited = 0;
+  for (let attempt = 0; attempt < attempts; attempt++) {
     let res;
     try {
-      res = await fetch(cfg.endpoint, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-api-key': cfg.key, 'anthropic-version': ANTHROPIC_VERSION },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(300000),
-      });
+      res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal: AbortSignal.timeout(300000) });
     } catch (e) {
-      lastErr = e;
-      await new Promise((r) => setTimeout(r, cfg.backoffMs * (attempt + 1)));
+      lastErr = new Error(`連線失敗：${e?.cause?.code || e?.name || 'error'}`);
+      await sleep(cfg.backoffMs * (attempt + 1));
       continue;
     }
     const raw = await readCapped(res, MAX_RESPONSE_BYTES);
     if (res.ok) {
-      const data = JSON.parse(raw);
-      const text = (data.content || []).filter((c) => c?.type === 'text').map((c) => c.text).join('');
-      return { text, usage: data.usage || {}, stop: data.stop_reason };
+      let data;
+      try { data = JSON.parse(raw); } catch { throw new Error('API 回應不是 JSON'); }
+      return parseResponse(cfg, data);
     }
-    let msg = `HTTP ${res.status}`;
-    try { msg += '：' + (JSON.parse(raw)?.error?.message || ''); } catch { /* 非 JSON */ }
-    if ([401, 403].includes(res.status)) throw new FatalApiError(msg + '（請檢查 ANTHROPIC_API_KEY）');
-    if (res.status === 404 || res.status === 400) throw new FatalApiError(msg + '（請檢查 TRANSLATE_MODEL／TRANSLATE_ENDPOINT）');
+    let errObj = null;
+    try { errObj = JSON.parse(raw)?.error || null; } catch { /* 非 JSON */ }
+    const apiMsg = redact(typeof errObj?.message === 'string' ? errObj.message : '', cfg.key).slice(0, 200);
+    const msg = `HTTP ${res.status}${errObj?.status ? ` ${errObj.status}` : ''}${apiMsg ? '：' + apiMsg : ''}`;
+    // Gemini 對無效金鑰回 400 + API_KEY_INVALID；兩家對未授權都回 401／403
+    const badKey = [401, 403].includes(res.status) || JSON.stringify(errObj?.details || []).includes('API_KEY_INVALID');
+    if (badKey) throw new FatalApiError(`${msg}（金鑰無效、已停用或沒有權限：請檢查 ${keyVar}${cfg.ci ? '（GitHub repo 的 Actions secret）' : ''}）`);
+    if (res.status === 404 || res.status === 400) throw new FatalApiError(`${msg}（請檢查 TRANSLATE_MODEL「${cfg.model}」／TRANSLATE_ENDPOINT）`);
     lastErr = new Error(msg);
     if (![408, 409, 429, 500, 502, 503, 504, 529].includes(res.status)) break;
+    if (res.status === 429) rateLimited++;
+    if (attempt === attempts - 1) break;
+    // 退避：優先用伺服器指定的等待時間（retry-after 標頭，或 Gemini 的 RetryInfo），否則指數退避加少量隨機
     const ra = Number(res.headers.get('retry-after'));
-    await new Promise((r) => setTimeout(r, Math.min(60000, Number.isFinite(ra) && ra > 0 ? ra * 1000 : cfg.backoffMs * 2 ** attempt)));
+    const hinted = Number.isFinite(ra) && ra > 0 ? ra * 1000 : geminiRetryDelay(errObj);
+    const wait = Number.isFinite(hinted) && hinted > 0 ? hinted : cfg.backoffMs * 2 ** attempt * (1 + Math.random() * 0.25);
+    console.warn(`  速率限制或暫時錯誤（${msg.slice(0, 80)}），${Math.round(wait / 1000)} 秒後重試`);
+    await sleep(Math.min(90000, wait));
+  }
+  if (rateLimited === attempts) {
+    // 一直 429：多半是每日配額（RPD，太平洋時間午夜重置）或帳單上限用完——停止其餘請求，明天自動再試
+    throw new FatalApiError(`${lastErr.message}（連續 ${attempts} 次 429：配額或速率上限已用完，其餘區塊留待下次執行；` +
+      `可到 Google AI Studio 查看此金鑰的用量與上限）`);
   }
   throw lastErr;
 }
@@ -271,25 +360,25 @@ export function extractJson(text) {
  */
 export async function translateProjection(cfg, lang, src, system) {
   const usage = { in: 0, out: 0 };
-  const user = JSON.stringify(src);
   const maxTokens = Math.min(32000, 2048 + Math.ceil(textLength(src) * 4));
-  const messages = [{ role: 'user', content: user }];
+  const messages = [{ role: 'user', text: JSON.stringify(src) }];
   let error;
   for (let attempt = 0; attempt < 2; attempt++) {
     const r = await callApi(cfg, system, messages, maxTokens);
-    usage.in += (r.usage.input_tokens || 0) + (r.usage.cache_read_input_tokens || 0) + (r.usage.cache_creation_input_tokens || 0);
-    usage.out += r.usage.output_tokens || 0;
+    usage.in += r.usage.in;
+    usage.out += r.usage.out;
     let out;
     try {
-      if (r.stop === 'max_tokens') throw new Error('回覆超過 max_tokens 被截斷');
+      if (r.stop === 'max_tokens') throw new Error('回覆超過輸出上限被截斷');
+      if (r.stop !== 'end') throw new Error(`模型未完成回覆（${r.stop}）`);
       out = extractJson(r.text);
       error = checkShape(src, out);
     } catch (e) {
       error = e.message;
     }
     if (!error) return { proj: out, usage, requests: attempt + 1 };
-    messages.push({ role: 'assistant', content: String(r.text).slice(0, 60000) || '(empty)' });
-    messages.push({ role: 'user', content: `Your reply was rejected by the validator: ${error}\nReturn the complete corrected JSON object only, with exactly the same structure as the original.` });
+    messages.push({ role: 'assistant', text: String(r.text).slice(0, 60000) || '(empty)' });
+    messages.push({ role: 'user', text: `Your reply was rejected by the validator: ${error}\nReturn the complete corrected JSON object only, with exactly the same structure as the original.` });
   }
   return { proj: null, usage, requests: 2, error };
 }
@@ -323,10 +412,10 @@ export function loadCache(file) {
   return cache;
 }
 
-function saveCache(file, cache, keep) {
+function saveCache(file, cache, keep = null) {
   const out = {};
   for (const h of [...cache.keys()].sort()) {
-    if (!keep.has(h)) continue; // 來源已不存在的區塊不再保留
+    if (keep && !keep.has(h)) continue; // 來源已不存在的區塊不再保留
     const langs = cache.get(h);
     out[h] = {};
     for (const l of TARGETS) if (langs.has(l)) out[h][l] = langs.get(l);
@@ -343,6 +432,23 @@ function cached(cache, hash, lang, src) {
   const proj = {};
   for (const k of Object.keys(src)) proj[k] = e[k];
   return checkShape(src, proj) ? null : { proj, at: e.at };
+}
+
+/**
+ * 把 extra（例如 repo 內含人工譯文的快取）併入 base（例如 data 分支上的快取），直接修改 base。
+ * extra 中 source:"manual" 的項目一律覆蓋；其他項目只在 base 沒有時補上。兩者都應是 loadCache 的結果（已過濾鍵）。
+ * @returns {{ manual: number, added: number }}
+ */
+export function mergeCaches(base, extra) {
+  let manual = 0, added = 0;
+  for (const [h, langs] of extra) {
+    if (!base.has(h)) base.set(h, new Map());
+    const b = base.get(h);
+    for (const [l, e] of langs) {
+      if (e?.source === 'manual') { b.set(l, e); manual++; } else if (!b.has(l)) { b.set(l, e); added++; }
+    }
+  }
+  return { manual, added };
 }
 
 /** 產生一個語言的輸出檔內容（尚未清理） */
@@ -434,12 +540,13 @@ export function applyImport(source, cache, lang, data, now = new Date()) {
  * 主程式
  * ------------------------------------------------------------------ */
 function parseArgs(argv) {
-  const o = { force: null, langs: null, exportFile: null, importLang: null, importFile: null };
+  const o = { force: null, langs: null, exportFile: null, importLang: null, importFile: null, mergeFile: null };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--force') o.force = argv[++i];
     else if (argv[i] === '--lang') o.langs = (argv[++i] || '').split(',').map((s) => s.trim()).filter(Boolean);
     else if (argv[i] === '--export') o.exportFile = argv[++i];
     else if (argv[i] === '--import') { o.importLang = argv[++i]; o.importFile = argv[++i]; }
+    else if (argv[i] === '--merge-cache') { o.mergeFile = argv[++i]; if (!o.mergeFile) throw new Error('用法：--merge-cache <檔案>'); }
     else throw new Error(`不認得的參數 ${logSafe(argv[i])}`);
   }
   if (o.exportFile === undefined || (o.importLang !== null && !o.importFile)) throw new Error('用法：--export <檔案>、--import <lang> <檔案>');
@@ -455,22 +562,39 @@ async function main() {
   const pubDir = process.env.INFO_PUBLIC_DIR || 'public/data/info';
   const srcFile = path.join(dataDir, 'source.json');
   const cacheFile = path.join(dataDir, 'translations.json');
+  if (args.mergeFile) {
+    // 只合併快取，不需要 source.json；來源已不存在的雜湊留給下一次正常執行清除
+    const base = loadCache(cacheFile);
+    const { manual, added } = mergeCaches(base, loadCache(args.mergeFile));
+    saveCache(cacheFile, base);
+    console.log(`合併翻譯快取：${logSafe(args.mergeFile)} → ${logSafe(cacheFile)}（人工譯文 ${manual} 筆優先，補上 ${added} 筆）`);
+    return;
+  }
   if (!fs.existsSync(srcFile)) throw new Error(`找不到 ${srcFile}，請先執行 node scripts/harvest-info.mjs`);
   if (fs.statSync(srcFile).size > INFO_LIMITS.maxBytes) throw new Error('source.json 過大');
   const source = sanitizeInfo(JSON.parse(fs.readFileSync(srcFile, 'utf8')), { lang: 'zh-Hant' });
 
-  const key = (process.env.ANTHROPIC_API_KEY || '').trim();
-  const endpoint = process.env.TRANSLATE_ENDPOINT || DEFAULT_ENDPOINT;
+  const provider = (process.env.TRANSLATE_PROVIDER || DEFAULT_PROVIDER).trim().toLowerCase();
+  if (!Object.hasOwn(PROVIDERS, provider)) throw new Error(`TRANSLATE_PROVIDER 只接受 ${Object.keys(PROVIDERS).join('、')}`);
+  const P = PROVIDERS[provider];
+  const key = (process.env[P.keyVar] || '').trim();
+  const endpoint = process.env.TRANSLATE_ENDPOINT || P.endpoint;
   const eu = new URL(endpoint);
   if (eu.protocol !== 'https:' && !(eu.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(eu.hostname))) {
     throw new Error('TRANSLATE_ENDPOINT 必須是 https');
   }
+  if (eu.username || eu.password || eu.search) throw new Error('TRANSLATE_ENDPOINT 不可含帳密或查詢字串（金鑰只經由環境變數傳入）');
+  const model = process.env.TRANSLATE_MODEL || P.model;
+  if (!MODEL_RE.test(model)) throw new Error('TRANSLATE_MODEL 格式不正確');
+  const temp = process.env.TRANSLATE_TEMPERATURE;
   const cfg = {
-    key, endpoint,
-    model: process.env.TRANSLATE_MODEL || DEFAULT_MODEL,
-    effort: process.env.TRANSLATE_EFFORT ?? 'low',
+    provider, key, endpoint, model,
+    temperature: temp === undefined || temp === '' ? NaN : Number(temp),
+    effort: provider === 'anthropic' ? (process.env.TRANSLATE_EFFORT ?? 'low') : '',
     backoffMs: Number(process.env.TRANSLATE_BACKOFF_MS ?? 2000),
+    ci: process.env.GITHUB_ACTIONS === 'true',
   };
+  if (temp && !(cfg.temperature >= 0 && cfg.temperature <= 2)) throw new Error('TRANSLATE_TEMPERATURE 必須介於 0 與 2');
   const langs = (process.env.TRANSLATE_LANGS || TARGETS.join(',')).split(',').map((s) => s.trim()).filter((l) => TARGETS.includes(l));
   const concurrency = Math.max(1, Math.min(8, Number(process.env.TRANSLATE_CONCURRENCY ?? 3)));
   const maxChars = Number(process.env.TRANSLATE_MAX_CHARS ?? 20000);
@@ -514,10 +638,10 @@ async function main() {
   } else if (!tasks.length) {
     console.log('所有區塊都已有譯文（快取），不需呼叫 API');
   } else if (!key) {
-    console.log(`注意：未設定 ANTHROPIC_API_KEY，略過翻譯（${tasks.length} 個區塊×語言待翻譯）。` +
+    console.log(`注意：未設定 ${P.keyVar}（TRANSLATE_PROVIDER=${provider}），略過翻譯（${tasks.length} 個區塊×語言待翻譯）。` +
       '各語言檔仍會產生，未翻譯的區塊帶繁中原文並標示 translated:false、meta.translation:"partial"。');
   } else {
-    console.log(`翻譯 ${tasks.length} 個區塊×語言（模型 ${cfg.model}，同時 ${concurrency} 個請求）`);
+    console.log(`翻譯 ${tasks.length} 個區塊×語言（${provider}，模型 ${cfg.model}，同時 ${concurrency} 個請求）`);
     let fatal = null;
     const systems = new Map(langs.map((l) => [l, buildSystemPrompt(l)]));
     await pool(tasks, concurrency, async ({ lang, u }) => {
@@ -540,14 +664,14 @@ async function main() {
       } catch (e) {
         total.failed++;
         if (e instanceof FatalApiError) fatal = e;
-        console.warn(`  [${lang}] ${u.id} 翻譯失敗：${logSafe(e?.message || e)}`);
+        console.warn(`  [${lang}] ${u.id} 翻譯失敗：${logSafe(redact(e?.message || e, key))}`);
       }
     });
     const price = PRICES[cfg.model];
     const cost = price ? `，約 US$${((total.in * price[0] + total.out * price[1]) / 1e6).toFixed(3)}` : '';
     console.log(`翻譯完成：成功 ${total.ok}、失敗 ${total.failed}、略過 ${total.skipped}；${total.requests} 次請求，` +
       `輸入 ${total.in}／輸出 ${total.out} tokens${cost}`);
-    if (fatal) console.error(`翻譯中止：${logSafe(fatal.message)}`);
+    if (fatal) console.error(`翻譯中止：${logSafe(redact(fatal.message, key))}`);
   }
 
   saveCache(cacheFile, cache, new Set(units.map((u) => u.hash)));

@@ -493,7 +493,7 @@ test('translate-info.mjs：遭竄改的翻譯快取（HTML、額外 href、__pro
     const cache = `{"${coins.hash}":{"en":${JSON.stringify(evil)}},"${elig.hash}":{"en":${JSON.stringify(ok)},"__proto__":{"polluted":1}},"__proto__":{"x":1},"not-a-hash":{}}`;
     fs.writeFileSync(path.join(dir, 'data/translations.json'), cache);
     await execFileAsync('node', [path.join(ROOT, 'scripts/translate-info.mjs')], {
-      env: { ...CHILD_ENV, ANTHROPIC_API_KEY: '', INFO_DATA_DIR: path.join(dir, 'data'), INFO_PUBLIC_DIR: path.join(dir, 'pub') },
+      env: { ...CHILD_ENV, ANTHROPIC_API_KEY: '', GEMINI_API_KEY: '', INFO_DATA_DIR: path.join(dir, 'data'), INFO_PUBLIC_DIR: path.join(dir, 'pub') },
     });
     const en = JSON.parse(fs.readFileSync(path.join(dir, 'pub/en.json'), 'utf8'));
     assert.deepEqual(validateInfo(en), []);

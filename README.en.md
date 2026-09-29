@@ -41,13 +41,16 @@ scripts/
   normalize.mjs         Conversion script: data/raw/*.json.gz → public/data/hospitals.json
   romanize.mjs          English (Latin-alphabet) transliteration of facility names / addresses / districts, called by normalize.mjs
   harvest-info.mjs      Harvests the Taiwan CDC "vaccination" pages and structures them → data/info/source.json (see docs/INFO_PIPELINE.md)
-  translate-info.mjs    Translates only the changed blocks via the Anthropic API → public/data/info/<lang>.json
+  translate-info.mjs    Translates only the changed blocks via the Google Gemini API (Anthropic optional) → public/data/info/<lang>.json
   sanitize-info.mjs     Allowlist sanitizing and validation of the vaccination info files (runs before writing files and before deployment)
   keep-live-data.mjs    At deploy time, uses the newer data from the data branch (or the live site), sanitizing it first (used by GitHub Actions)
-  publish-data.sh       Runs on a machine in Taiwan: harvest facility data and vaccination info → translate → check → push to the data branch → trigger deployment only if something changed
+  info-update.sh        Stages of the daily vaccination info update (fetch previous version → harvest → translate → check → push to the data branch), called by info-update.yml
+  push-data-branch.sh   Shared procedure for updating the data branch: overwrites only the given files, keeps a single commit, and uses --force-with-lease so the two writers cannot overwrite each other
+  publish-data.sh       Runs on a machine in Taiwan: harvest facility data → check → push to the data branch → trigger deployment
   install-updater.sh    Installs a daily schedule on a Linux machine in Taiwan (systemd user timer)
 .github/workflows/
   deploy.yml            Deploys to GitHub Pages (site from main, data from the data branch)
+  info-update.yml       Updates the vaccination info section daily at 06:00 Taipei time (harvest → Gemini translation → check → data branch → trigger deployment)
   freshness.yml         Checks daily whether the data has gone more than 36 hours without an update, and sends an email if it is too old (a vaccination info harvest that is too old only raises a warning)
 docs/
   DATA_SCHEMA.md        Format contract for public/data/hospitals.json
@@ -66,7 +69,8 @@ tests/
   romanize.test.mjs     Hand-checked examples of English transliteration (names, addresses, edge cases)
   e2e-info.spec.mjs     Playwright tests for the vaccination info page (desktop + mobile, language switching, deep links, malicious data)
   info-ui.test.mjs      Unit tests for the info page's pure functions (link allowlist, health-coin parsing, table cells)
-  info.test.mjs         Vaccination info: parsing the sample page (fixtures/info-mpage.html), malicious pages, and translation and caching against a mock API (mock-translate.mjs)
+  info.test.mjs         Vaccination info: parsing the sample page (fixtures/info-mpage.html), malicious pages, and translation and caching against a mock API (mock-translate.mjs, Gemini and Anthropic)
+  data-branch.test.mjs  The shared data-branch push procedure (local bare repo, simulating another writer cutting in), the full info-update.sh flow, and workflow security rules
 ```
 
 ## Running locally
@@ -137,10 +141,12 @@ This is still an **interim approach**; the proper approach is a direct server-si
 
 The **vaccination info section** (`public/data/info/<lang>.json`) has a separate pipeline: `npm run update-info` runs, in order,
 `scripts/harvest-info.mjs` (fetches the Taiwan CDC "vaccination" pages, parses each card into paragraphs, lists, tables, links and attachments,
-sanitizes them with an allowlist, and writes them to `data/info/source.json`), `scripts/translate-info.mjs` (sends only the blocks whose content changed to the Anthropic API
-for translation into 7 languages, caching the results in `data/info/translations.json` so unchanged blocks are not sent again; without `ANTHROPIC_API_KEY` set, nothing is translated,
+sanitizes them with an allowlist, and writes them to `data/info/source.json`), `scripts/translate-info.mjs` (sends only the blocks whose content changed to the Google Gemini API
+[`gemini-3.5-flash-lite`] for translation into 7 languages, caching the results in `data/info/translations.json` so unchanged blocks are not sent again; without `GEMINI_API_KEY` set, nothing is translated,
 and the foreign-language files are written with the Traditional Chinese source text and marked as not yet translated), and finally validates the 8 output files. If the page is unreachable or has been redesigned, no file is written and the site keeps the previous version.
-It fetches only one page at a time, and translating a typical single-block change costs about US$0.06; for details, the cost estimate and how to force re-translation, see `docs/INFO_PIPELINE.md`.
+The Taiwan CDC website (`www.cdc.gov.tw`) is reachable from outside Taiwan, so this pipeline runs automatically every day on GitHub Actions (`.github/workflows/info-update.yml`,
+at 06:00 Taipei time) and does not need a machine in Taiwan. It fetches only one page at a time, and translating a typical single-block change costs about US$0.01; for details, the cost estimate, manual triggering and how to force re-translation, see
+`docs/INFO_PIPELINE.md`.
 
 ## Vaccination info page (info.html)
 
@@ -177,38 +183,46 @@ and is not an official translation, so a few names or addresses may not be entir
 
 ## Deploying to GitHub Pages (with daily automatic data updates)
 
-**Important prerequisite: the Taiwan CDC's current site does not accept connections from outside Taiwan.** In a test on 2026-09-21, connections from the GitHub Actions runners (located abroad) to
-`vaxmap.cdc.gov.tw` timed out (`UND_ERR_CONNECT_TIMEOUT`). The data harvest therefore cannot run on GitHub,
-so it is done as "harvest on a machine in Taiwan, with GitHub only handling deployment":
+**Important prerequisite: the Taiwan CDC's current site (the map) does not accept connections from outside Taiwan.** In a test on 2026-09-21, connections from the GitHub Actions runners (located abroad) to
+`vaxmap.cdc.gov.tw` timed out (`UND_ERR_CONNECT_TIMEOUT`). The facility data harvest therefore cannot run on GitHub,
+so it is done on "a machine in Taiwan harvests the facility data". The source of the vaccination info section is the Taiwan CDC website `www.cdc.gov.tw`, which is reachable from outside Taiwan (HTTP 200 in a test on 2026-09-29),
+so the entire vaccination info pipeline runs on GitHub Actions, and the translation key is kept only on GitHub:
 
 ```
 Linux machine in Taiwan (daily at 05:30, 12:30)  GitHub
-  scripts/publish-data.sh                          
-    ├─ fetch the previous version from the data branch (translation cache)
-    ├─ harvest.mjs harvest → normalize.mjs → data checks  
-    ├─ harvest-info.mjs → translate-info.mjs → check (vaccination info, translating only changed blocks)
-    ├─ force-push hospitals.json, info/*.json  ──►  data branch (always a single commit, so the repo does not grow)
-    └─ gh workflow run deploy.yml only if changed ──►  deploy.yml: take the site from main + the newer data from the data branch
-                                                    → run sanitizing and checks again → deploy to Pages
+  scripts/publish-data.sh
+    ├─ harvest.mjs harvest → normalize.mjs → data checks
+    ├─ push-data-branch.sh: hospitals.json ────────►  data branch (always a single commit, so the repo does not grow)
+    └─ gh workflow run deploy.yml ─────────────────►  deploy.yml: take the site from main + the newer data from the data branch
+                                                       → run sanitizing and checks again → deploy to Pages
+                                                    info-update.yml (daily at 06:00, runs on GitHub)
+                                                      ├─ fetch the previous version from the data branch (translation cache)
+                                                      ├─ harvest-info → translate-info (Gemini) → check
+                                                      ├─ push-data-branch.sh: info/*.json ──► data branch
+                                                      └─ trigger deploy.yml only if what the site shows changed
 ```
 
-`.github/workflows/deploy.yml` runs on a push to `main`, or when triggered manually or by `publish-data.sh`: it checks out the `data` branch's
+`.github/workflows/deploy.yml` runs on a push to `main`, or when triggered manually, by `publish-data.sh` or by `info-update.yml`: it checks out the `data` branch's
 `hospitals.json`, sanitizes it with `scripts/keep-live-data.mjs --file`, and adopts it only after confirming it is newer than the snapshot in `main`; if there is no `data`
 branch, it keeps using the snapshot in `main`. `.github/workflows/freshness.yml` checks the `data` branch's data every day at 09:00 Taipei time (UTC+8),
 and if it has not been updated for more than 36 hours, it fails that run and GitHub emails the repo owner (meaning the harvest machine is not running or keeps failing);
 the "Data snapshot" on the site itself will also show "not updated for N days".
 
-The vaccination info section takes the same route: after the facility data, `publish-data.sh` runs `harvest-info.mjs` and `translate-info.mjs`, and pushes
+The vaccination info section is updated by `.github/workflows/info-update.yml`: every day at 06:00 Taipei time it runs `harvest-info.mjs` and `translate-info.mjs`, and writes
 `info/<lang>.json` together with the source text `info/source.json` and the translation cache `info/translations.json` to the `data` branch (so the cache is kept across runs
-and unchanged blocks are not paid for again); if either the facility data or the vaccination info fails, the other is still published, and the one that failed keeps its previous version.
-When neither has a change that affects what the site shows, no deployment is triggered. `deploy.yml` checks out the `data` branch's `info/<lang>.json` and validates each file with
+and unchanged blocks are not paid for again; when the source is unchanged and every language is already translated, the translation API is not called at all); when what the site shows has not changed, no deployment is triggered.
+The `data` branch therefore has two writers, and both write only through `scripts/push-data-branch.sh`: each overwrites only the files it owns (the machine in Taiwan touches only `hospitals.json`,
+the workflow touches only `info/*`) and pushes with `--force-with-lease`; if the other side happens to push at the same moment, it fetches again and retries, so neither overwrites the other (see `docs/INFO_PIPELINE.md`).
+If either side fails, the other's data is still updated, and the one that failed keeps its previous version. `deploy.yml` checks out the `data` branch's `info/<lang>.json` and validates each file with
 `scripts/keep-live-data.mjs --info-dir` (strictly checked by `sanitize-info.mjs`), adopting it only after confirming it is newer than the one in `main`; if the `data` branch does not have these files,
 the versions in `main` are kept. `freshness.yml` also checks the last harvest time in `info/source.json`, and if it is more than 36 hours old it only raises a warning (no email);
 it looks at the harvest time rather than the source content, so a Taiwan CDC page that has not changed for a few days does not cause a false alarm.
 
-**Translation key**: on the updater machine, fill in `ANTHROPIC_API_KEY=…` in `~/.config/vaxmap-updater/env` (`install-updater.sh` creates a template and sets it to `chmod 600`; systemd loads it via
-`EnvironmentFile=`) to enable translation, which takes effect on the next run; running `npm run publish-data` manually also reads this file.
-The key exists only on this machine and never goes into git or GitHub. If no key is filled in, everything works as usual, except that the foreign-language pages show the Traditional Chinese source text.
+**Translation key**: the Google Gemini API key is stored in the repo's Actions secret `GEMINI_API_KEY` (see step 5 below for how to set it). It is provided to the program only in the "translate" step of `info-update.yml`
+and never goes into git or onto the machine in Taiwan. If it is not set, everything works as usual, except that the foreign-language pages show the Traditional Chinese source text; once it is set, the next run (or a manual Run workflow)
+fills in the translations. To trigger manually or force re-translation: Actions → "接種資訊更新" (the vaccination info update workflow) → Run workflow; leaving `force` blank = a normal run, `deploy` = deploy even if the source is unchanged,
+`all` / `title` / a block id = re-translate that part, and `langs` can restrict the languages (for example `en,ja`); see "手動觸發／強制重翻" (manual trigger / forced re-translation) in `docs/INFO_PIPELINE.md` for details.
+(The old `~/.config/vaxmap-updater/env` on the machine in Taiwan is no longer used; if it contains `ANTHROPIC_API_KEY`, please delete that file.)
 
 First-time setup:
 
@@ -219,7 +233,10 @@ First-time setup:
 4. Run `scripts/install-updater.sh` to install the daily schedule. It creates a separate dedicated folder
    (`~/.local/share/vaxmap-updater`, kept apart from the folder where you edit the code, and automatically synced to `main` before each run),
    and sets up a systemd user timer; runs missed while the machine was off are made up after boot. To remove it, use `scripts/install-updater.sh --uninstall`.
-5. (Optional) To translate the vaccination info section, edit `~/.config/vaxmap-updater/env` and fill in `ANTHROPIC_API_KEY=` (a key created in the Anthropic Console).
+5. To translate the vaccination info section: create a Gemini API key in Google AI Studio (https://aistudio.google.com/apikey), then
+   in the repo go to Settings → Secrets and variables → Actions → New repository secret, name it `GEMINI_API_KEY`, and paste the key as the value.
+   Next go to Actions → "接種資訊更新" → Run workflow and run it once manually (about 2–5 minutes); after that it runs automatically every day at 06:00 Taipei time.
+   The free tier is not charged, but Google may use the submitted content to improve its products (all this site sends is public text from the official website); if your organization's rules do not allow this, enable billing for the project.
 
 We do not recommend switching to GitHub self-hosted runners: on a **public** repo, a pull request submitted by anyone
 can cause code to run on that machine, and GitHub itself advises against this. The approach above only needs that machine to push outward, and it accepts no inbound commands.
@@ -271,9 +288,17 @@ The vaccination info section is handled the same way: `harvest-info.mjs` uses a 
 and keeps only https links whose host is on the allowlist (`*.gov.tw`, `*.gov.taipei`, YouTube; see `docs/INFO_SCHEMA.md`); machine-translated output is adopted only if its structure is identical to the source text, URLs are always taken from the source text,
 and every file is validated by `scripts/sanitize-info.mjs` before it is written and before deployment (the related tests are in `tests/info.test.mjs`).
 
-**GitHub Actions**: each job uses least privilege (only deploy has `pages: write`, and no job can write to the repo),
-all actions are pinned to full commit SHAs, `${{ }}` is always passed in through `env:` rather than written directly into commands, and checkout does not persist credentials.
-When upgrading an action version, re-verify and update the SHA. We recommend going to the repo's Settings → Environments → github-pages and confirming that only the `main` branch is allowed to deploy.
+**GitHub Actions**: each job uses least privilege (default `permissions: {}`; only deploy has `pages: write`; only `info-update.yml` can write to the repo:
+`contents: write` to push the data branch and `actions: write` to trigger deployment), all actions are pinned to full commit SHAs, `${{ }}` is always passed in through `env:` rather than written directly into commands,
+and checkout does not persist credentials. When upgrading an action version, re-verify and update the SHA (`tests/data-branch.test.mjs` checks these rules).
+We recommend going to the repo's Settings → Environments → github-pages and confirming that only the `main` branch is allowed to deploy.
+
+**Translation key and write permission**: `GEMINI_API_KEY` exists only as an encrypted GitHub secret; it never leaves GitHub and is not on the machine in Taiwan. `info-update.yml` provides it to `translate-info.mjs` as an environment variable only in the "translate" step
+(the harvest, validation and push steps cannot get it); the program puts it only in the `x-goog-api-key` header and never in a URL, and error messages in logs have the key masked first.
+When the source is unchanged and every language is already translated, even that step does not hand the key to the translation program. The `GITHUB_TOKEN` used for pushing is likewise given only to the "write to the data branch" step
+and is passed to git as an HTTP header, not written into a URL or config file. Please note: **`contents: write` cannot be limited by GitHub to a single branch** (branch protection rules also cannot restrict this token to
+"push to data only"); "write only the data branch" is guaranteed by the procedure (`scripts/push-data-branch.sh`). We recommend setting branch protection on `main` (requiring pull requests),
+so that this token at least cannot change `main` directly. External pull requests cannot trigger this workflow (only the schedule and manual runs can), so they cannot obtain the key.
 
 **Limitations of GitHub Pages**: HTTP headers cannot be set, so there is no `frame-ancestors` / `X-Frame-Options` (which prevent embedding by other sites).
 This site has no login state and no sensitive actions that could be induced by clicks, so the risk is low; if you switch to a host where headers can be set, please add them.

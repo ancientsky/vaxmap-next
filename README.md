@@ -41,13 +41,16 @@ scripts/
   normalize.mjs         data/raw/*.json.gz → public/data/hospitals.json 的轉換腳本
   romanize.mjs          院所名稱／地址／行政區的英文（拉丁字母）轉寫，normalize.mjs 呼叫
   harvest-info.mjs      擷取疾管署「疫苗接種專區」頁面並結構化 → data/info/source.json（見 docs/INFO_PIPELINE.md）
-  translate-info.mjs    以 Anthropic API 翻譯內容有變動的區塊 → public/data/info/<lang>.json
+  translate-info.mjs    以 Google Gemini API（可改 Anthropic）翻譯內容有變動的區塊 → public/data/info/<lang>.json
   sanitize-info.mjs     接種資訊檔的白名單清理與驗證（寫檔前、部署前都會執行）
   keep-live-data.mjs    部署時採用 data 分支（或線上）較新的資料，先清理再使用（供 GitHub Actions 使用）
-  publish-data.sh       在國內機器執行：擷取院所資料與接種資訊 → 翻譯 → 檢查 → 推到 data 分支 → 有變動才觸發部署
+  info-update.sh        接種資訊每日更新的各階段（取回上一版 → 擷取 → 翻譯 → 檢查 → 推到 data 分支），由 info-update.yml 呼叫
+  push-data-branch.sh   更新 data 分支的共用程序：只覆蓋指定檔案、維持單一提交、以 --force-with-lease 防止兩個寫入者互相覆蓋
+  publish-data.sh       在國內機器執行：擷取院所資料 → 檢查 → 推到 data 分支 → 觸發部署
   install-updater.sh    在國內的 Linux 機器安裝每日排程（systemd 使用者計時器）
 .github/workflows/
   deploy.yml            部署到 GitHub Pages（網站取自 main，資料取自 data 分支）
+  info-update.yml       每天臺北時間 06:00 更新接種資訊專區（擷取 → Gemini 翻譯 → 檢查 → data 分支 → 觸發部署）
   freshness.yml         每天檢查資料是否超過 36 小時未更新，太舊就寄信通知（接種資訊太久未抓取只發警告）
 docs/
   DATA_SCHEMA.md        public/data/hospitals.json 的格式契約
@@ -66,7 +69,8 @@ tests/
   romanize.test.mjs     英文轉寫的人工核對範例（名稱、地址、邊界情況）
   e2e-info.spec.mjs     接種資訊頁的 Playwright 測試（桌面＋手機、語言切換、深連結、惡意資料）
   info-ui.test.mjs      接種資訊頁純函式（連結白名單、健康幣解析、表格儲存格）單元測試
-  info.test.mjs         接種資訊：解析範例頁（fixtures/info-mpage.html）、惡意頁面、以模擬 API（mock-translate.mjs）測翻譯與快取
+  info.test.mjs         接種資訊：解析範例頁（fixtures/info-mpage.html）、惡意頁面、以模擬 API（mock-translate.mjs，Gemini 與 Anthropic）測翻譯與快取
+  data-branch.test.mjs  data 分支共用推送程序（本機 bare repo，模擬另一個寫入者插隊）、info-update.sh 全流程、workflow 安全規則
 ```
 
 ## 本地執行
@@ -137,10 +141,12 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 
 **接種資訊專區**（`public/data/info/<lang>.json`）另有一條管線：`npm run update-info` 依序執行
 `scripts/harvest-info.mjs`（抓取疾管署「疫苗接種專區」頁面，把每張卡片解析成段落、清單、表格、連結與附件，
-以白名單清理後寫入 `data/info/source.json`）、`scripts/translate-info.mjs`（只把內容有變動的區塊送 Anthropic API
-翻成 7 種語言，結果快取在 `data/info/translations.json`，沒變的區塊不會重送；沒有設定 `ANTHROPIC_API_KEY` 時不翻譯，
+以白名單清理後寫入 `data/info/source.json`）、`scripts/translate-info.mjs`（只把內容有變動的區塊送 Google Gemini API
+〔`gemini-3.5-flash-lite`〕翻成 7 種語言，結果快取在 `data/info/translations.json`，沒變的區塊不會重送；沒有設定 `GEMINI_API_KEY` 時不翻譯，
 外語檔以繁中原文輸出並標示尚未翻譯），最後驗證 8 個輸出檔。頁面連不上或改版時不會寫入任何檔案，網站沿用上一版。
-一次只抓一頁，典型的單一區塊變動翻譯費用約 US$0.06；細節、費用估算與強制重新翻譯的方法見 `docs/INFO_PIPELINE.md`。
+疾管署官網（`www.cdc.gov.tw`）境外連得到，所以這條管線每天在 GitHub Actions 上自動執行（`.github/workflows/info-update.yml`，
+臺北時間 06:00），不需要國內機器。一次只抓一頁，典型的單一區塊變動翻譯費用約 US$0.01；細節、費用估算、手動觸發與強制重新翻譯的方法見
+`docs/INFO_PIPELINE.md`。
 
 ## 接種資訊頁（info.html）
 
@@ -177,38 +183,46 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 
 ## 部署到 GitHub Pages（含每日自動更新資料）
 
-**重要前提：疾管署現站不接受境外連線。** 2026-09-21 實測，GitHub Actions 的執行機器（位於國外）連到
-`vaxmap.cdc.gov.tw` 時連線逾時（`UND_ERR_CONNECT_TIMEOUT`）。因此資料擷取無法在 GitHub 上執行，
-改成「國內機器擷取、GitHub 只負責部署」：
+**重要前提：疾管署現站（地圖）不接受境外連線。** 2026-09-21 實測，GitHub Actions 的執行機器（位於國外）連到
+`vaxmap.cdc.gov.tw` 時連線逾時（`UND_ERR_CONNECT_TIMEOUT`）。因此院所資料的擷取無法在 GitHub 上執行，
+改成「國內機器擷取院所資料」；接種資訊專區的來源是疾管署官網 `www.cdc.gov.tw`，境外連得到（2026-09-29 實測 HTTP 200），
+所以整條接種資訊管線在 GitHub Actions 上執行，翻譯金鑰也只放在 GitHub：
 
 ```
 國內的 Linux 機器（每天 05:30、12:30）            GitHub
-  scripts/publish-data.sh                          
-    ├─ 取回 data 分支上一版（翻譯快取）
-    ├─ harvest.mjs 擷取 → normalize.mjs → 資料檢查  
-    ├─ harvest-info.mjs → translate-info.mjs → 檢查（接種資訊，只翻有變動的區塊）
-    ├─ 把 hospitals.json、info/*.json 強制推送  ──►  data 分支（永遠只有一個提交，repo 不會變大）
-    └─ 有變動才 gh workflow run deploy.yml    ──►  deploy.yml：取 main 的網站＋data 分支較新的資料
-                                                    → 再過一次清理與檢查 → 部署到 Pages
+  scripts/publish-data.sh
+    ├─ harvest.mjs 擷取 → normalize.mjs → 資料檢查
+    ├─ push-data-branch.sh：hospitals.json ────────►  data 分支（永遠只有一個提交，repo 不會變大）
+    └─ gh workflow run deploy.yml ─────────────────►  deploy.yml：取 main 的網站＋data 分支較新的資料
+                                                       → 再過一次清理與檢查 → 部署到 Pages
+                                                    info-update.yml（每天 06:00，GitHub 上執行）
+                                                      ├─ 取回 data 分支上一版（翻譯快取）
+                                                      ├─ harvest-info → translate-info（Gemini）→ 檢查
+                                                      ├─ push-data-branch.sh：info/*.json ──► data 分支
+                                                      └─ 畫面有變動才觸發 deploy.yml
 ```
 
-`.github/workflows/deploy.yml` 在推送到 `main`、或被手動／被 `publish-data.sh` 觸發時執行：取出 `data` 分支的
+`.github/workflows/deploy.yml` 在推送到 `main`、或被手動／被 `publish-data.sh`／`info-update.yml` 觸發時執行：取出 `data` 分支的
 `hospitals.json`，經 `scripts/keep-live-data.mjs --file` 清理並確認比 `main` 裡的快照新，才採用；沒有 `data`
 分支時沿用 `main` 裡的快照。`.github/workflows/freshness.yml` 每天臺北時間 09:00 檢查 `data` 分支的資料，
 超過 36 小時沒更新就讓該次執行失敗，GitHub 會寄信通知 repo 擁有者（代表擷取機器沒在跑或一直失敗）；
 網站畫面上的「資料快照」也會顯示「已 N 天未更新」。
 
-接種資訊專區走同一條路：`publish-data.sh` 在院所資料之後執行 `harvest-info.mjs`、`translate-info.mjs`，把
-`info/<lang>.json` 連同原文 `info/source.json` 與翻譯快取 `info/translations.json` 一起推到 `data` 分支（快取因此能跨次保留，
-沒變的區塊不會重複付費翻譯）；院所資料與接種資訊任一項失敗時，另一項照常發布，失敗的那項沿用上一版。
-兩者都沒有影響網站畫面的變動時不觸發部署。`deploy.yml` 會取出 `data` 分支的 `info/<lang>.json`，逐檔以
+接種資訊專區由 `.github/workflows/info-update.yml` 更新：每天臺北時間 06:00 執行 `harvest-info.mjs`、`translate-info.mjs`，把
+`info/<lang>.json` 連同原文 `info/source.json` 與翻譯快取 `info/translations.json` 一起寫入 `data` 分支（快取因此能跨次保留，
+沒變的區塊不會重複付費翻譯；來源沒變且各語言都已翻譯時完全不呼叫翻譯 API）；網站畫面沒有變動時不觸發部署。
+`data` 分支因此有兩個寫入者，兩者都只經由 `scripts/push-data-branch.sh` 寫入：只覆蓋自己負責的檔案（國內機器只動 `hospitals.json`，
+workflow 只動 `info/*`），並以 `--force-with-lease` 推送，另一方剛好同時推送時會重新取回再試，不會互相覆蓋（見 `docs/INFO_PIPELINE.md`）。
+任一方失敗時，另一方的資料照常更新，失敗的那項沿用上一版。`deploy.yml` 會取出 `data` 分支的 `info/<lang>.json`，逐檔以
 `scripts/keep-live-data.mjs --info-dir` 驗證（`sanitize-info.mjs` 嚴格檢查）並確認比 `main` 裡的新才採用；`data` 分支沒有這些檔案時
 沿用 `main` 裡的版本。`freshness.yml` 另外檢查 `info/source.json` 的上次抓取時間，超過 36 小時只發出警告（不寄信）；
 它看的是抓取時間而不是來源內容，所以疾管署頁面幾天沒改不會誤報。
 
-**翻譯金鑰**：更新機器上的 `~/.config/vaxmap-updater/env`（`install-updater.sh` 會建立範本並設為 `chmod 600`，由 systemd 以
-`EnvironmentFile=` 載入）填入 `ANTHROPIC_API_KEY=…` 即可啟用翻譯，下次執行生效；手動執行 `npm run publish-data` 時也會讀取這個檔案。
-金鑰只存在這台機器，不進 git、不進 GitHub。未填金鑰時一切照常，只是外語頁面顯示繁中原文。
+**翻譯金鑰**：Google Gemini API 金鑰存放在 repo 的 Actions secret `GEMINI_API_KEY`（設定方式見下方第 5 步），只在 `info-update.yml`
+的「翻譯」這一步提供給程式，不進 git、不在國內機器上。未設定時一切照常，只是外語頁面顯示繁中原文；設定後下一次執行（或手動 Run workflow）
+就會補翻。手動觸發與強制重翻：Actions →「接種資訊更新」→ Run workflow，`force` 留白＝一般執行、`deploy`＝來源沒變也部署、
+`all`／`title`／區塊 id＝重翻該部分，`langs` 可限定語言（例如 `en,ja`）；詳見 `docs/INFO_PIPELINE.md`「手動觸發／強制重翻」。
+（舊版在國內機器上的 `~/.config/vaxmap-updater/env` 已不再使用，裡面若有 `ANTHROPIC_API_KEY` 請刪除該檔。）
 
 第一次設定：
 
@@ -219,7 +233,10 @@ npm run test:a11y  # 無障礙檢查（僅回報問題，不會修改任何檔�
 4. 執行 `scripts/install-updater.sh` 安裝每日排程。它會另外建立一個專用資料夾
    （`~/.local/share/vaxmap-updater`，與您修改程式的資料夾分開，每次執行前自動同步 `main`），
    並設定 systemd 使用者計時器；關機錯過的排程會在開機後補跑。移除用 `scripts/install-updater.sh --uninstall`。
-5. （選用）要翻譯接種資訊專區，編輯 `~/.config/vaxmap-updater/env`，填入 `ANTHROPIC_API_KEY=`（Anthropic Console 建立的金鑰）。
+5. 要翻譯接種資訊專區：在 Google AI Studio（https://aistudio.google.com/apikey）建立 Gemini API 金鑰，然後
+   在 repo Settings → Secrets and variables → Actions → New repository secret，名稱 `GEMINI_API_KEY`，值貼上金鑰。
+   接著到 Actions →「接種資訊更新」→ Run workflow 先手動跑一次（約 2–5 分鐘），之後每天臺北時間 06:00 自動執行。
+   免費層級不收費，但 Google 會將送出的內容用於改進產品（本站送出的只有官網公開文字）；若機關規定不允許，請為該專案啟用帳單。
 
 不建議改用 GitHub 的自架執行機器（self-hosted runner）：在**公開** repo 上，任何人送出的 pull request
 都可能讓程式碼在那台機器上執行，GitHub 官方也不建議這樣用。上面的作法只需要那台機器「往外推送」，不接受任何外來指令。
@@ -271,9 +288,17 @@ CORS 或部署在同網域），效果等同於上述排程匯出。
 連結只保留 https 且主機在允許清單（`*.gov.tw`、`*.gov.taipei`、YouTube；見 `docs/INFO_SCHEMA.md`）；機器翻譯的輸出必須與原文結構完全相同才採用，網址一律取自原文，
 所有檔案寫入前、部署前都經 `scripts/sanitize-info.mjs` 驗證（相關測試在 `tests/info.test.mjs`）。
 
-**GitHub Actions**：各工作採最小權限（只有 deploy 有 `pages: write`，沒有任何工作能寫入 repo），
-所有 action 釘選到完整 commit SHA，`${{ }}` 一律經由 `env:` 傳入而不直接寫進指令，checkout 不保留憑證。
-升級 action 版本時請重新查證並更新 SHA。建議到 repo 的 Settings → Environments → github-pages，確認只允許 `main` 分支部署。
+**GitHub Actions**：各工作採最小權限（預設 `permissions: {}`；只有 deploy 有 `pages: write`；只有 `info-update.yml` 能寫入 repo——
+`contents: write` 推送 data 分支、`actions: write` 觸發部署），所有 action 釘選到完整 commit SHA，`${{ }}` 一律經由 `env:` 傳入而不直接寫進指令，
+checkout 不保留憑證。升級 action 版本時請重新查證並更新 SHA（`tests/data-branch.test.mjs` 會檢查這些規則）。
+建議到 repo 的 Settings → Environments → github-pages，確認只允許 `main` 分支部署。
+
+**翻譯金鑰與寫入權限**：`GEMINI_API_KEY` 只存在 GitHub 的加密 secret，不離開 GitHub、不在國內機器上；`info-update.yml` 只在「翻譯」這一步
+以環境變數提供給 `translate-info.mjs`（擷取、驗證、推送等步驟都拿不到），程式只把它放在 `x-goog-api-key` 標頭、絕不放進網址，
+記錄中的錯誤訊息也會先遮蔽金鑰。來源沒變且各語言都已翻譯時，連這一步也不把金鑰交給翻譯程式。推送用的 `GITHUB_TOKEN` 同樣只給「寫入 data 分支」這一步，
+並以 http 標頭交給 git，不寫進網址或設定檔。請注意：**`contents: write` 無法被 GitHub 限定在單一分支**（分支保護規則也無法把這個權杖限制成
+「只能推 data」），「只寫 data 分支」是由程序（`scripts/push-data-branch.sh`）保證的；建議為 `main` 設定分支保護（要求 pull request），
+讓這個權杖至少不能直接改 `main`。外部 pull request 觸發不了這個 workflow（只有排程與手動觸發），也就拿不到金鑰。
 
 **GitHub Pages 的限制**：無法設定 HTTP 標頭，因此沒有 `frame-ancestors`／`X-Frame-Options`（防止被別的網站嵌入）。
 本站沒有登入狀態或可被誘導點擊的敏感操作，風險低；若改部署到可設定標頭的主機，請補上。

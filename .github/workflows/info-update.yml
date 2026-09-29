@@ -1,0 +1,98 @@
+# 接種資訊專區每日更新：擷取疾管署「疫苗接種專區」頁面 → 只翻譯有變動的區塊（Google Gemini）→ 驗證 → 寫入 data 分支 → 需要時觸發部署。
+# www.cdc.gov.tw 境外連得到（不同於 vaxmap.cdc.gov.tw），所以這條管線在 GitHub 上執行；院所資料仍由國內機器的 publish-data.sh 更新。
+# 兩者都只經由 scripts/push-data-branch.sh 更新 data 分支（各自只覆蓋自己的檔案，以 --force-with-lease 防止互相覆蓋）。
+# 流程與費用見 docs/INFO_PIPELINE.md；每個 step 都是 scripts/info-update.sh 的一個階段，可在本機依序重現。
+name: 接種資訊更新
+
+on:
+  schedule:
+    - cron: '0 22 * * *'   # 臺北時間每天 06:00
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '強制選項：留白＝一般執行；deploy＝來源沒變也觸發部署；all／title／區塊 id＝丟棄該部分的翻譯快取並重翻'
+        required: false
+        default: ''
+        type: string
+      langs:
+        description: '搭配 force 重翻時只重翻這些語言（例：en,ja；留白＝全部 7 種）'
+        required: false
+        default: ''
+        type: string
+
+# 預設不給任何權限，工作只拿自己需要的
+permissions: {}
+
+# 與其他寫入 data 分支的 workflow 共用同一組，避免同一 repo 內同時推送（國內機器另以 --force-with-lease 處理）
+concurrency:
+  group: data-branch
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write   # 推送 data 分支（GitHub 無法把權限限定在單一分支；本流程只經由 push-data-branch.sh 寫 data 分支）
+      actions: write    # gh workflow run deploy.yml
+    env:
+      # 工作資料夾：scripts/info-update.sh 未設定 INFO_WORK_DIR 時用 $RUNNER_TEMP/info-work（runner 內容在 job 層級的 env 不可用）
+      DATA_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+    steps:
+      # 第三方 action 一律釘選完整 commit SHA（與 deploy.yml 相同版本）
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: 取回 data 分支上一版（原文、翻譯快取、語言檔）並併入 repo 內的人工譯文
+        run: bash scripts/info-update.sh prepare
+
+      - name: 擷取疾管署接種專區頁面
+        id: harvest
+        run: bash scripts/info-update.sh harvest
+
+      # 只有這一步拿得到翻譯金鑰。來源沒變且各語言都已翻譯時，腳本不把金鑰交給翻譯程式（保證 0 次 API 呼叫）
+      - name: 翻譯有變動的區塊
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          INFO_FORCE: ${{ inputs.force }}
+          INFO_FORCE_LANGS: ${{ inputs.langs }}
+        run: bash scripts/info-update.sh translate
+
+      - name: 驗證輸出檔
+        run: bash scripts/info-update.sh check
+
+      # 只有這一步拿得到推送／觸發部署用的權杖（GITHUB_TOKEN），且以 http 標頭傳給 git，不寫進網址或 .git/config
+      - name: 寫入 data 分支並視需要觸發部署
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SERVER_URL: ${{ github.server_url }}
+          INFO_FORCE: ${{ inputs.force }}
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="http.$SERVER_URL/.extraheader" GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth"
+          DATA_REMOTE="$DATA_REPO_URL" bash scripts/info-update.sh publish
+
+      - name: 摘要
+        if: always()
+        run: |
+          INFO_WORK_DIR="$RUNNER_TEMP/info-work"
+          {
+            echo "### 接種資訊更新"
+            echo
+            echo "- 來源有變動：$(cat "$INFO_WORK_DIR/state.changed" 2>/dev/null || echo '—')"
+            echo "- 有呼叫翻譯 API 的可能：$(cat "$INFO_WORK_DIR/state.translated" 2>/dev/null || echo '—')"
+            echo "- 網站畫面有變動（觸發部署）：$(cat "$INFO_WORK_DIR/state.visible_change" 2>/dev/null || echo '—')"
+            node -e "
+              const fs = require('fs');
+              for (const l of ['en','ja','ko','id','vi','th','tl']) {
+                try { const x = JSON.parse(fs.readFileSync(process.argv[1] + '/pub/' + l + '.json', 'utf8'));
+                  console.log('- ' + l + '：已翻譯 ' + x.sections.filter((s) => s.translated).length + '/' + x.sections.length); } catch {}
+              }" "$INFO_WORK_DIR" || true
+          } >> "$GITHUB_STEP_SUMMARY"

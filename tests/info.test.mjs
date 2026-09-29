@@ -13,14 +13,14 @@ import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { buildSource, projectSection, hashSection, normalizeCell } from '../scripts/harvest-info.mjs';
 import { sanitizeInfo, validateInfo, cleanInfoHref, isAllowedInfoHost, INFO_LANGS } from '../scripts/sanitize-info.mjs';
-import { checkShape, mergeTranslation, buildSystemPrompt, readGlossary, extractJson, DEFAULT_MODEL } from '../scripts/translate-info.mjs';
+import { checkShape, mergeTranslation, buildSystemPrompt, readGlossary, extractJson, DEFAULT_MODEL, PROVIDERS, loadCache, mergeCaches } from '../scripts/translate-info.mjs';
 import { SUPPORTED_LANGS } from '../public/js/logic.js';
 import { startMockTranslate } from './mock-translate.mjs';
 
 const execFileAsync = promisify(execFile);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FIXTURE = fs.readFileSync(path.join(ROOT, 'tests/fixtures/info-mpage.html'), 'utf8');
-const CHILD_ENV = Object.fromEntries(Object.entries(process.env).filter(([k]) => !/^(https?_proxy|all_proxy|no_proxy|ANTHROPIC_API_KEY|TRANSLATE_.*|INFO_.*)$/i.test(k)));
+const CHILD_ENV = Object.fromEntries(Object.entries(process.env).filter(([k]) => !/^(https?_proxy|all_proxy|no_proxy|ANTHROPIC_API_KEY|GEMINI_API_KEY|GITHUB_ACTIONS|TRANSLATE_.*|INFO_.*)$/i.test(k)));
 const node = (script, args, opts) => execFileAsync('node', [path.join(ROOT, script), ...args], { ...opts, env: { ...CHILD_ENV, ...(opts?.env || {}) } });
 const tmpdir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'info-'));
 const NOW = new Date('2026-09-29T00:00:00Z');
@@ -270,7 +270,7 @@ test('translate-info.mjs：沒有金鑰 → 8 個檔都產生，未翻譯區塊�
   const { dir, pub, env } = setupDirs();
   try {
     const r = await node('scripts/translate-info.mjs', [], { env });
-    assert.match(r.stdout, /未設定 ANTHROPIC_API_KEY/);
+    assert.match(r.stdout, /未設定 GEMINI_API_KEY（TRANSLATE_PROVIDER=gemini）/);
     const files = fs.readdirSync(pub).sort();
     assert.deepEqual(files, INFO_LANGS.map((l) => `${l}.json`).sort());
     const zh = readLang(pub, 'zh-Hant');
@@ -290,16 +290,17 @@ test('translate-info.mjs：沒有金鑰 → 8 個檔都產生，未翻譯區塊�
   }
 });
 
-test('translate-info.mjs：模擬 API → 7 種語言全數翻譯、網址不變；第二次執行 0 個請求', { timeout: 60000 }, async () => {
+test('translate-info.mjs（anthropic）：模擬 API → 7 種語言全數翻譯、網址不變；第二次執行 0 個請求', { timeout: 60000 }, async () => {
   const mock = await startMockTranslate();
   const { dir, data, pub, env } = setupDirs();
-  const e = { ...env, ANTHROPIC_API_KEY: 'test-key', TRANSLATE_ENDPOINT: mock.url };
+  const e = { ...env, TRANSLATE_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'test-key', TRANSLATE_ENDPOINT: mock.url };
   try {
     const r = await node('scripts/translate-info.mjs', [], { env: e });
     const src = fixtureSource();
     const units = src.sections.length + 1; // + 頁面標題
     assert.equal(mock.stats.requests, units * 7);
-    assert.equal(mock.stats.lastBody.model, DEFAULT_MODEL);
+    assert.equal(mock.stats.lastBody.model, PROVIDERS.anthropic.model);
+    assert.equal(mock.stats.byApi.anthropic, mock.stats.requests);
     assert.deepEqual(mock.stats.lastBody.output_config, { effort: 'low' });
     assert.match(r.stdout, /tokens/);
     for (const l of ['en', 'ja', 'ko', 'id', 'vi', 'th', 'tl']) {
@@ -345,7 +346,7 @@ test('translate-info.mjs：結構不符 → 重試一次，仍不符則保留原
   const mock = await startMockTranslate({ mode: 'bad-shape' });
   const { dir, pub, env } = setupDirs();
   try {
-    await node('scripts/translate-info.mjs', [], { env: { ...env, ANTHROPIC_API_KEY: 'k', TRANSLATE_ENDPOINT: mock.url, TRANSLATE_LANGS: 'en' } });
+    await node('scripts/translate-info.mjs', [], { env: { ...env, TRANSLATE_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'k', TRANSLATE_ENDPOINT: mock.url, TRANSLATE_LANGS: 'en' } });
     const src = fixtureSource();
     assert.equal(mock.stats.requests, (src.sections.length + 1) * 2, '每個區塊應恰好重試一次');
     const en = readLang(pub, 'en');
@@ -363,7 +364,7 @@ test('translate-info.mjs：第一次結構錯、重試成功；回覆帶 ``` 圍
     const mock = await startMockTranslate({ mode });
     const { dir, pub, env } = setupDirs();
     try {
-      await node('scripts/translate-info.mjs', [], { env: { ...env, ANTHROPIC_API_KEY: 'k', TRANSLATE_ENDPOINT: mock.url, TRANSLATE_LANGS: 'ko' } });
+      await node('scripts/translate-info.mjs', [], { env: { ...env, TRANSLATE_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'k', TRANSLATE_ENDPOINT: mock.url, TRANSLATE_LANGS: 'ko' } });
       const ko = readLang(pub, 'ko');
       assert.ok(ko.sections.every((s) => s.translated), mode);
       assert.equal(ko.meta.translation, 'machine');
@@ -376,11 +377,11 @@ test('translate-info.mjs：第一次結構錯、重試成功；回覆帶 ``` 圍
   }
 });
 
-test('translate-info.mjs：金鑰無效（401）→ 立即停止、仍輸出原文檔、結束代碼 0', { timeout: 60000 }, async () => {
+test('translate-info.mjs（anthropic）：金鑰無效（401）→ 立即停止、仍輸出原文檔、結束代碼 0', { timeout: 60000 }, async () => {
   const mock = await startMockTranslate({ mode: 'unauthorized' });
   const { dir, pub, env } = setupDirs();
   try {
-    const r = await node('scripts/translate-info.mjs', [], { env: { ...env, ANTHROPIC_API_KEY: 'bad-secret-key', TRANSLATE_ENDPOINT: mock.url, TRANSLATE_CONCURRENCY: '1' } });
+    const r = await node('scripts/translate-info.mjs', [], { env: { ...env, TRANSLATE_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'bad-secret-key', TRANSLATE_ENDPOINT: mock.url, TRANSLATE_CONCURRENCY: '1' } });
     assert.match(r.stderr, /翻譯中止.*ANTHROPIC_API_KEY/);
     assert.ok(mock.stats.requests <= 2);
     assert.equal(fs.readdirSync(pub).length, 8);
@@ -394,7 +395,173 @@ test('translate-info.mjs：金鑰無效（401）→ 立即停止、仍輸出原�
 test('translate-info.mjs：TRANSLATE_ENDPOINT 只接受 https（本機測試除外）', async () => {
   const { dir, env } = setupDirs();
   try {
-    await assert.rejects(node('scripts/translate-info.mjs', [], { env: { ...env, ANTHROPIC_API_KEY: 'k', TRANSLATE_ENDPOINT: 'http://example.com/v1/messages' } }), /https/);
+    await assert.rejects(node('scripts/translate-info.mjs', [], { env: { ...env, TRANSLATE_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'k', TRANSLATE_ENDPOINT: 'http://example.com/v1/messages' } }), /https/);
+    await assert.rejects(node('scripts/translate-info.mjs', [], { env: { ...env, GEMINI_API_KEY: 'k', TRANSLATE_ENDPOINT: 'http://example.com/v1beta' } }), /https/);
+    await assert.rejects(node('scripts/translate-info.mjs', [], { env: { ...env, GEMINI_API_KEY: 'k', TRANSLATE_ENDPOINT: 'https://generativelanguage.googleapis.com/v1beta?key=abc' } }), /查詢字串/);
+    await assert.rejects(node('scripts/translate-info.mjs', [], { env: { ...env, TRANSLATE_PROVIDER: 'openai' } }), /TRANSLATE_PROVIDER/);
+    await assert.rejects(node('scripts/translate-info.mjs', [], { env: { ...env, GEMINI_API_KEY: 'k', TRANSLATE_MODEL: '../../x' } }), /TRANSLATE_MODEL/);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+/* Gemini（預設翻譯服務） */
+test('translate-info.mjs（gemini，預設）：金鑰只在 x-goog-api-key 標頭、JSON 回應模式；7 語言全數翻譯、快取命中後 0 請求', { timeout: 60000 }, async () => {
+  const mock = await startMockTranslate();
+  const { dir, data, pub, env } = setupDirs();
+  const e = { ...env, GEMINI_API_KEY: 'gem-secret-key-123', TRANSLATE_ENDPOINT: mock.geminiUrl };
+  try {
+    const r = await node('scripts/translate-info.mjs', [], { env: e });
+    const src = fixtureSource();
+    const units = src.sections.length + 1;
+    assert.equal(DEFAULT_MODEL, 'gemini-3.5-flash-lite');
+    assert.equal(mock.stats.byApi.gemini, units * 7);
+    assert.equal(mock.stats.byApi.anthropic, undefined);
+    assert.equal(mock.stats.keyInUrl, 0, '金鑰不得放在網址');
+    assert.deepEqual([...mock.stats.keysSeen], ['gem-secret-key-123']);
+    assert.equal(mock.stats.lastPath, '/v1beta/models/gemini-3.5-flash-lite:generateContent');
+    const b = mock.stats.lastBody;
+    assert.equal(b.generationConfig.responseMimeType, 'application/json');
+    assert.equal(b.generationConfig.temperature, undefined, '預設不送 temperature（Gemini 3 建議維持預設值）');
+    assert.ok(b.generationConfig.maxOutputTokens > 0);
+    assert.match(b.systemInstruction.parts[0].text, /TARGET_LANGUAGE_CODE: \w+/);
+    assert.match(b.systemInstruction.parts[0].text, /Health Coins/);
+    assert.equal(b.contents.length, 1);
+    assert.equal(b.contents[0].role, 'user');
+    assert.ok(!('model' in b), 'Gemini 的模型只在網址路徑');
+    assert.match(r.stdout, /gemini，模型 gemini-3\.5-flash-lite/);
+    assert.match(r.stdout, /US\$/, '有 gemini-3.5-flash-lite 的費用估算');
+    assert.ok(!r.stdout.includes('gem-secret-key-123') && !r.stderr.includes('gem-secret-key-123'));
+    for (const l of ['en', 'ja', 'ko', 'id', 'vi', 'th', 'tl']) {
+      const d = readLang(pub, l);
+      assert.equal(d.meta.translation, 'machine');
+      assert.deepEqual(allHrefs(d), allHrefs(src));
+      assert.deepEqual(validateInfo(d), []);
+    }
+    const cache = JSON.parse(fs.readFileSync(path.join(data, 'translations.json'), 'utf8'));
+    assert.equal(Object.values(cache)[0].en.model, 'gemini-3.5-flash-lite');
+    const before = mock.stats.requests;
+    const r2 = await node('scripts/translate-info.mjs', [], { env: e });
+    assert.equal(mock.stats.requests, before);
+    assert.match(r2.stdout, /不需呼叫 API/);
+    // TRANSLATE_TEMPERATURE 明確設定時才送出
+    await node('scripts/translate-info.mjs', ['--force', 'title', '--lang', 'en'], { env: { ...e, TRANSLATE_TEMPERATURE: '0.2' } });
+    assert.equal(mock.stats.lastBody.generationConfig.temperature, 0.2);
+  } finally {
+    mock.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('translate-info.mjs（gemini）：結構不符重試一次（contents 帶 model 回覆＋驗證錯誤）；圍欄也能解析', { timeout: 60000 }, async () => {
+  for (const mode of ['bad-once', 'bad-shape', 'fence']) {
+    const mock = await startMockTranslate({ mode });
+    const { dir, pub, env } = setupDirs();
+    try {
+      await node('scripts/translate-info.mjs', [], { env: { ...env, GEMINI_API_KEY: 'k', TRANSLATE_ENDPOINT: mock.geminiUrl, TRANSLATE_LANGS: 'th' } });
+      const th = readLang(pub, 'th');
+      const n = fixtureSource().sections.length + 1;
+      if (mode === 'bad-shape') {
+        assert.equal(mock.stats.requests, n * 2);
+        assert.ok(th.sections.every((s) => s.translated === false));
+      } else {
+        assert.ok(th.sections.every((s) => s.translated), mode);
+      }
+      if (mode === 'bad-once') {
+        assert.equal(mock.stats.retries, n);
+        const c = mock.stats.lastBody.contents;
+        assert.deepEqual(c.map((x) => x.role), ['user', 'model', 'user']);
+        assert.match(c[2].parts[0].text, /rejected by the validator/);
+      }
+    } finally {
+      mock.close();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }
+});
+
+test('translate-info.mjs（gemini）：金鑰無效（400 API_KEY_INVALID）／403 → 立即停止並提示 GEMINI_API_KEY；金鑰不入記錄', { timeout: 60000 }, async () => {
+  for (const mode of ['unauthorized', 'forbidden']) {
+    const mock = await startMockTranslate({ mode });
+    const { dir, pub, env } = setupDirs();
+    try {
+      const r = await node('scripts/translate-info.mjs', [], { env: { ...env, GEMINI_API_KEY: 'bad-gemini-secret', TRANSLATE_ENDPOINT: mock.geminiUrl, TRANSLATE_CONCURRENCY: '1', GITHUB_ACTIONS: 'true' } });
+      assert.match(r.stderr, /翻譯中止.*GEMINI_API_KEY.*Actions secret/, mode);
+      assert.ok(mock.stats.requests <= 1, `${mode}：${mock.stats.requests} 次請求`);
+      assert.equal(fs.readdirSync(pub).length, 8);
+      assert.ok(!(r.stdout + r.stderr).includes('bad-gemini-secret'));
+    } finally {
+      mock.close();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }
+  // 模型名稱錯誤（404）→ 立即停止並提示 TRANSLATE_MODEL
+  const mock = await startMockTranslate();
+  const { dir, env } = setupDirs();
+  try {
+    const r = await node('scripts/translate-info.mjs', [], { env: { ...env, GEMINI_API_KEY: 'k', TRANSLATE_ENDPOINT: mock.geminiUrl, TRANSLATE_MODEL: 'no-such-model', TRANSLATE_CONCURRENCY: '1' } });
+    assert.match(r.stderr, /翻譯中止.*404.*TRANSLATE_MODEL/);
+    assert.equal(mock.stats.requests, 1);
+  } finally {
+    mock.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('translate-info.mjs（gemini）：429 → 依 RetryInfo 退避後成功；一直 429（配額用完）→ 停止其餘請求', { timeout: 60000 }, async () => {
+  {
+    const mock = await startMockTranslate({ mode: 'rate-once' });
+    const { dir, pub, env } = setupDirs();
+    try {
+      const r = await node('scripts/translate-info.mjs', [], { env: { ...env, GEMINI_API_KEY: 'k', TRANSLATE_ENDPOINT: mock.geminiUrl, TRANSLATE_LANGS: 'en,vi' } });
+      assert.equal(mock.stats.rateLimited, 2);
+      assert.match(r.stderr, /秒後重試/);
+      assert.equal(readLang(pub, 'en').meta.translation, 'machine');
+      assert.equal(readLang(pub, 'vi').meta.translation, 'machine');
+    } finally {
+      mock.close();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }
+  const mock = await startMockTranslate({ mode: 'quota' });
+  const { dir, pub, env } = setupDirs();
+  try {
+    const r = await node('scripts/translate-info.mjs', [], { env: { ...env, GEMINI_API_KEY: 'k', TRANSLATE_ENDPOINT: mock.geminiUrl, TRANSLATE_CONCURRENCY: '1' } });
+    assert.match(r.stderr, /翻譯中止.*429.*配額/);
+    assert.equal(mock.stats.requests, 5, '只對第一個區塊試 5 次，其餘不送');
+    assert.equal(readLang(pub, 'en').meta.translation, 'partial');
+  } finally {
+    mock.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('translate-info.mjs --merge-cache：人工譯文優先、其他只補缺、非法鍵丟棄', async () => {
+  const { dir, data, env } = setupDirs();
+  try {
+    const H = (c) => 'sha256:' + c.repeat(64);
+    fs.writeFileSync(path.join(data, 'translations.json'), JSON.stringify({
+      [H('a')]: { en: { title: 'machine A', model: 'm' }, ja: { title: 'machine A ja', model: 'm' } },
+      [H('b')]: { en: { title: 'machine B', model: 'm' } },
+    }));
+    const repo = path.join(dir, 'repo-translations.json');
+    fs.writeFileSync(repo, `{"${H('a')}":{"en":{"title":"manual A","source":"manual"},"ja":{"title":"old repo ja"}},"${H('c')}":{"vi":{"title":"repo C"}},"__proto__":{"en":{"polluted":1}},"bad":{"en":{}}}`);
+    const r = await node('scripts/translate-info.mjs', ['--merge-cache', repo], { env });
+    assert.match(r.stdout, /人工譯文 1 筆優先，補上 1 筆/);
+    const out = JSON.parse(fs.readFileSync(path.join(data, 'translations.json'), 'utf8'));
+    assert.equal(out[H('a')].en.title, 'manual A');
+    assert.equal(out[H('a')].ja.title, 'machine A ja', '非人工的項目不覆蓋 data 分支上的譯文');
+    assert.equal(out[H('b')].en.title, 'machine B');
+    assert.equal(out[H('c')].vi.title, 'repo C');
+    assert.deepEqual(Object.keys(out).sort(), [H('a'), H('b'), H('c')]);
+    assert.equal({}.polluted, undefined);
+    // 函式介面
+    const base = loadCache(path.join(data, 'translations.json'));
+    assert.deepEqual(mergeCaches(base, new Map()), { manual: 0, added: 0 });
+    // data 分支還沒有快取 → 合併結果就是 repo 的那份
+    fs.rmSync(path.join(data, 'translations.json'));
+    await node('scripts/translate-info.mjs', ['--merge-cache', repo], { env });
+    assert.equal(JSON.parse(fs.readFileSync(path.join(data, 'translations.json'), 'utf8'))[H('a')].en.title, 'manual A');
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

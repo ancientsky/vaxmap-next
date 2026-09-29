@@ -69,6 +69,7 @@
 - 只翻譯 `translated` 為 false 或雜湊改變的區塊；結果快取於 `data/info/translations.json`：`{ "<hash>": { "en": {...section}, "ja": … } }`。
 - 翻譯的是結構化 JSON（title、blocks 內 text／items／caption／head／rows、links.text、files.text），不是 HTML；
   `href`、`updated`、`id`、數字與品牌名（Moderna、Novavax、GSK、Sanofi、高端 → "Medigen"、國光 → "Adimmune"、東洋 → "TTY Biopharm"）依詞彙表處理。
-- 使用 Anthropic API（環境變數 `ANTHROPIC_API_KEY`；模型以 `TRANSLATE_MODEL` 指定），無金鑰時跳過翻譯：
+- 預設使用 Google Gemini API（`gemini-3.5-flash-lite`；環境變數 `GEMINI_API_KEY`，在 GitHub Actions 由 repo secret 提供），
+  可用 `TRANSLATE_PROVIDER=anthropic`＋`ANTHROPIC_API_KEY` 改用 Anthropic；模型以 `TRANSLATE_MODEL` 指定。無金鑰時跳過翻譯：
   各語言檔仍會產生，未翻譯區塊帶原文並標 `translated:false`、`meta.translation:"partial"`，前端顯示「此段尚未翻譯，以下為原文」。
 - 翻譯輸出經結構驗證（區塊數、型別、連結數一致）與 `sanitize` 後才寫入。

@@ -1,7 +1,8 @@
 # 部署到 GitHub Pages。
 # 院所資料不在這裡擷取：疾管署現站不接受境外連線（GitHub 的執行機器在國外，實測連線逾時），
-# 所以改由一台國內機器定時擷取，把 hospitals.json 與接種資訊 info/<lang>.json 推到 `data` 分支，再觸發這個流程部署。
-# 見 README「部署到 GitHub Pages」與 scripts/publish-data.sh。
+# 所以改由一台國內機器定時擷取，把 hospitals.json 推到 `data` 分支（scripts/publish-data.sh）；接種資訊 info/<lang>.json
+# 由 info-update.yml 在 GitHub 上擷取、翻譯後寫入同一個 data 分支。兩者都會在有變動時觸發這個流程部署。
+# 見 README「部署到 GitHub Pages」與 docs/INFO_PIPELINE.md。
 name: 部署
 
 on:

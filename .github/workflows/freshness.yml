@@ -1,5 +1,6 @@
 # 每天檢查 data 分支的資料是否太舊。院所資料太舊就讓這次執行失敗，GitHub 會寄信通知 repo 擁有者
-# （代表負責擷取的那台國內機器沒有在跑，或擷取一直失敗）。接種資訊太久沒抓取只發出警告（不寄信）。
+# （代表負責擷取的那台國內機器沒有在跑，或擷取一直失敗）。接種資訊太久沒抓取只發出警告（不寄信；
+# 接種資訊由 info-update.yml 更新，那個排程本身失敗時 GitHub 就會寄信）。
 name: 資料新鮮度檢查
 
 on:
@@ -36,11 +37,11 @@ jobs:
             const age = (Date.now() - Date.parse(d.meta && d.meta.fetchedAt)) / 3600000;
             if (!Number.isFinite(age)) { console.log('::warning::接種資訊 fetchedAt 格式不正確'); process.exit(0); }
             console.log('接種資訊距上次抓取 ' + age.toFixed(1) + ' 小時；來源最近變動 ' + d.meta.changedAt + '；' + (d.sections || []).length + ' 個區塊');
-            if (age > Number(process.env.MAX_AGE_HOURS)) console.log('::warning::接種資訊已 ' + Math.floor(age) + ' 小時未成功抓取，請檢查更新機器的記錄（journalctl --user -u vaxmap-updater.service）；頁面可能改版或暫時無法連線');
+            if (age > Number(process.env.MAX_AGE_HOURS)) console.log('::warning::接種資訊已 ' + Math.floor(age) + ' 小時未成功抓取，請到 Actions →「接種資訊更新」查看最近一次執行的記錄；頁面可能改版或暫時無法連線');
             try {
               const en = JSON.parse(fs.readFileSync('en.json', 'utf8'));
               const n = en.sections.filter((s) => !s.translated).length;
-              if (n) console.log('::notice::英文版有 ' + n + ' 個區塊尚未翻譯（未設定 ANTHROPIC_API_KEY、或翻譯驗證未通過）');
+              if (n) console.log('::notice::英文版有 ' + n + ' 個區塊尚未翻譯（未設定 GEMINI_API_KEY secret、配額用完、或翻譯驗證未通過；見「接種資訊更新」的執行記錄）');
             } catch {}
           "
 

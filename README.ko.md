@@ -41,13 +41,16 @@ scripts/
   normalize.mjs         Conversion script: data/raw/*.json.gz → public/data/hospitals.json
   romanize.mjs          English (Latin-alphabet) transliteration of facility names / addresses / districts, called by normalize.mjs
   harvest-info.mjs      Harvests Taiwan CDC's "Vaccination" pages and structures them → data/info/source.json (see docs/INFO_PIPELINE.md)
-  translate-info.mjs    Translates only the changed blocks via the Anthropic API → public/data/info/<lang>.json
+  translate-info.mjs    Translates only the changed blocks via the Google Gemini API (Anthropic also supported) → public/data/info/<lang>.json
   sanitize-info.mjs     Whitelist sanitizing and validation of the info files (runs before writing and before deployment)
   keep-live-data.mjs    At deploy time, uses the newer data from the data branch (or the live site), sanitizing it first (used by GitHub Actions)
-  publish-data.sh       Runs on a machine in Taiwan: harvest facility data and vaccination info → translate → check → push to the data branch → trigger deployment only if something changed
+  info-update.sh        Stages of the daily vaccination info update (fetch the previous version → harvest → translate → check → push to the data branch), called by info-update.yml
+  push-data-branch.sh   Shared procedure for updating the data branch: overwrites only the specified files, keeps a single commit, and uses --force-with-lease so the two writers cannot overwrite each other
+  publish-data.sh       Runs on a machine in Taiwan: harvest facility data → check → push to the data branch → trigger deployment
   install-updater.sh    Installs a daily schedule on a Linux machine in Taiwan (systemd user timer)
 .github/workflows/
   deploy.yml            Deploys to GitHub Pages (site from main, data from the data branch)
+  info-update.yml       Updates the vaccination info section daily at 06:00 Taipei time (harvest → Gemini translation → check → data branch → trigger deployment)
   freshness.yml         Checks daily whether the data has gone more than 36 hours without an update, and sends an email if it is too old (info that has not been harvested for too long only triggers a warning)
 docs/
   DATA_SCHEMA.md        Format contract for public/data/hospitals.json
@@ -66,7 +69,8 @@ tests/
   romanize.test.mjs     Hand-checked examples of English transliteration (names, addresses, edge cases)
   e2e-info.spec.mjs     Playwright tests for the info page (desktop + mobile, language switching, deep links, malicious data)
   info-ui.test.mjs      Unit tests for the info page's pure functions (link whitelist, health-coin parsing, table cells)
-  info.test.mjs         Vaccination info: parses the sample page (fixtures/info-mpage.html), malicious pages, and tests translation and caching against a mock API (mock-translate.mjs)
+  info.test.mjs         Vaccination info: parses the sample page (fixtures/info-mpage.html), malicious pages, and tests translation and caching against a mock API (mock-translate.mjs, Gemini and Anthropic)
+  data-branch.test.mjs  Shared data-branch push procedure (local bare repo, simulating another writer cutting in), the full info-update.sh flow, workflow security rules
 ```
 
 ## 로컬 실행
@@ -137,10 +141,12 @@ npm run test:a11y  # Accessibility checks (reports issues only, never modifies a
 
 **접종 정보 코너**(`public/data/info/<lang>.json`)에는 별도의 파이프라인이 있습니다. `npm run update-info`는 순서대로
 `scripts/harvest-info.mjs`(질병관제서의 「백신 접종 코너」 페이지를 가져와 각 카드를 문단, 목록, 표, 링크, 첨부 파일로 파싱하고,
-화이트리스트로 정리한 뒤 `data/info/source.json`에 기록), `scripts/translate-info.mjs`(내용이 바뀐 블록만 Anthropic API로 보내
-7개 언어로 번역하며, 결과는 `data/info/translations.json`에 캐시하므로 바뀌지 않은 블록은 다시 보내지 않습니다. `ANTHROPIC_API_KEY`가 설정되어 있지 않으면 번역하지 않고,
+화이트리스트로 정리한 뒤 `data/info/source.json`에 기록), `scripts/translate-info.mjs`(내용이 바뀐 블록만 Google Gemini API
+〔`gemini-3.5-flash-lite`〕로 보내 7개 언어로 번역하며, 결과는 `data/info/translations.json`에 캐시하므로 바뀌지 않은 블록은 다시 보내지 않습니다. `GEMINI_API_KEY`가 설정되어 있지 않으면 번역하지 않고,
 외국어 파일은 번체 중국어 원문으로 출력하되 아직 번역되지 않았음을 표시합니다)를 실행하고, 마지막으로 8개 출력 파일을 검증합니다. 페이지에 접속할 수 없거나 개편되었을 때는 어떤 파일도 쓰지 않으며, 웹사이트는 이전 버전을 그대로 사용합니다.
-한 번에 한 페이지만 가져오며, 일반적인 단일 블록 변경의 번역 비용은 약 US$0.06입니다. 자세한 내용, 비용 추정, 강제 재번역 방법은 `docs/INFO_PIPELINE.md`를 참고하십시오.
+질병관제서 공식 웹사이트(`www.cdc.gov.tw`)는 해외에서도 접속되므로, 이 파이프라인은 매일 GitHub Actions에서 자동으로 실행됩니다(`.github/workflows/info-update.yml`,
+타이베이 시간 06:00). 국내 머신은 필요하지 않습니다. 한 번에 한 페이지만 가져오며, 일반적인 단일 블록 변경의 번역 비용은 약 US$0.01입니다. 자세한 내용, 비용 추정, 수동 실행과 강제 재번역 방법은
+`docs/INFO_PIPELINE.md`를 참고하십시오.
 
 ## 접종 정보 페이지(info.html)
 
@@ -178,37 +184,45 @@ npm run test:a11y  # Accessibility checks (reports issues only, never modifies a
 ## GitHub Pages에 배포하기(매일 자동 데이터 갱신 포함)
 
 **중요한 전제: 질병관제서의 현행 사이트는 해외 접속을 받지 않습니다.** 2026-09-21 실측 결과, GitHub Actions의 실행 머신(해외에 위치)에서
-`vaxmap.cdc.gov.tw`에 연결하면 연결 시간이 초과되었습니다(`UND_ERR_CONNECT_TIMEOUT`). 따라서 데이터 수집을 GitHub에서 실행할 수 없어,
-「국내 머신에서 수집하고 GitHub은 배포만 담당」하는 방식으로 바꾸었습니다.
+`vaxmap.cdc.gov.tw`에 연결하면 연결 시간이 초과되었습니다(`UND_ERR_CONNECT_TIMEOUT`). 따라서 의료기관 데이터의 수집은 GitHub에서 실행할 수 없어,
+「국내 머신에서 의료기관 데이터를 수집」하는 방식으로 바꾸었습니다. 접종 정보 코너의 원본은 질병관제서 공식 웹사이트 `www.cdc.gov.tw`이며 해외에서도 접속되므로(2026-09-29 실측 HTTP 200),
+접종 정보 파이프라인 전체를 GitHub Actions에서 실행하고 번역 키도 GitHub에만 둡니다.
 
 ```
 Linux machine in Taiwan (daily at 05:30, 12:30)  GitHub
-  scripts/publish-data.sh                          
-    ├─ fetch the previous version of the data branch (translation cache)
-    ├─ harvest.mjs harvest → normalize.mjs → data checks  
-    ├─ harvest-info.mjs → translate-info.mjs → checks (vaccination info, translating only changed blocks)
-    ├─ force-push hospitals.json, info/*.json  ──►  data branch (always a single commit, so the repo does not grow)
-    └─ gh workflow run deploy.yml only if changed ──►  deploy.yml: take the site from main + the newer data from the data branch
-                                                    → run sanitizing and checks again → deploy to Pages
+  scripts/publish-data.sh
+    ├─ harvest.mjs harvest → normalize.mjs → data checks
+    ├─ push-data-branch.sh: hospitals.json ────────►  data branch (always a single commit, so the repo does not grow)
+    └─ gh workflow run deploy.yml ─────────────────►  deploy.yml: take the site from main + the newer data from the data branch
+                                                       → run sanitizing and checks again → deploy to Pages
+                                                    info-update.yml (daily at 06:00, runs on GitHub)
+                                                      ├─ fetch the previous version of the data branch (translation cache)
+                                                      ├─ harvest-info → translate-info (Gemini) → checks
+                                                      ├─ push-data-branch.sh: info/*.json ──► data branch
+                                                      └─ trigger deploy.yml only if the visible content changed
 ```
 
-`.github/workflows/deploy.yml`은 `main`에 푸시되거나 수동으로／`publish-data.sh`에 의해 트리거될 때 실행됩니다. `data` 브랜치의
+`.github/workflows/deploy.yml`은 `main`에 푸시되거나, 수동으로／`publish-data.sh`／`info-update.yml`에 의해 트리거될 때 실행됩니다. `data` 브랜치의
 `hospitals.json`을 가져와 `scripts/keep-live-data.mjs --file`로 정리하고 `main`에 있는 스냅샷보다 최신임을 확인한 경우에만 채택하며, `data`
-브랜치가 없으면 `main`에 있는 스냅샷을 그대로 씁니다. `.github/workflows/freshness.yml`은 매일 Taipei time (UTC+8) 09:00에 `data` 브랜치의 데이터를 점검하여
+브랜치가 없으면 `main`에 있는 스냅샷을 그대로 씁니다. `.github/workflows/freshness.yml`은 매일 타이베이 시간 09:00에 `data` 브랜치의 데이터를 점검하여
 36시간 넘게 갱신되지 않았으면 해당 실행을 실패 처리하고, GitHub이 repo 소유자에게 메일로 알립니다(수집 머신이 동작하지 않거나 계속 실패하고 있다는 뜻입니다).
 웹사이트 화면의 「데이터 스냅샷」에도 「N일째 갱신되지 않음」이 표시됩니다.
 
-접종 정보 코너도 같은 경로를 따릅니다. `publish-data.sh`는 의료기관 데이터 다음에 `harvest-info.mjs`와 `translate-info.mjs`를 실행하고,
-`info/<lang>.json`을 원문 `info/source.json` 및 번역 캐시 `info/translations.json`과 함께 `data` 브랜치로 푸시합니다(그래서 캐시가 실행 사이에도 유지되어
-바뀌지 않은 블록은 번역 비용을 다시 내지 않습니다). 의료기관 데이터와 접종 정보 중 하나가 실패해도 다른 하나는 정상적으로 게시되며, 실패한 쪽은 이전 버전을 그대로 씁니다.
-둘 다 웹사이트 화면에 영향을 주는 변경이 없으면 배포를 트리거하지 않습니다. `deploy.yml`은 `data` 브랜치의 `info/<lang>.json`을 가져와 파일마다
+접종 정보 코너는 `.github/workflows/info-update.yml`이 갱신합니다. 매일 타이베이 시간 06:00에 `harvest-info.mjs`와 `translate-info.mjs`를 실행하고,
+`info/<lang>.json`을 원문 `info/source.json` 및 번역 캐시 `info/translations.json`과 함께 `data` 브랜치에 기록합니다(그래서 캐시가 실행 사이에도 유지되어
+바뀌지 않은 블록은 번역 비용을 다시 내지 않으며, 원본이 바뀌지 않았고 모든 언어가 이미 번역되어 있으면 번역 API를 전혀 호출하지 않습니다). 웹사이트 화면에 변경이 없으면 배포를 트리거하지 않습니다.
+그래서 `data` 브랜치에는 두 명의 작성자가 있으며, 둘 다 `scripts/push-data-branch.sh`를 통해서만 기록합니다. 자신이 담당하는 파일만 덮어쓰고(국내 머신은 `hospitals.json`만,
+workflow는 `info/*`만 건드립니다), `--force-with-lease`로 푸시하므로, 상대방이 마침 동시에 푸시하면 다시 가져와서 재시도하며 서로 덮어쓰지 않습니다(`docs/INFO_PIPELINE.md` 참고).
+어느 한쪽이 실패해도 다른 쪽의 데이터는 정상적으로 갱신되며, 실패한 쪽은 이전 버전을 그대로 씁니다. `deploy.yml`은 `data` 브랜치의 `info/<lang>.json`을 가져와 파일마다
 `scripts/keep-live-data.mjs --info-dir`로 검증하고(`sanitize-info.mjs`가 엄격하게 검사) `main`에 있는 것보다 최신임을 확인한 경우에만 채택하며, `data` 브랜치에 이 파일들이 없으면
 `main`에 있는 버전을 그대로 씁니다. `freshness.yml`은 별도로 `info/source.json`의 마지막 수집 시각을 점검하여 36시간을 넘기면 경고만 내보냅니다(메일은 보내지 않음).
 이 검사는 원본 내용이 아니라 수집 시각을 보므로, 질병관제서 페이지가 며칠 동안 바뀌지 않아도 오탐하지 않습니다.
 
-**번역 키**: 갱신 머신의 `~/.config/vaxmap-updater/env`(`install-updater.sh`가 템플릿을 만들고 `chmod 600`으로 설정하며, systemd가
-`EnvironmentFile=`로 불러옵니다)에 `ANTHROPIC_API_KEY=…`를 채우면 번역이 활성화되고 다음 실행부터 적용됩니다. 수동으로 `npm run publish-data`를 실행할 때도 이 파일을 읽습니다.
-키는 이 머신에만 있으며 git에도 GitHub에도 올라가지 않습니다. 키를 채우지 않아도 모든 것이 평소처럼 동작하며, 외국어 페이지에 번체 중국어 원문이 표시될 뿐입니다.
+**번역 키**: Google Gemini API 키는 repo의 Actions secret `GEMINI_API_KEY`에 보관하며(설정 방법은 아래 5단계 참고), `info-update.yml`의
+「번역」 단계에서만 프로그램에 제공됩니다. git에 들어가지 않고 국내 머신에도 없습니다. 설정하지 않아도 모든 것이 평소처럼 동작하며 외국어 페이지에 번체 중국어 원문이 표시될 뿐이고, 설정하면 다음 실행(또는 수동 Run workflow) 때
+번역이 채워집니다. 수동 실행과 강제 재번역: Actions →「접종 정보 갱신」→ Run workflow에서 `force`를 비워 두면 일반 실행, `deploy`＝원본이 바뀌지 않아도 배포,
+`all`／`title`／블록 id＝해당 부분 재번역이며, `langs`로 언어를 제한할 수 있습니다(예: `en,ja`). 자세한 내용은 `docs/INFO_PIPELINE.md`의 「수동 실행／강제 재번역」을 참고하십시오.
+(이전 버전에서 국내 머신에 두던 `~/.config/vaxmap-updater/env`는 더 이상 사용하지 않으며, 그 안에 `ANTHROPIC_API_KEY`가 있다면 해당 파일을 삭제하십시오.)
 
 최초 설정:
 
@@ -219,7 +233,10 @@ Linux machine in Taiwan (daily at 05:30, 12:30)  GitHub
 4. `scripts/install-updater.sh`를 실행해 매일 스케줄을 설치합니다. 이 스크립트는 전용 폴더를 별도로 만들고
    (`~/.local/share/vaxmap-updater`, 코드를 수정하는 폴더와 분리되어 있으며 매 실행 전에 `main`을 자동으로 동기화합니다),
    systemd 사용자 타이머를 설정합니다. 전원이 꺼져 있어 놓친 스케줄은 부팅 후 보충 실행됩니다. 제거하려면 `scripts/install-updater.sh --uninstall`을 사용하십시오.
-5. (선택) 접종 정보 코너를 번역하려면 `~/.config/vaxmap-updater/env`를 편집하여 `ANTHROPIC_API_KEY=`(Anthropic Console에서 만든 키)를 채웁니다.
+5. 접종 정보 코너를 번역하려면: Google AI Studio(https://aistudio.google.com/apikey)에서 Gemini API 키를 만든 다음
+   repo의 Settings → Secrets and variables → Actions → New repository secret에서 이름을 `GEMINI_API_KEY`로 하고 값에 키를 붙여 넣습니다.
+   이어서 Actions →「접종 정보 갱신」→ Run workflow로 먼저 수동으로 한 번 실행하고(약 2–5분), 그 뒤로는 매일 타이베이 시간 06:00에 자동 실행됩니다.
+   무료 등급은 요금이 없지만 Google이 전송된 내용을 제품 개선에 사용합니다(이 사이트가 보내는 것은 공식 웹사이트의 공개 텍스트뿐입니다). 기관 규정상 허용되지 않는다면 해당 프로젝트에 결제를 활성화하십시오.
 
 GitHub의 자체 호스팅 실행 머신(self-hosted runner)으로 바꾸는 것은 권장하지 않습니다. **공개** repo에서는 누구든 보낸 pull request가
 그 머신에서 코드를 실행하게 만들 수 있으며, GitHub 공식 문서도 이런 사용을 권장하지 않습니다. 위의 방식은 그 머신이 「밖으로 푸시」하기만 하면 되고, 외부의 어떤 명령도 받지 않습니다.
@@ -271,9 +288,17 @@ N분마다(예: 5–15분, 데이터 갱신 빈도에 따라 결정) 데이터�
 링크는 https이면서 호스트가 허용 목록(`*.gov.tw`、`*.gov.taipei`、YouTube; `docs/INFO_SCHEMA.md` 참고)에 있는 것만 남깁니다. 기계 번역 결과는 원문과 구조가 완전히 같아야만 채택하고, URL은 항상 원문에서 가져오며,
 모든 파일은 쓰기 전과 배포 전에 `scripts/sanitize-info.mjs`로 검증합니다(관련 테스트는 `tests/info.test.mjs`).
 
-**GitHub Actions**: 각 작업은 최소 권한으로 구성했으며(deploy만 `pages: write`를 갖고, repo에 쓸 수 있는 작업은 없습니다),
-모든 action은 전체 commit SHA로 고정했고, `${{ }}`는 항상 `env:`를 통해 전달하고 명령에 직접 쓰지 않으며, checkout은 자격 증명을 유지하지 않습니다.
-action 버전을 올릴 때는 다시 확인하여 SHA를 갱신하십시오. repo의 Settings → Environments → github-pages에서 `main` 브랜치만 배포할 수 있도록 되어 있는지 확인하시기 바랍니다.
+**GitHub Actions**: 각 작업은 최소 권한으로 구성했으며(기본값 `permissions: {}`, deploy만 `pages: write`를 갖고, repo에 쓸 수 있는 것은 `info-update.yml`뿐입니다——
+`contents: write`로 data 브랜치에 푸시하고 `actions: write`로 배포를 트리거합니다), 모든 action은 전체 commit SHA로 고정했고, `${{ }}`는 항상 `env:`를 통해 전달하고 명령에 직접 쓰지 않으며,
+checkout은 자격 증명을 유지하지 않습니다. action 버전을 올릴 때는 다시 확인하여 SHA를 갱신하십시오(`tests/data-branch.test.mjs`가 이 규칙들을 검사합니다).
+repo의 Settings → Environments → github-pages에서 `main` 브랜치만 배포할 수 있도록 되어 있는지 확인하시기 바랍니다.
+
+**번역 키와 쓰기 권한**: `GEMINI_API_KEY`는 GitHub의 암호화된 secret에만 존재하며 GitHub을 벗어나지 않고 국내 머신에도 없습니다. `info-update.yml`은 「번역」 단계에서만
+환경 변수로 `translate-info.mjs`에 제공하고(수집, 검증, 푸시 등의 단계는 받을 수 없습니다), 프로그램은 키를 `x-goog-api-key` 헤더에만 넣고 URL에는 절대 넣지 않으며,
+로그의 오류 메시지에서도 키를 먼저 가립니다. 원본이 바뀌지 않았고 모든 언어가 이미 번역되어 있으면 이 단계에서도 키를 번역 프로그램에 넘기지 않습니다. 푸시에 쓰는 `GITHUB_TOKEN`도 마찬가지로 「data 브랜치에 기록」하는 단계에만 주며,
+http 헤더로 git에 전달하고 URL이나 설정 파일에는 쓰지 않습니다. 유의하십시오. **`contents: write`는 GitHub에서 단일 브랜치로 한정할 수 없으며**(브랜치 보호 규칙으로도 이 토큰을
+「data만 푸시 가능」으로 제한할 수 없습니다), 「data 브랜치에만 쓴다」는 것은 절차(`scripts/push-data-branch.sh`)가 보장합니다. `main`에 브랜치 보호(pull request 필수)를 설정하여
+이 토큰이 최소한 `main`을 직접 수정하지 못하게 하기를 권장합니다. 외부 pull request는 이 workflow를 트리거할 수 없으므로(스케줄과 수동 실행만 가능) 키를 얻을 수 없습니다.
 
 **GitHub Pages의 제약**: HTTP 헤더를 설정할 수 없으므로 `frame-ancestors`／`X-Frame-Options`(다른 사이트에 삽입되는 것을 방지)가 없습니다.
 이 사이트에는 로그인 상태나 클릭을 유도당할 수 있는 민감한 동작이 없어 위험이 낮습니다. 헤더를 설정할 수 있는 호스트로 옮겨 배포한다면 이를 보완하십시오.

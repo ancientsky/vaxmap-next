@@ -12,15 +12,20 @@
   ▼
 data/info/source.json             繁中原文（結構化），meta.fetchedAt／changedAt
   │
-  │ scripts/translate-info.mjs    只把「雜湊不在快取裡」的區塊送 Anthropic API 翻譯（每區塊×每語言一個請求）
+  │ scripts/translate-info.mjs    只把「雜湊不在快取裡」的區塊送 Google Gemini API 翻譯（每區塊×每語言一個請求）
   │                               結果快取在 data/info/translations.json（鍵：區塊雜湊＋語言）
   ▼
 public/data/info/<lang>.json      8 個語言檔（zh-Hant、en、ja、ko、id、vi、th、tl），前端只讀這些檔
   │
   │ scripts/sanitize-info.mjs --check   嚴格驗證（型別、長度、網址白名單、無 < >、ISO 日期）
   ▼
-data 分支 info/*.json（含 source.json 與 translations.json）→ deploy.yml 取用並再驗證一次 → GitHub Pages
+data 分支 info/*.json（含 source.json 與 translations.json；scripts/push-data-branch.sh 寫入）
+  → deploy.yml 取用並再驗證一次 → GitHub Pages
 ```
+
+以上全部在 **GitHub Actions** 上執行（`.github/workflows/info-update.yml`，每天臺北時間 06:00）：`www.cdc.gov.tw`
+境外連得到（2026-09-29 實測海外主機 HTTP 200；不接受境外連線的只有 `vaxmap.cdc.gov.tw`），所以接種資訊不需要國內機器，
+翻譯金鑰也只放在 GitHub。國內機器的 `publish-data.sh` 只負責院所資料。
 
 指令：
 
@@ -28,13 +33,73 @@ data 分支 info/*.json（含 source.json 與 translations.json）→ deploy.yml
 |---|---|
 | `npm run harvest-info` | 抓取＋解析，寫 `data/info/source.json`；最後一行印 `changed` 或 `unchanged` |
 | `npm run translate-info` | 翻譯缺少的區塊，輸出 8 個語言檔（沒有金鑰也會輸出，外語檔為原文） |
-| `npm run update-info` | 以上兩步＋驗證全部檔案 |
+| `npm run update-info` | 以上兩步＋驗證全部檔案（在 repo 的 `data/info`、`public/data/info` 執行，不推送） |
+| `scripts/info-update.sh <階段>` | workflow 的各個 step：`prepare`、`harvest`、`translate`、`check`、`publish`（或 `all` 依序全部） |
+| `scripts/push-data-branch.sh -C <資料夾> 檔案…` | 把檔案疊到 data 分支（兩個寫入者共用，見下方「data 分支的兩個寫入者」） |
 | `node scripts/harvest-info.mjs --file 某頁.html` | 解析本機存下的頁面（離線除錯用） |
 | `node scripts/sanitize-info.mjs --check 檔案…` | 驗證任意接種資訊檔，不合格結束代碼 1 |
 | `node scripts/translate-info.mjs --export 檔案` ／ `--import <lang> 檔案` | 離線／人工翻譯的匯出與匯入（見下方「離線／人工翻譯」） |
 
-每日排程（國內更新機器，臺北時間 05:30、12:30）由 `scripts/publish-data.sh` 在擷取院所資料之後接著執行，
-兩者互不影響：其中一項失敗時，另一項照常發布，失敗的那項沿用 `data` 分支上一版。
+## 每日排程（`.github/workflows/info-update.yml`）
+
+每天臺北時間 06:00（`cron: '0 22 * * *'`，UTC）與手動觸發時執行，每個 step 是 `scripts/info-update.sh` 的一個階段，
+各階段以工作資料夾（`$RUNNER_TEMP/info-work`）交接：
+
+| step | 做什麼 | 拿得到的機密 |
+|---|---|---|
+| `prepare` | 取回 data 分支上一版（`info/source.json`、`info/translations.json`、8 個語言檔），再以 `translate-info.mjs --merge-cache` 併入 repo（`main`）內的 `data/info/translations.json`（`source:"manual"` 的人工譯文優先，其餘只補缺）。連不上 repo 時失敗（不會誤當成第一次執行而遺失快取） | 無 |
+| `harvest` | `harvest-info.mjs`；最後一行 `changed`／`unchanged`。失敗（連不上、改版）→ 整個執行失敗、GitHub 寄信給 repo 擁有者，data 分支維持上一版 | 無 |
+| `translate` | `translate-info.mjs`，只翻譯快取裡沒有的區塊。**來源 `unchanged`、上一版 7 種語言都已完整翻譯、且沒有 force 時，不把金鑰交給翻譯程式**（保證 0 次 API 呼叫），只以快取重建語言檔，讓 `meta.fetchedAt`（網站上的「同步時間」）更新 | `GEMINI_API_KEY`（只有這一步） |
+| `check` | `sanitize-info.mjs --check` 驗證 `source.json` 與 8 個語言檔 | 無 |
+| `publish` | `push-data-branch.sh` 把 `info/*.json` 疊到 data 分支（`hospitals.json` 不動）；語言檔有「會影響畫面」的變動（忽略 `fetchedAt`）或手動 force 時 `gh workflow run deploy.yml` | `GITHUB_TOKEN`（只有這一步） |
+
+「`unchanged` 就提早結束」的實際作法：不呼叫翻譯 API、不觸發部署，但**仍然推送**更新過 `fetchedAt` 的檔案——
+`freshness.yml` 看的是 data 分支 `info/source.json` 的 `fetchedAt`，如果來源沒變就完全不推送，疾管署頁面幾天沒改就會被誤報為停止更新；
+網站上的「同步時間」也會停在上次內容變動時。data 分支只有一個提交，多推一次不會讓 repo 變大。
+例外：上一版有任何語言標示 `partial`（先前沒有金鑰、配額用完或驗證失敗），來源沒變也會補翻缺少的區塊。
+
+### 手動觸發／強制重翻
+
+GitHub repo → Actions →「接種資訊更新」→ **Run workflow**，兩個輸入欄：
+
+| `force` | 效果 |
+|---|---|
+| 留白 | 與排程相同（例如剛設定好金鑰，想立刻補翻） |
+| `deploy` | 來源沒變也觸發部署 |
+| `all` | 丟棄全部翻譯快取、全部重翻（約 US$0.11），並觸發部署 |
+| `title` | 只重翻頁面標題 |
+| 區塊 id（例如 `103106`，見 data 分支 `info/source.json` 的 `sections[].id`） | 只重翻這個區塊 |
+
+`langs`（選填）：搭配 `all`／`title`／區塊 id，只重翻這些語言（例如 `en,ja`）；留白＝全部 7 種。兩個輸入都以白名單檢查
+（`force` 只接受上表的值、`langs` 只接受「兩個小寫字母,…」），其他內容一律拒絕。
+
+### data 分支的兩個寫入者
+
+data 分支現在由兩方更新：國內機器的 `publish-data.sh`（`hospitals.json`，每天 05:30、12:30）與這個 workflow（`info/*.json`）。
+兩者都只呼叫 `scripts/push-data-branch.sh`：
+
+1. 取回 data 分支目前的提交（sha S）與它的檔案樹；
+2. 只把自己負責的檔案疊到那棵樹上，其他檔案原樣保留；
+3. 以整棵樹建立**一個沒有上一代的提交**（data 分支永遠只有一個提交，repo 不會因每天更新而變大）；
+4. `git push --force-with-lease=refs/heads/data:S`——只有遠端仍是 S 才覆蓋。若另一方剛好在這之間推送，
+   推送被拒 → 重新取回、重新疊加、再推，最多重試 3 次；仍失敗就結束代碼 1（不會蓋掉對方的資料，下一次排程再試）。
+
+`tests/data-branch.test.mjs` 以本機 bare repo 模擬另一個寫入者在推送前一刻插隊（git pre-push hook），驗證雙方的檔案都保留。
+workflow 另設 `concurrency: data-branch`，避免同一 repo 內的執行彼此重疊。
+
+注意：GitHub 的 `contents: write` 權限無法限定在單一分支（分支保護規則也無法把 `GITHUB_TOKEN` 限制成「只能推 data」），
+「只寫 data 分支」是由程序（這支腳本）保證，而不是由 GitHub 保證。建議在 Settings → Rules 為 `main` 設定分支保護
+（要求 pull request），讓這個權杖至少不能直接改 `main`。
+
+### 在本機跑一次（重現 workflow）
+
+```bash
+export INFO_WORK_DIR=/tmp/info-work DATA_REPO_URL=https://github.com/<帳號>/<repo> SKIP_DEPLOY_TRIGGER=1
+scripts/info-update.sh prepare && scripts/info-update.sh harvest
+GEMINI_API_KEY=… scripts/info-update.sh translate     # 金鑰只給這一步
+scripts/info-update.sh check
+ls /tmp/info-work/pub                                # 檢查結果；確定要推送才執行 publish（需要 data 分支的推送權限）
+```
 
 ## 擷取與解析（`harvest-info.mjs`）
 
@@ -70,9 +135,22 @@ data 分支 info/*.json（含 source.json 與 translations.json）→ deploy.yml
 
 ## 翻譯（`translate-info.mjs`）
 
-- **模型**：預設 `claude-sonnet-5-5`（Claude Sonnet 5.5，2026-09 Anthropic 文件列為速度與能力的最佳平衡；價格每百萬 token
-  輸入 US$2／輸出 US$10）。以環境變數 `TRANSLATE_MODEL` 更換；`TRANSLATE_EFFORT`（預設 `low`）對應 API 的 `output_config.effort`。
-  以 `fetch` 直接呼叫 Messages API（不使用 SDK，沒有新增相依套件）。
+- **翻譯服務**：`TRANSLATE_PROVIDER`＝`gemini`（預設）或 `anthropic`。兩者都以 `fetch` 直接呼叫（不使用 SDK，沒有新增相依套件），
+  提示詞、結構驗證、重試、快取完全相同；快取項目記錄產生它的 `model`。
+- **Gemini（預設）**：模型 `gemini-3.5-flash-lite`（2026-09-29 查 Google AI for Developers 的模型頁：「Gemini 3.5 Flash-Lite —
+  Our fastest, most cost-effective 3.5 model for high-throughput execution. **Stable**」，代碼 `gemini-3.5-flash-lite`，2026-07 更新；
+  價格頁付費層級每百萬 token 輸入 US$0.30／輸出 US$2.50，免費層級不收費）。請求：
+  `POST https://generativelanguage.googleapis.com/v1beta/models/<模型>:generateContent`，金鑰只放在 **`x-goog-api-key` 標頭**
+  （不用 `?key=`，網址可能出現在代理或錯誤記錄中；`TRANSLATE_ENDPOINT` 含查詢字串或帳密會被拒絕），
+  `systemInstruction`＝系統提示（含詞彙表），`contents`＝區塊 JSON（重試時加上模型上一次的回覆〔role `model`〕與驗證錯誤），
+  `generationConfig.responseMimeType: "application/json"`、`maxOutputTokens` 依原文長度計算。
+  回應取 `candidates[0].content.parts[].text`（略過 `thought` 部分）；`finishReason` 為 `MAX_TOKENS` 視為截斷、`SAFETY` 等其他值視為未完成，都走「重試一次」。
+  用量取 `usageMetadata.promptTokenCount`（輸入）與 `candidatesTokenCount`＋`thoughtsTokenCount`（輸出，思考 token 以輸出價計費）。
+- **溫度**：預設**不送** `temperature`（使用模型預設值）。Google 的 Gemini 3 說明寫明「For all Gemini 3 models, we strongly recommend keeping
+  the temperature parameter at its default value of 1.0」，調低可能造成重複迴圈或品質下降；翻譯的一致性由結構驗證與快取保證（同一區塊不會重翻）。
+  需要時以 `TRANSLATE_TEMPERATURE`（0–2）指定。
+- **Anthropic（備用）**：`TRANSLATE_PROVIDER=anthropic`、`ANTHROPIC_API_KEY`，預設模型 `claude-sonnet-5-5`（每百萬 token 輸入 US$2／輸出 US$10），
+  `TRANSLATE_EFFORT`（預設 `low`）對應 `output_config.effort`，系統提示使用提示快取。
 - **送出什麼**：每個區塊×每種語言一個請求。使用者訊息是區塊的「投影」JSON（只有 `title`、`blocks` 的文字與 `type`、
   `links`／`files` 的 `text`；**不含網址**），系統提示包含目標語言、`docs/I18N.md` 的「醫療用語對照」表（執行時讀取）、
   品牌對照（高端 Medigen、國光 Adimmune、台灣東洋 TTY Biopharm、賽諾菲 Sanofi、GSK、莫德納 Moderna、Novavax／Nuvaxovid 保留）、
@@ -86,58 +164,75 @@ data 分支 info/*.json（含 source.json 與 translations.json）→ deploy.yml
 - **快取**：`data/info/translations.json`，`{ "<區塊雜湊>": { "en": { title, blocks, links, files, model, at }, … } }`。
   讀取時逐筆驗證形狀，不符就當作沒有；來源已不存在的雜湊會被清掉。內容沒變的區塊永遠不會重送。
 - **保險絲**：單一區塊原文超過 20,000 字不送（`TRANSLATE_MAX_CHARS`）；同時 3 個請求（`TRANSLATE_CONCURRENCY`）；整次執行上限
-  30 分鐘（`TRANSLATE_MAX_MINUTES`）；429／5xx 依 `retry-after` 退避重試；401／403（金鑰錯誤）、400／404（模型名稱錯誤）立即停止
-  其餘請求。每個請求與總計的 token 用量、估計費用都會印在記錄中。
+  30 分鐘（`TRANSLATE_MAX_MINUTES`）。錯誤處理：
+  - **429（速率限制）／5xx**：每個請求最多試 5 次，等待時間依序取 `Retry-After` 標頭、Gemini 錯誤內容的 `RetryInfo.retryDelay`，
+    否則指數退避（2、4、8、16 秒，加少量隨機）；記錄中印「N 秒後重試」。
+  - **連續 5 次都是 429**：視為配額用完（例如每日請求數 RPD，太平洋時間午夜重置，或帳單上限）→ 停止其餘請求，已翻好的照常保存，
+    未翻的留待下次（隔天來源沒變也會補翻）。
+  - **401／403，或 Gemini 的 400 `API_KEY_INVALID`**（金鑰錯誤、停用、沒有權限）：立即停止其餘請求，訊息提示檢查 `GEMINI_API_KEY`
+    （在 GitHub 上會加註「GitHub repo 的 Actions secret」）。**400／404**（模型名稱錯誤）：立即停止並提示檢查 `TRANSLATE_MODEL`。
+  - 以上情況都不會讓這一步失敗：8 個語言檔照樣輸出（未翻的區塊帶原文），`freshness.yml` 會以 notice 提示英文版有未翻譯區塊。
+  - 金鑰不會出現在記錄中：只經由環境變數讀取，不放進網址，任何要印出的錯誤訊息都會先把金鑰字串遮蔽。
+  每個請求與總計的 token 用量、估計費用都會印在記錄中。
 - **沒有金鑰**：不呼叫 API，8 個檔照樣產生；外語檔的區塊帶繁中原文、`translated:false`，`meta.translation` 為 `"partial"`；
   結束代碼 0。前端據此顯示「此段尚未翻譯，以下為原文」。
-- **離線測試**：`TRANSLATE_ENDPOINT` 可指向本機模擬伺服器（`tests/mock-translate.mjs`，回傳相同結構並在每段文字前加 `[xx] `）；
-  只接受 https 或 `http://127.0.0.1`／`localhost`。
+- **離線測試**：`TRANSLATE_ENDPOINT` 可指向本機模擬伺服器（`tests/mock-translate.mjs`，依路徑同時模擬 Gemini 的
+  `/v1beta/models/<模型>:generateContent` 與 Anthropic 的 `/v1/messages`，回傳相同結構並在每段文字前加 `[xx] `；
+  也模擬 400 `API_KEY_INVALID`、403、404、429 與配額用完）；只接受 https 或 `http://127.0.0.1`／`localhost`。
+  Gemini 時 `TRANSLATE_ENDPOINT` 是 API 根網址（預設 `https://generativelanguage.googleapis.com/v1beta`），Anthropic 時是完整網址。
 
 ## 費用估算
 
-以 2026-09-29 實際頁面計算（沒有金鑰無法呼叫 token 計數 API，以下以字元數估算：中文約 1 token／字、ASCII 約 3.5 字元／token；
-系統提示約 1,400 tokens，未計入提示快取折扣）：
+以 2026-09-29 實際頁面計算（沒有實際呼叫 API，以下以字元數估算：中文約 1 token／字、ASCII 約 3.5 字元／token；
+系統提示約 1,400 tokens；Gemini 的分詞與 Claude 不同，實際 token 數可能差 ±30%）。價格為 `gemini-3.5-flash-lite` 付費層級
+（每百萬 token 輸入 US$0.30、輸出 US$2.50，2026-09-29 查 Google 價格頁）：
 
-| 情境 | 請求數 | 輸入 tokens | 輸出 tokens | 費用（Sonnet 5.5） |
-|---|---|---|---|---|
-| 頁面沒有變動（大多數日子） | 0 | 0 | 0 | US$0 |
-| 典型變動：一個區塊改了（例如「最新新聞稿資訊」多一則），×7 種語言 | 7 | 約 12,000 | 約 3,200 | 約 US$0.06 |
-| 最大的區塊改了（「哪裡可以接種」，含兩份縣市清單），×7 | 7 | 約 16,000 | 約 7,500 | 約 US$0.11 |
-| 第一次全部翻譯（11 個單位×7 種語言） | 77 | 約 127,000 | 約 28,000 | 約 US$0.55 |
+| 情境 | 請求數 | 輸入 tokens | 輸出 tokens | 費用（Gemini 3.5 Flash-Lite） | 參考：Sonnet 5.5 |
+|---|---|---|---|---|---|
+| 頁面沒有變動（大多數日子） | 0 | 0 | 0 | US$0 | US$0 |
+| 典型變動：一個區塊改了（例如「最新新聞稿資訊」多一則），×7 種語言 | 7 | 約 12,000 | 約 3,200 | 約 US$0.012 | 約 US$0.06 |
+| 最大的區塊改了（「哪裡可以接種」，含兩份縣市清單），×7 | 7 | 約 16,000 | 約 7,500 | 約 US$0.024 | 約 US$0.11 |
+| 第一次全部翻譯（11 個單位×7 種語言） | 77 | 約 127,000 | 約 28,000 | 約 US$0.11 | 約 US$0.55 |
 
 原文總量約 2,000 個中文字＋2,900 個結構字元；輸出以英文約 1.2 token／原文字、泰文約 2.5 token／原文字估算。
-驗證失敗重試會使該區塊費用加倍。即使來源每天都改一個區塊，每月也在 US$2 以內。
+驗證失敗重試會使該區塊費用加倍。模型若使用思考，思考 token 以輸出價另計（本程式不設定 thinking level；Google 文件寫 Gemini 3.1 Flash-Lite 預設為 `minimal`，
+3.5 Flash-Lite 的預設值文件未載明），記錄中的用量已含在內——第一次實際執行後請以記錄中的 tokens 校正上表。即使來源每天都改一個區塊，每月也約 US$0.40 以內。
+
+**免費層級**：`gemini-3.5-flash-lite` 有免費層級（不收費），但 Google 價格頁寫明免費層級的內容「Used to improve our products: Yes」
+（付費層級為 No），且速率上限較低（依帳號而定，在 Google AI Studio 的 Rate limit 頁查看）。本管線送出的只有疾管署公開網頁的文字，
+沒有個資；但若機關規定不得讓送出的內容被用於改進產品，請替該專案啟用帳單（付費層級）。第一次全部翻譯約 77 個請求，
+免費層級若觸發 429，程式會退避重試，仍不夠時留待隔天補翻。
 
 ## 常見狀況與處理
 
 | 狀況 | 結果 | 處理 |
 |---|---|---|
-| 疾管署頁面連不上、逾時、非 200 | `harvest-info` 失敗、不寫檔；`publish-data.sh` 沿用 data 分支上一版的接種資訊，院所資料照常發布，結束代碼 1 | 通常下一次排程就恢復。超過 36 小時 `freshness.yml` 會出現警告 |
+| 疾管署頁面連不上、逾時、非 200 | `harvest` 這一步失敗，後面的 step 不執行，data 分支維持上一版；排程失敗 GitHub 會寄信給 repo 擁有者 | 通常隔天就恢復，也可手動 Run workflow。超過 36 小時 `freshness.yml` 會出現警告 |
 | 頁面改版（區塊 < 5 或找不到標題） | 同上 | 用瀏覽器存下頁面 → `node scripts/harvest-info.mjs --file 頁面.html` 看解析結果 → 修改解析器並把新頁面加進 `tests/fixtures/` |
 | 某些連結消失 | 主機不在白名單（例如短網址 reurl.cc、docs.google.com） | 如需開放新主機，同時修改 `sanitize-info.mjs` 的 `INFO_ALLOWED_HOSTS`、`INFO_SCHEMA.md` 與前端的允許清單（`tests/info.test.mjs` 有允許／拒絕的範例） |
-| 金鑰未設定或無效 | 外語檔為原文（partial）；記錄中有「翻譯中止」 | 編輯更新機器上的 `~/.config/vaxmap-updater/env` |
-| 某區塊一直翻譯失敗（驗證不過） | 該區塊維持原文；記錄中有「結構驗證未通過」與原因 | 多半是數字被改寫；可改用較強的模型（`TRANSLATE_MODEL`），或調整 `buildSystemPrompt` |
+| 金鑰未設定或無效 | 外語檔為原文（partial）；記錄中有「未設定 GEMINI_API_KEY」或「翻譯中止…請檢查 GEMINI_API_KEY」 | 到 repo 的 Settings → Secrets and variables → Actions 設定或更新 `GEMINI_API_KEY`，再手動 Run workflow（force 留白即可補翻） |
+| 配額用完（連續 429） | 已翻好的保存，其餘留待下次；記錄中有「配額或速率上限已用完」 | 通常隔天自動補完；急的話到 Google AI Studio 查看用量、提高上限或啟用帳單 |
+| 排程沒有執行 | GitHub 會停用公開 repo 中「60 天沒有活動」的排程 workflow；Actions 頁面會顯示已停用 | 到 Actions →「接種資訊更新」按 Enable workflow。`freshness.yml` 也是排程，可能一起被停用，請一併確認 |
+| data 分支推送一直被拒 | `publish` 失敗（「已重試 3 次」），data 分支維持另一方寫入的版本 | 極少見（兩個寫入者剛好同時且反覆衝突）；手動 Run workflow 即可 |
+| 某區塊一直翻譯失敗（驗證不過） | 該區塊維持原文；記錄中有「結構驗證未通過」與原因 | 多半是數字被改寫；可在 workflow 的翻譯 step 加上 `TRANSLATE_MODEL`（例如較強的 Gemini 模型），或改用 `TRANSLATE_PROVIDER: anthropic`（需另設 `ANTHROPIC_API_KEY` secret 並加進翻譯 step 的 `env:`，同時更新 `tests/data-branch.test.mjs` 對 secret 數量的檢查），或調整 `buildSystemPrompt` |
 | 譯文品質有問題 | — | 見下節「強制重新翻譯」 |
-| 翻譯快取損壞 | 損壞的項目視為沒有，會重新翻譯 | 不需處理；或刪掉 data 分支上的 `info/translations.json` 讓它全部重翻（約 US$0.55） |
+| 翻譯快取損壞 | 損壞的項目視為沒有，會重新翻譯 | 不需處理；或手動 Run workflow，`force` 填 `all` 全部重翻（約 US$0.11） |
 
 ## 強制重新翻譯某個區塊
 
-在有金鑰的機器（更新機器的專用資料夾 `~/.local/share/vaxmap-updater`，或您自己的資料夾）：
+最簡單：GitHub repo → Actions →「接種資訊更新」→ Run workflow，`force` 填區塊 id（或 `title`、`all`），`langs` 選填
+（見上方「手動觸發／強制重翻」）。重翻結果由 workflow 寫回 data 分支的快取並觸發部署。
+
+在自己的電腦上重翻（例如想先看結果）：
 
 ```bash
-# 先取回 data 分支上的原文與快取
-git fetch origin data && git show FETCH_HEAD:info/source.json > data/info/source.json \
-  && git show FETCH_HEAD:info/translations.json > data/info/translations.json
-export ANTHROPIC_API_KEY=…                                   # 或寫在 ~/.config/vaxmap-updater/env
-node scripts/translate-info.mjs --force 103106 --lang en,ja   # 區塊 id（見 source.json 的 sections[].id）
-node scripts/translate-info.mjs --force title                 # 頁面標題
-node scripts/translate-info.mjs --force all                   # 全部（約 US$0.55）
+export INFO_WORK_DIR=/tmp/info-work DATA_REPO_URL=https://github.com/<帳號>/<repo> SKIP_DEPLOY_TRIGGER=1
+scripts/info-update.sh prepare && scripts/info-update.sh harvest
+GEMINI_API_KEY=… INFO_FORCE=103106 INFO_FORCE_LANGS=en,ja scripts/info-update.sh translate
+# 或直接呼叫：INFO_DATA_DIR=/tmp/info-work/data INFO_PUBLIC_DIR=/tmp/info-work/pub node scripts/translate-info.mjs --force title
 ```
 
-之後執行 `npm run publish-data`（會重新擷取並推送），或等下一次排程。注意：排程每次都從 data 分支取回快取，
-所以要把重新翻譯的結果推送到 data 分支才會保留——最簡單的作法是在更新機器上執行
-`systemctl --user start vaxmap-updater.service` 之前，先在專用資料夾以 `--force` 跑一次（快取會被 publish-data.sh 一起推送）。
-若只是想讓排程在下一次自動重翻某區塊，也可以直接從 data 分支的 `info/translations.json` 刪除該區塊雜湊的該語言項目。
+本機的結果不會自動保留（每次執行都從 data 分支取回快取）；要保留請改用 workflow，或把譯文以「離線／人工翻譯」匯入並提交到 `main`。
 
 ## 離線／人工翻譯（匯出 → 翻譯 → 匯入）
 
@@ -168,7 +263,7 @@ node scripts/translate-info.mjs --import vi vi.json                     # 逐區
 - 詞彙依本文件「翻譯」一節與 `docs/I18N.md` 的醫療用語對照（品牌名、健康幣、公費＝publicly funded 等）。
 
 **保留人工譯文**：匯入的項目存在 `data/info/translations.json`。要讓每日排程使用，請把這個檔案提交到 `main`：
-`publish-data.sh` 會把 repo 內的快取併入 data 分支上的快取，`source:"manual"` 的項目優先於機器翻譯。原文之後若再改動，
+workflow 的 `prepare` 階段（`translate-info.mjs --merge-cache`）會把 repo 內的快取併入 data 分支上的快取，`source:"manual"` 的項目優先於機器翻譯。原文之後若再改動，
 該區塊的雜湊改變，人工譯文不再適用（有金鑰時改由機器翻譯，否則顯示原文），需重新匯出、翻譯、匯入。
 
 ## 新增一種語言
@@ -176,8 +271,8 @@ node scripts/translate-info.mjs --import vi vi.json                     # 逐區
 1. 前端：依 `docs/I18N.md`「新增語系」完成（`SUPPORTED_LANGS`、`public/i18n/<lang>.json`、語言選單）。
 2. `scripts/sanitize-info.mjs`：`INFO_LANGS` 加入代碼（`tests/info.test.mjs` 會檢查它與 `SUPPORTED_LANGS` 一致）。
 3. `scripts/translate-info.mjs`：`LANG_NAMES` 加入「英文名稱（本地名稱）」，必要時在 `buildSystemPrompt` 加該語言的特殊規則。
-4. `scripts/publish-data.sh`（比對變動的語言清單）與 `.github/workflows/deploy.yml`（從 data 分支取檔的語言清單）加入代碼。
-5. `npm test`；下一次排程會自動翻譯新語言的所有區塊（約 US$0.08／語言）。
+4. `scripts/info-update.sh`（`LANGS`）與 `.github/workflows/deploy.yml`（從 data 分支取檔的語言清單）、`info-update.yml`（摘要的語言清單）加入代碼。
+5. `npm test`；下一次排程會自動翻譯新語言的所有區塊（上一版沒有該語言檔＝視為尚未翻譯，約 US$0.02／語言）。
 
 ## 與 INFO_SCHEMA 的補充
 

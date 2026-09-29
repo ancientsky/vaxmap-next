@@ -41,13 +41,16 @@ scripts/
   normalize.mjs         Conversion script: data/raw/*.json.gz → public/data/hospitals.json
   romanize.mjs          English (Latin-alphabet) transliteration of facility names / addresses / districts, called by normalize.mjs
   harvest-info.mjs      Harvests the Taiwan CDC "vaccination" pages and structures them → data/info/source.json (see docs/INFO_PIPELINE.md)
-  translate-info.mjs    Translates only the changed blocks via the Anthropic API → public/data/info/<lang>.json
+  translate-info.mjs    Translates only the changed blocks via the Google Gemini API (Anthropic optional) → public/data/info/<lang>.json
   sanitize-info.mjs     Whitelist sanitizing and validation of the vaccination info files (runs before writing and before deployment)
   keep-live-data.mjs    At deploy time, uses the newer data from the data branch (or the live site), sanitizing it first (used by GitHub Actions)
-  publish-data.sh       Runs on a machine in Taiwan: harvest facility data and vaccination info → translate → check → push to the data branch → trigger deployment only if something changed
+  info-update.sh        Stages of the daily vaccination info update (fetch the previous version → harvest → translate → check → push to the data branch), called by info-update.yml
+  push-data-branch.sh   Shared routine for updating the data branch: overwrites only the given files, keeps a single commit, and uses --force-with-lease so the two writers cannot overwrite each other
+  publish-data.sh       Runs on a machine in Taiwan: harvest facility data → check → push to the data branch → trigger deployment
   install-updater.sh    Installs a daily schedule on a Linux machine in Taiwan (systemd user timer)
 .github/workflows/
   deploy.yml            Deploys to GitHub Pages (site from main, data from the data branch)
+  info-update.yml       Updates the vaccination info section daily at 06:00 Taipei time (harvest → Gemini translation → check → data branch → trigger deployment)
   freshness.yml         Checks daily whether the data has gone more than 36 hours without an update, and sends an email if it is too old (a stale vaccination info harvest only warns)
 docs/
   DATA_SCHEMA.md        Format contract for public/data/hospitals.json
@@ -66,7 +69,8 @@ tests/
   romanize.test.mjs     Hand-checked examples of English transliteration (names, addresses, edge cases)
   e2e-info.spec.mjs     Playwright tests for the vaccination info page (desktop + mobile, language switching, deep links, malicious data)
   info-ui.test.mjs      Unit tests for the info page's pure functions (link whitelist, health-coin parsing, table cells)
-  info.test.mjs         Vaccination info: parses a sample page (fixtures/info-mpage.html), malicious pages, and tests translation and caching against a mock API (mock-translate.mjs)
+  info.test.mjs         Vaccination info: parses a sample page (fixtures/info-mpage.html), malicious pages, and tests translation and caching against a mock API (mock-translate.mjs, Gemini and Anthropic)
+  data-branch.test.mjs  Shared data branch push routine (local bare repo, simulating another writer cutting in), the full info-update.sh flow, and workflow security rules
 ```
 
 ## ローカルでの実行
@@ -140,10 +144,12 @@ npm run test:a11y  # Accessibility checks (reports issues only, never modifies a
 
 **接種情報セクション**（`public/data/info/<lang>.json`）には別のパイプラインがあります。`npm run update-info` は次を順に実行します。
 `scripts/harvest-info.mjs`（疾病管制署の「疫苗接種專區」（ワクチン接種特設）ページを取得し、各カードを段落、リスト、表、リンク、添付ファイルに解析して、
-ホワイトリストでクレンジングした上で `data/info/source.json` に書き込みます）、`scripts/translate-info.mjs`（内容が変わったブロックだけを Anthropic API に送って
-7 言語に翻訳し、結果を `data/info/translations.json` にキャッシュします。変わっていないブロックは再送されません。`ANTHROPIC_API_KEY` が設定されていない場合は翻訳せず、
+ホワイトリストでクレンジングした上で `data/info/source.json` に書き込みます）、`scripts/translate-info.mjs`（内容が変わったブロックだけを Google Gemini API
+〔`gemini-3.5-flash-lite`〕に送って 7 言語に翻訳し、結果を `data/info/translations.json` にキャッシュします。変わっていないブロックは再送されません。`GEMINI_API_KEY` が設定されていない場合は翻訳せず、
 外国語ファイルは繁体字中国語の原文のまま出力し、未翻訳と表示します）、最後に 8 つの出力ファイルを検証します。ページに接続できない場合やページが改版された場合は、ファイルを一切書き込まず、サイトは前のバージョンを使い続けます。
-一度に取得するのは 1 ページだけで、典型的な単一ブロックの変更に対する翻訳費用は約 US$0.06 です。詳細、費用の見積もり、強制再翻訳の方法は `docs/INFO_PIPELINE.md` を参照してください。
+疾病管制署の公式サイト（`www.cdc.gov.tw`）には海外からも接続できるため、このパイプラインは毎日 GitHub Actions 上で自動実行され（`.github/workflows/info-update.yml`、
+台北時間 06:00）、台湾国内のマシンは不要です。一度に取得するのは 1 ページだけで、典型的な単一ブロックの変更に対する翻訳費用は約 US$0.01 です。詳細、費用の見積もり、手動トリガーと強制再翻訳の方法は
+`docs/INFO_PIPELINE.md` を参照してください。
 
 ## 接種情報ページ（info.html）
 
@@ -180,38 +186,46 @@ UI は繁体字中国語（デフォルト）、English、日本語、한국어�
 
 ## GitHub Pages へのデプロイ（毎日のデータ自動更新を含む）
 
-**重要な前提：疾病管制署の現行サイトは海外からの接続を受け付けません。** 2026-09-21 の実測では、GitHub Actions の実行マシン（国外にあります）から
-`vaxmap.cdc.gov.tw` に接続するとタイムアウトしました（`UND_ERR_CONNECT_TIMEOUT`）。そのため、データ取得を GitHub 上で実行することはできず、
-「台湾国内のマシンで取得し、GitHub はデプロイだけを担当する」方式にしています。
+**重要な前提：疾病管制署の現行サイト（地図）は海外からの接続を受け付けません。** 2026-09-21 の実測では、GitHub Actions の実行マシン（国外にあります）から
+`vaxmap.cdc.gov.tw` に接続するとタイムアウトしました（`UND_ERR_CONNECT_TIMEOUT`）。そのため、医療機関データの取得を GitHub 上で実行することはできず、
+「台湾国内のマシンで医療機関データを取得する」方式にしています。一方、接種情報セクションの取得元は疾病管制署の公式サイト `www.cdc.gov.tw` で、海外からも接続できる（2026-09-29 の実測で HTTP 200）ため、
+接種情報のパイプライン全体を GitHub Actions 上で実行し、翻訳キーも GitHub にのみ置きます。
 
 ```
 Linux machine in Taiwan (daily at 05:30, 12:30)  GitHub
-  scripts/publish-data.sh                          
-    ├─ fetch the previous version of the data branch (translation cache)
-    ├─ harvest.mjs harvest → normalize.mjs → data checks  
-    ├─ harvest-info.mjs → translate-info.mjs → checks (vaccination info, only changed blocks are translated)
-    ├─ force-push hospitals.json, info/*.json  ──►  data branch (always a single commit, so the repo does not grow)
-    └─ gh workflow run deploy.yml only if changed ──►  deploy.yml: take the site from main + the newer data from the data branch
-                                                    → run sanitizing and checks again → deploy to Pages
+  scripts/publish-data.sh
+    ├─ harvest.mjs harvest → normalize.mjs → data checks
+    ├─ push-data-branch.sh: hospitals.json ────────►  data branch (always a single commit, so the repo does not grow)
+    └─ gh workflow run deploy.yml ─────────────────►  deploy.yml: take the site from main + the newer data from the data branch
+                                                       → run sanitizing and checks again → deploy to Pages
+                                                    info-update.yml (daily at 06:00, runs on GitHub)
+                                                      ├─ fetch the previous version of the data branch (translation cache)
+                                                      ├─ harvest-info → translate-info (Gemini) → checks
+                                                      ├─ push-data-branch.sh: info/*.json ──► data branch
+                                                      └─ trigger deploy.yml only if the screen changed
 ```
 
-`.github/workflows/deploy.yml` は、`main` への push、または手動／`publish-data.sh` からのトリガーで実行されます。`data` ブランチの
+`.github/workflows/deploy.yml` は、`main` への push、または手動／`publish-data.sh`／`info-update.yml` からのトリガーで実行されます。`data` ブランチの
 `hospitals.json` を取り出し、`scripts/keep-live-data.mjs --file` でクレンジングして `main` 内のスナップショットより新しいことを確認できた場合にのみ採用します。`data`
 ブランチがない場合は `main` 内のスナップショットをそのまま使います。`.github/workflows/freshness.yml` は毎日 Taipei time (UTC+8) の 09:00 に `data` ブランチのデータを確認し、
 36 時間以上更新されていなければその実行を失敗させ、GitHub が repo のオーナーにメールで通知します（取得マシンが動いていないか、失敗し続けていることを意味します）。
 サイト画面上の「資料快照」（データのスナップショット）にも「已 N 天未更新」（N 日間未更新）と表示されます。
 
-接種情報セクションも同じ経路をたどります。`publish-data.sh` は医療機関データの後に `harvest-info.mjs` と `translate-info.mjs` を実行し、
-`info/<lang>.json` を原文の `info/source.json`、翻訳キャッシュの `info/translations.json` とともに `data` ブランチへ push します（これによりキャッシュが実行をまたいで保持され、
-変わっていないブロックに対して翻訳費用が重ねて発生することはありません）。医療機関データと接種情報のどちらか一方が失敗しても、もう一方は通常どおり公開され、失敗した方は前のバージョンが使われます。
-どちらにもサイト画面に影響する変更がない場合は、デプロイをトリガーしません。`deploy.yml` は `data` ブランチの `info/<lang>.json` を取り出し、1 ファイルずつ
+接種情報セクションは `.github/workflows/info-update.yml` が更新します。毎日台北時間 06:00 に `harvest-info.mjs` と `translate-info.mjs` を実行し、
+`info/<lang>.json` を原文の `info/source.json`、翻訳キャッシュの `info/translations.json` とともに `data` ブランチへ書き込みます（これによりキャッシュが実行をまたいで保持され、
+変わっていないブロックに対して翻訳費用が重ねて発生することはありません。ソースに変更がなく、すべての言語が翻訳済みの場合は、翻訳 API をまったく呼び出しません）。サイト画面に変更がない場合はデプロイをトリガーしません。
+このため `data` ブランチには 2 つの書き込み側があり、どちらも `scripts/push-data-branch.sh` だけを通して書き込みます。自分の担当ファイルだけを上書きし（台湾国内のマシンは `hospitals.json` のみ、
+workflow は `info/*` のみ）、`--force-with-lease` で push します。もう一方がちょうど同時に push した場合は取得し直して再試行するため、互いに上書きすることはありません（`docs/INFO_PIPELINE.md` を参照）。
+どちらか一方が失敗しても、もう一方のデータは通常どおり更新され、失敗した方は前のバージョンが使われます。`deploy.yml` は `data` ブランチの `info/<lang>.json` を取り出し、1 ファイルずつ
 `scripts/keep-live-data.mjs --info-dir` で検証し（`sanitize-info.mjs` による厳格なチェック）、`main` 内のものより新しいことを確認できた場合にのみ採用します。`data` ブランチにこれらのファイルがない場合は
 `main` 内のバージョンを使います。`freshness.yml` はさらに `info/source.json` の前回取得時刻も確認し、36 時間を超えている場合は警告を出すだけです（メールは送りません）。
 確認するのは取得時刻であって、ソースの内容ではないため、疾病管制署のページが数日間更新されなくても誤報にはなりません。
 
-**翻訳キー**：更新用マシンの `~/.config/vaxmap-updater/env`（`install-updater.sh` がひな形を作成して `chmod 600` に設定し、systemd が
-`EnvironmentFile=` として読み込みます）に `ANTHROPIC_API_KEY=…` を記入すれば翻訳が有効になり、次回の実行から反映されます。手動で `npm run publish-data` を実行する場合もこのファイルを読み込みます。
-キーはこのマシン上にのみ存在し、git にも GitHub にも入りません。キーを記入しない場合も通常どおり動作し、外国語ページに繁体字中国語の原文が表示されるだけです。
+**翻訳キー**：Google Gemini API キーは repo の Actions secret `GEMINI_API_KEY` に保存します（設定方法は下の手順 5 を参照）。`info-update.yml` の
+「翻訳」ステップでのみプログラムに渡され、git には入らず、台湾国内のマシンにも置きません。未設定の場合も通常どおり動作し、外国語ページに繁体字中国語の原文が表示されるだけです。設定後は、次回の実行（または手動の Run workflow）で
+未翻訳分が翻訳されます。手動トリガーと強制再翻訳：Actions →「接種資訊更新」→ Run workflow で、`force` を空欄にすると通常実行、`deploy` はソースに変更がなくてもデプロイ、
+`all`／`title`／ブロック id はその部分を再翻訳します。`langs` で言語を限定できます（例：`en,ja`）。詳しくは `docs/INFO_PIPELINE.md` の「手動トリガー／強制再翻訳」を参照してください。
+（旧バージョンで台湾国内のマシンに置いていた `~/.config/vaxmap-updater/env` はもう使われません。中に `ANTHROPIC_API_KEY` がある場合は、そのファイルを削除してください。）
 
 初回セットアップ：
 
@@ -222,7 +236,10 @@ Linux machine in Taiwan (daily at 05:30, 12:30)  GitHub
 4. `scripts/install-updater.sh` を実行して、毎日のスケジュールをインストールします。専用のフォルダーが別途作成され
    （`~/.local/share/vaxmap-updater`。プログラムを修正するフォルダーとは分かれており、実行のたびに自動で `main` を同期します）、
    systemd ユーザータイマーが設定されます。マシンの電源が切れていて実行されなかったスケジュールは、起動後に補完実行されます。削除するには `scripts/install-updater.sh --uninstall` を使用します。
-5. （任意）接種情報セクションを翻訳するには、`~/.config/vaxmap-updater/env` を編集し、`ANTHROPIC_API_KEY=`（Anthropic Console で作成したキー）を記入します。
+5. 接種情報セクションを翻訳するには、Google AI Studio（https://aistudio.google.com/apikey）で Gemini API キーを作成し、
+   repo の Settings → Secrets and variables → Actions → New repository secret で、名前を `GEMINI_API_KEY`、値にキーを貼り付けます。
+   続いて Actions →「接種資訊更新」→ Run workflow で一度手動実行し（約 2～5 分）、以後は毎日台北時間 06:00 に自動実行されます。
+   無料枠では料金はかかりませんが、Google は送信した内容を製品改善に利用します（本サイトが送信するのは公式サイトの公開テキストのみです）。機関の規定で認められない場合は、そのプロジェクトで課金を有効にしてください。
 
 GitHub のセルフホストランナー（self-hosted runner）への切り替えはお勧めしません。**公開** repo では、誰が送った pull request でも
 そのマシン上でコードが実行される可能性があり、GitHub 公式もこの使い方を推奨していません。上記の方法では、そのマシンは「外向きに push する」だけで、外部からの指示は一切受け付けません。
@@ -274,9 +291,17 @@ CORS を開放するか、同一ドメインに配置する必要があります
 リンクは https で、かつホストが許可リスト（`*.gov.tw`、`*.gov.taipei`、YouTube。`docs/INFO_SCHEMA.md` を参照）に含まれるものだけを残します。機械翻訳の出力は原文と構造が完全に一致する場合にのみ採用し、URL は常に原文から取得します。
 すべてのファイルは、書き込み前と、デプロイ前に `scripts/sanitize-info.mjs` で検証されます（関連するテストは `tests/info.test.mjs` にあります）。
 
-**GitHub Actions**：各ジョブは最小権限とし（`pages: write` を持つのは deploy だけで、repo に書き込めるジョブはありません）、
-すべての action は完全な commit SHA に固定し、`${{ }}` は必ず `env:` 経由で渡してコマンドに直接は書き込まず、checkout では認証情報を保持しません。
-action のバージョンを上げる際は、あらためて確認して SHA を更新してください。repo の Settings → Environments → github-pages で、`main` ブランチからのデプロイのみが許可されていることを確認することをお勧めします。
+**GitHub Actions**：各ジョブは最小権限とし（デフォルトは `permissions: {}`。`pages: write` を持つのは deploy だけで、repo に書き込めるのは `info-update.yml` だけです。
+`contents: write` で data ブランチに push し、`actions: write` でデプロイをトリガーします）、すべての action は完全な commit SHA に固定し、`${{ }}` は必ず `env:` 経由で渡してコマンドに直接は書き込まず、
+checkout では認証情報を保持しません。action のバージョンを上げる際は、あらためて確認して SHA を更新してください（`tests/data-branch.test.mjs` がこれらの規則を検査します）。
+repo の Settings → Environments → github-pages で、`main` ブランチからのデプロイのみが許可されていることを確認することをお勧めします。
+
+**翻訳キーと書き込み権限**：`GEMINI_API_KEY` は GitHub の暗号化された secret にのみ存在し、GitHub の外には出ず、台湾国内のマシンにも置きません。`info-update.yml` は「翻訳」ステップでのみ
+環境変数として `translate-info.mjs` に渡し（取得、検証、push などのステップには渡されません）、プログラムはキーを `x-goog-api-key` ヘッダーにだけ入れ、URL には決して入れません。
+ログに出るエラーメッセージも、先にキーをマスクします。ソースに変更がなく、すべての言語が翻訳済みの場合は、このステップでもキーを翻訳プログラムに渡しません。push に使う `GITHUB_TOKEN` も「data ブランチへの書き込み」ステップにだけ渡され、
+http ヘッダーとして git に渡されるため、URL や設定ファイルには書き込まれません。注意：**`contents: write` は GitHub では単一のブランチに限定できません**（ブランチ保護ルールでも、このトークンを
+「data にしか push できない」ように制限することはできません）。「data ブランチにしか書き込まない」ことは、手順（`scripts/push-data-branch.sh`）によって保証されています。`main` にブランチ保護（pull request を必須にする）を設定し、
+このトークンが少なくとも `main` を直接変更できないようにすることをお勧めします。外部からの pull request ではこの workflow をトリガーできない（トリガーはスケジュールと手動のみ）ため、キーを取得することもできません。
 
 **GitHub Pages の制限**：HTTP ヘッダーを設定できないため、`frame-ancestors`／`X-Frame-Options`（他のサイトへの埋め込みを防ぐもの）がありません。
 本サイトにはログイン状態や、誘導クリックされ得る機微な操作がないためリスクは低いですが、ヘッダーを設定できるホストにデプロイを切り替える場合は、これらを追加してください。

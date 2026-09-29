@@ -13,7 +13,7 @@
     "harvest-info": "node scripts/harvest-info.mjs",
     "translate-info": "node scripts/translate-info.mjs",
     "update-info": "node scripts/harvest-info.mjs && node scripts/translate-info.mjs && node scripts/sanitize-info.mjs --check data/info/source.json public/data/info/*.json",
-    "test": "node --test tests/logic.test.mjs tests/i18n.test.mjs tests/romanize.test.mjs tests/data.test.mjs tests/harvest.test.mjs tests/security.test.mjs tests/info.test.mjs tests/info-ui.test.mjs",
+    "test": "node --test tests/logic.test.mjs tests/i18n.test.mjs tests/romanize.test.mjs tests/data.test.mjs tests/harvest.test.mjs tests/security.test.mjs tests/info.test.mjs tests/info-ui.test.mjs tests/data-branch.test.mjs",
     "test:e2e": "node tests/e2e.spec.mjs && node tests/e2e-info.spec.mjs",
     "test:e2e:info": "node tests/e2e-info.spec.mjs",
     "test:a11y": "node tests/a11y.spec.mjs",
