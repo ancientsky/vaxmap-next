@@ -136,6 +136,7 @@ earlyData.catch(() => { /* 錯誤由 start() 處理 */ });
 
 async function start() {
   showLoading();
+  ensureMap();
   try {
     const pending = earlyData || loadData();
     earlyData = null; // 「重試」時重新抓取
@@ -151,6 +152,33 @@ async function start() {
   init();
 }
 
+/**
+ * 地圖不需等院所資料：先建立地圖、套用網址上的視野，讓底圖圖磚與 hospitals.json 同時下載（改善 LCP）。
+ * 標記等資料載入後由 init() → recompute() 加上。
+ */
+function ensureMap() {
+  if (mapApi) return;
+  mapApi = createMap(document.getElementById('map'), {
+    onMarkerClick: (id) => openDetail(id, { fromMap: true }),
+    onMarkerHover: (id) => highlightCard(id),
+    onMoveEnd: () => { onMapMoved(); },
+    onBasemapChange: syncBasemapSwitch,
+    onTileStatus: (s, info) => {
+      // 外文介面的英文底圖失效、改用中文地名底圖時，提示地名可能是中文（停留較久）
+      if (s === 'fallback') {
+        setMapStatus({ key: info.localLabels ? 'map.tileFallbackLocal' : 'map.tileFallback', tiles: info },
+          info.localLabels ? 10000 : 6000);
+      }
+      if (s === 'failed') setMapStatus({ key: 'map.tileFailed' }, 0);
+      if (s === 'ok') setMapStatus(null, 0);
+    },
+  });
+  // 指定院所或縣市的視野要等資料才知道，交給 init()
+  const { view, id, city } = decodeState(location.hash);
+  if (view) mapApi.setView(view);
+  else if (id == null && !city) mapApi.fitTaiwan(sheetInset());
+}
+
 function init() {
   catalog = data.vaccines;
   groupsMeta = data.groups;
@@ -158,24 +186,6 @@ function init() {
   renderSnapshot();
   buildChips();
   buildCityOptions();
-
-  if (!mapApi) {
-    mapApi = createMap(document.getElementById('map'), {
-      onMarkerClick: (id) => openDetail(id, { fromMap: true }),
-      onMarkerHover: (id) => highlightCard(id),
-      onMoveEnd: () => { onMapMoved(); },
-      onBasemapChange: syncBasemapSwitch,
-      onTileStatus: (s, info) => {
-        // 外文介面的英文底圖失效、改用中文地名底圖時，提示地名可能是中文（停留較久）
-        if (s === 'fallback') {
-          setMapStatus({ key: info.localLabels ? 'map.tileFallbackLocal' : 'map.tileFallback', tiles: info },
-            info.localLabels ? 10000 : 6000);
-        }
-        if (s === 'failed') setMapStatus({ key: 'map.tileFailed' }, 0);
-        if (s === 'ok') setMapStatus(null, 0);
-      },
-    });
-  }
 
   // 由網址還原
   const initial = decodeState(location.hash);
@@ -884,12 +894,15 @@ function locate() {
 const sheet = { state: 'peek', dragging: false };
 const SHEET_STATES = ['peek', 'half', 'full'];
 
+const PEEK_LOADING_H = 220;
 function stageHeight() { return dom.stage.clientHeight; }
 
 function sheetHeightFor(s) {
   const H = stageHeight();
   if (s === 'full') return H;
   if (s === 'half') return Math.round(H * 0.55);
+  // 資料載入前清單只有骨架：沿用 CSS 的預設高度（.sheet 的 220px），避免載入中、載入後各跳一次（CLS）
+  if (!data && dom.viewDetail.hidden) return PEEK_LOADING_H;
   // peek：把手 + 摘要（或返回列）+ 一張卡片
   // 把手按鈕 44px 高，但下緣 20px 與摘要列重疊（見 CSS），實際佔用 24px
   const handle = (dom.handle.offsetHeight || 44) - 20;
