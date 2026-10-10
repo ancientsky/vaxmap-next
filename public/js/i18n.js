@@ -90,6 +90,8 @@ async function activate(l) {
 /** 啟動時呼叫一次；不會丟出例外（載入失敗時退回繁中，再失敗則只剩 HTML 內的繁中原文） */
 export async function initI18n() {
   const want = detectLang();
+  // 目標語系檔與繁中底稿同時下載（loadCatalog 會共用進行中的請求），不必等繁中載完才開始
+  if (want !== DEFAULT_LANG) loadCatalog(want).catch(() => { /* 由 activate() 處理 */ });
   try {
     base = await loadCatalog(DEFAULT_LANG);
   } catch (e) {

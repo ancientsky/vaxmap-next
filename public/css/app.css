@@ -357,6 +357,8 @@ html:lang(en), html:lang(id), html:lang(vi), html:lang(fil) {
   gap: 6px;
   padding: 10px 16px 0;
 }
+/* 品項按鈕要等院所資料才產生：先預留一列高度，避免載入後把地圖往下推（CLS） */
+.group-chips:empty::before { content: ""; height: 40px; }
 .chip {
   position: relative;
   display: inline-flex; align-items: center; justify-content: center;
@@ -669,7 +671,7 @@ html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
 
 /* Skeleton */
 .skel { list-style: none; }
-.skel .card { box-shadow: none; }
+.skel .card { box-shadow: none; min-height: 96px; } /* 不矮於實際卡片露出的高度，載入前後底部清單高度一致 */
 .skel-line {
   height: 14px; border-radius: 7px; margin: 8px 0;
   background: linear-gradient(90deg, var(--surface-2) 0%, var(--border) 50%, var(--surface-2) 100%);
@@ -1071,7 +1073,7 @@ html:not(:lang(zh)) .chip__label { overflow-wrap: anywhere; hyphens: auto; }
   .sheet {
     position: absolute;
     left: 0; right: 0; bottom: 0;
-    height: 220px;
+    height: 220px; /* 與 app.js 的 PEEK_LOADING_H 一致 */
     z-index: 600;
     border-radius: 18px 18px 0 0;
     box-shadow: var(--shadow-sheet);
