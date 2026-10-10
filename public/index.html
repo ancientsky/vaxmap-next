@@ -12,6 +12,14 @@
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/markercluster/MarkerCluster.css">
   <link rel="stylesheet" href="css/app.css">
+  <!-- 預先抓取 ES module 相依檔，避免 app.js → i18n.js → logic.js 逐層發現的請求瀑布 -->
+  <link rel="modulepreload" href="js/app.js">
+  <link rel="modulepreload" href="js/logic.js">
+  <link rel="modulepreload" href="js/i18n.js">
+  <link rel="modulepreload" href="js/data-source.js">
+  <link rel="modulepreload" href="js/map.js">
+  <link rel="modulepreload" href="js/ui.js">
+  <link rel="modulepreload" href="js/nav.js">
 </head>
 <body>
   <a class="skip-link" href="#search-input" data-i18n="skip.search">跳到搜尋</a>
@@ -56,7 +64,7 @@
     </div>
   </header>
 
-  <section class="banner" id="banner" aria-label="公告" data-i18n-attr="aria-label:banner.label" hidden>
+  <section class="banner" id="banner" aria-label="公告" data-i18n-attr="aria-label:banner.label">
     <div class="banner__body">
       <svg class="banner__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v6M12 16.5v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       <ul class="banner__list">

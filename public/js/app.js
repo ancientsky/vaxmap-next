@@ -77,7 +77,8 @@ function safeStorage(op, key, val) {
 
 // ---------------- 公告 ----------------
 const BANNER_KEY = 'vaxmap.banner.v1';
-if (safeStorage('get', BANNER_KEY) !== 'dismissed') dom.banner.hidden = false;
+// 公告預設顯示（寫在 HTML 裡），避免載入後才插入造成版面位移（CLS）；只有關閉過的人才隱藏
+if (safeStorage('get', BANNER_KEY) === 'dismissed') dom.banner.hidden = true;
 dom.bannerClose.addEventListener('click', () => {
   dom.banner.hidden = true;
   safeStorage('set', BANNER_KEY, 'dismissed');
@@ -129,10 +130,16 @@ function showError(err) {
   if (isMobile()) setSheet('half', { animate: false });
 }
 
+// 院所資料一開始就抓，與語系檔並行，不必等 initI18n() 完成才開始下載
+let earlyData = loadData();
+earlyData.catch(() => { /* 錯誤由 start() 處理 */ });
+
 async function start() {
   showLoading();
   try {
-    data = await loadData();
+    const pending = earlyData || loadData();
+    earlyData = null; // 「重試」時重新抓取
+    data = await pending;
     learnPlaceNames(data.hospitals); // 行政區英文名稱（外文介面的行政區選單、篩選標籤）
   } catch (err) {
     console.error(err);
