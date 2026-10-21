@@ -46,6 +46,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
+          check-latest: true
 
       - name: 取回 data 分支上一版（原文、翻譯快取、語言檔）並併入 repo 內的人工譯文
         run: bash scripts/info-update.sh prepare
