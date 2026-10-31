@@ -1,0 +1,3508 @@
+{
+ "sha256:183c478aa634c5b136732294cd5476eb00cdc73118e4c754015ddfb7679d5a94": {
+  "en": {
+   "title": "Vaccine brands",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "Flu vaccine"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "This year (ROC year 115, 2026) the trivalent flu vaccine is used. There are 5 publicly funded brands (standard and enhanced types), all single-dose (0.5 mL per dose). The brands and the ages they are approved for are listed below:"
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "items": [
+      "For children aged 3 and over and adults (standard type)",
+      "Adimmune: 安定伏 (Adimmune split-virion flu vaccine).",
+      "Medigen: 福喜健 (Medigen trivalent flu vaccine).",
+      "For children aged 6 months and over and adults (standard type)",
+      "Sanofi: 菲流達 (Sanofi trivalent flu vaccine).",
+      "GSK (Taiwan branch): 伏流感 (GSK flu vaccine).",
+      "TTY Biopharm: 輔流威護 (TTY Biopharm flu vaccine).",
+      "Given first to people aged 65 and over in elderly care / long-term care facilities and to the staff of those facilities (enhanced type)",
+      "TTY Biopharm: 輔流禦 (TTY Biopharm enhanced flu vaccine)",
+      "Sanofi: 菲優達 (Sanofi high-dose trivalent flu vaccine)"
+     ]
+    },
+    {
+     "type": "h",
+     "text": "COVID-19 vaccine"
+    },
+    {
+     "type": "list",
+     "items": [
+      "The COVID-19 vaccines currently available in Taiwan are an mRNA vaccine and a protein subunit vaccine, from Moderna and Novavax (Nuvaxovid) respectively.",
+      "Moderna XFG COVID-19 vaccine comes in single-dose and multi-dose forms:",
+      "Single-dose: for publicly funded recipients aged 12 and over (0.2 mL per dose). This is a new-generation COVID-19 vaccine. It contains only 1/5 of the antigen dose of the previous generation, yet clinical studies show better protection, inducing nearly twice the immune protection, and evidence shows about half as many cases of fever and of any local side effects after vaccination. The new-generation vaccine therefore offers better protection with fewer side effects.",
+      "Multi-dose: for publicly funded recipients aged 6 months to 11 years (0.25 mL per dose).",
+      "Novavax (Nuvaxovid) XFG COVID-19 vaccine comes in a single-dose form:",
+      "Single-dose: for publicly funded recipients aged 12 and over (0.5 mL per dose)."
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.034Z"
+  },
+  "ja": {
+   "title": "ワクチンの銘柄・メーカー情報",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "インフルエンザワクチン"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "今年度（115年度）は3価インフルエンザワクチンを使用します。公費ワクチンは標準型と強化型あわせて5つのメーカー・銘柄があり、いずれも1回分ずつの単回接種型（1回0.5mL）です。各ワクチンの銘柄と対象年齢は次のとおりです。"
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "items": [
+      "3歳以上の幼児および成人が接種できます（標準型）",
+      "国光生物科技（Adimmune）：安定伏（スプリット型インフルエンザワクチン）。",
+      "高端疫苗生物製剤（Medigen）：福喜健（3価インフルエンザワクチン）。",
+      "生後6か月以上の幼児および成人が接種できます（標準型）",
+      "サノフィ（Sanofi）：菲流達（3価インフルエンザワクチン）。",
+      "GSK（グラクソ・スミスクライン）台湾支社：伏流感（インフルエンザワクチン）。",
+      "台湾東洋薬品工業（TTY Biopharm）：輔流威護（インフルエンザワクチン）。",
+      "高齢者施設・長期ケア（サービス）施設などで、65歳以上の入所者・利用者とその施設の職員を優先して接種します（強化型）",
+      "台湾東洋薬品工業（TTY Biopharm）：輔流禦（インフルエンザワクチン）",
+      "サノフィ（Sanofi）：菲優達（高用量3価インフルエンザワクチン）"
+     ]
+    },
+    {
+     "type": "h",
+     "text": "新型コロナワクチン"
+    },
+    {
+     "type": "list",
+     "items": [
+      "現在、台湾国内で接種できる新型コロナワクチンは、mRNAワクチンと組換えタンパクワクチンで、メーカーはModernaとNovavax（Nuvaxovid）です。",
+      "Moderna XFG新型コロナワクチンには、単回接種型と複数回分の多回接種型があります。",
+      "単回接種型：12歳以上の公費接種対象者向け（1回0.2 mL）で、新世代の新型コロナワクチンです。新世代ワクチンに含まれる抗原量は従来のワクチンの5分の1ですが、臨床試験の結果では防御効果がより高く、従来のワクチンの約2倍の免疫防御力が誘導されることが示されています。また、接種後の発熱や局所の副反応は約半分に減ることが実証データで示されています。そのため、新世代の新型コロナワクチンは、防御効果が高く副反応が少ないワクチンです。",
+      "多回接種型：生後6か月から11歳の公費接種対象者向け（1回0.25 mL）。",
+      "Novavax（Nuvaxovid）XFG新型コロナワクチンは単回接種型です。",
+      "単回接種型：12歳以上の公費接種対象者向け（1回0.5 mL）。"
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.125Z"
+  },
+  "ko": {
+   "title": "백신 제조사 정보",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "독감 백신"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "올해(115년)에는 3가 독감 백신을 사용하며, 공비 백신은 표준형과 고용량(강화형)을 합쳐 5개 제조사 제품이 있습니다. 모두 1회분 단회용(1회 0.5mL)이며, 제품별 적용 연령은 다음과 같습니다."
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "items": [
+      "만 3세 이상 유아 및 성인용 (표준형)",
+      "Adimmune(國光生物科技): 안정복(安定伏) 분할형 독감 백신",
+      "Medigen(高端疫苗生物製劑): 푸시젠(福喜健) 3가 독감 백신",
+      "생후 6개월 이상 유아 및 성인용 (표준형)",
+      "Sanofi(賽諾菲): 페이류다(菲流達) 3가 독감 백신",
+      "GSK(荷商葛蘭素史克藥廠 대만 지사): 푸류간(伏流感) 독감 백신",
+      "TTY Biopharm(台灣東洋藥品工業): 푸류웨이후(輔流威護) 독감 백신",
+      "요양·장기요양(서비스) 등 시설의 65세 이상 입소자와 소속 직원에게 우선 제공 (강화형)",
+      "TTY Biopharm(台灣東洋藥品工業): 푸류위(輔流禦) 독감 백신",
+      "Sanofi(賽諾菲): 페이유다(菲優達) 고용량 3가 독감 백신"
+     ]
+    },
+    {
+     "type": "h",
+     "text": "COVID-19 백신"
+    },
+    {
+     "type": "list",
+     "items": [
+      "현재 국내에서 접종 가능한 COVID-19 백신은 mRNA 백신과 단백질 아단위 백신이며, 제조사는 각각 Moderna와 Novavax(Nuvaxovid)입니다.",
+      "Moderna XFG COVID-19 백신은 1회용(단회용)과 여러 회분용(다회용) 두 가지 제형이 있습니다.",
+      "1회용: 만 12세 이상 공비 접종 대상에게 적용됩니다(1회 0.2 mL). 신세대 COVID-19 백신입니다. 신세대 백신은 항원 용량이 이전 세대 백신의 1/5에 불과하지만, 임상 연구 결과 보호 효과가 더 좋아 이전 세대보다 약 2배 높은 면역 보호력을 이끌어냈고, 접종 후 발열과 국소 이상반응이 약 절반으로 줄었다는 근거 자료가 있습니다. 따라서 신세대 COVID-19 백신은 보호 효과가 더 좋고 부작용은 더 적은 백신입니다.",
+      "다회용: 생후 6개월~11세 공비 접종 대상에게 적용됩니다(1회 0.25 mL).",
+      "Novavax(Nuvaxovid) XFG COVID-19 백신은 1회용 제형입니다.",
+      "1회용: 만 12세 이상 공비 접종 대상에게 적용됩니다(1회 0.5 mL)."
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.218Z"
+  },
+  "id": {
+   "title": "Informasi merek vaksin",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "Vaksin influenza"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Tahun ini (ROC 115, 2026) digunakan vaksin influenza trivalen. Ada 5 merek vaksin bersubsidi (tipe standar dan tipe penguat), semuanya dosis tunggal (0,5 mL per dosis). Merek dan usia yang dapat menerimanya adalah sebagai berikut:"
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "items": [
+      "Untuk anak usia 3 tahun ke atas dan dewasa (tipe standar)",
+      "Adimmune: 安定伏 (vaksin influenza split-virion).",
+      "Medigen: 福喜健 (vaksin influenza trivalen).",
+      "Untuk anak usia 6 bulan ke atas dan dewasa (tipe standar)",
+      "Sanofi: 菲流達 (vaksin influenza trivalen).",
+      "GSK (cabang Taiwan dari perusahaan Belanda): 伏流感 (vaksin influenza).",
+      "TTY Biopharm: 輔流威護 (vaksin influenza).",
+      "Diutamakan bagi penghuni berusia 65 tahun ke atas di panti jompo/perawatan jangka panjang dan staf lembaga tersebut (tipe penguat)",
+      "TTY Biopharm: 輔流禦 (vaksin influenza)",
+      "Sanofi: 菲優達 (vaksin influenza trivalen dosis tinggi)"
+     ]
+    },
+    {
+     "type": "h",
+     "text": "Vaksin COVID-19"
+    },
+    {
+     "type": "list",
+     "items": [
+      "Vaksin COVID-19 yang tersedia di Taiwan saat ini adalah vaksin mRNA dan vaksin subunit protein, dengan merek Moderna dan Novavax (Nuvaxovid).",
+      "Vaksin COVID-19 Moderna XFG tersedia dalam kemasan dosis tunggal dan multidosis:",
+      "Dosis tunggal: untuk penerima vaksin bersubsidi usia 12 tahun ke atas (0,2 mL per dosis), yaitu vaksin COVID-19 generasi baru. Vaksin generasi baru mengandung antigen hanya 1/5 dari generasi sebelumnya. Studi klinis menunjukkan perlindungan lebih baik, dengan kekebalan hampir 2 kali lipat dibanding generasi sebelumnya, dan data bukti menunjukkan demam serta reaksi lokal setelah vaksinasi berkurang sekitar setengahnya. Jadi vaksin generasi baru memberi perlindungan lebih baik dengan efek samping lebih ringan.",
+      "Multidosis: untuk penerima vaksin bersubsidi usia 6 bulan sampai 11 tahun (0,25 mL per dosis).",
+      "Vaksin COVID-19 Novavax (Nuvaxovid) XFG tersedia dalam dosis tunggal:",
+      "Dosis tunggal: untuk penerima vaksin bersubsidi usia 12 tahun ke atas (0,5 mL per dosis)."
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.312Z"
+  },
+  "vi": {
+   "title": "Thông tin các hãng vắc-xin",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "Vắc-xin cúm"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Năm nay (năm 115) sử dụng vắc-xin cúm tam giá; vắc-xin do nhà nước chi trả có 5 hãng (loại tiêu chuẩn và loại tăng cường), đều là liều đơn (mỗi liều 0,5 mL). Các hãng và độ tuổi áp dụng như sau:"
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "items": [
+      "Dùng cho trẻ từ 3 tuổi và người lớn (loại tiêu chuẩn)",
+      "Adimmune (國光生物科技): 安定伏 (An Định Phục), vắc-xin cúm bất hoạt phân đoạn.",
+      "Medigen (高端疫苗生物製劑): 福喜健 (Phúc Hỷ Kiện), vắc-xin cúm tam giá.",
+      "Dùng cho trẻ từ 6 tháng tuổi và người lớn (loại tiêu chuẩn)",
+      "Sanofi (賽諾菲): 菲流達 (Phi Lưu Đạt), vắc-xin cúm tam giá.",
+      "GSK (荷商葛蘭素史克), chi nhánh Đài Loan: 伏流感 (Phục Lưu Cảm), vắc-xin cúm.",
+      "TTY Biopharm (台灣東洋藥品): 輔流威護 (Phụ Lưu Uy Hộ), vắc-xin cúm.",
+      "Ưu tiên cho người từ 65 tuổi trở lên được chăm sóc tại các cơ sở dưỡng lão/chăm sóc dài hạn và nhân viên của các cơ sở này (loại tăng cường)",
+      "TTY Biopharm (台灣東洋藥品): 輔流禦 (Phụ Lưu Ngự), vắc-xin cúm",
+      "Sanofi (賽諾菲): 菲優達 (Phi Ưu Đạt), vắc-xin cúm tam giá liều cao"
+     ]
+    },
+    {
+     "type": "h",
+     "text": "Vắc-xin COVID-19"
+    },
+    {
+     "type": "list",
+     "items": [
+      "Hiện vắc-xin COVID-19 được cung cấp trong nước gồm vắc-xin mRNA và vắc-xin tiểu đơn vị protein, của hai hãng Moderna và Novavax (Nuvaxovid).",
+      "Vắc-xin COVID-19 Moderna XFG có dạng liều đơn và dạng nhiều liều:",
+      "Dạng liều đơn: dùng cho đối tượng do nhà nước chi trả từ đủ 12 tuổi trở lên (mỗi liều 0,2 mL), là vắc-xin COVID-19 thế hệ mới. Lượng kháng nguyên của vắc-xin thế hệ mới chỉ bằng 1/5 thế hệ trước; kết quả nghiên cứu lâm sàng cho thấy hiệu quả bảo vệ tốt hơn, tạo miễn dịch bảo vệ cao gần gấp 2 lần, và số trường hợp sốt cũng như phản ứng phụ tại chỗ sau tiêm giảm khoảng một nửa. Vì vậy, vắc-xin COVID-19 thế hệ mới có hiệu quả bảo vệ tốt hơn và ít tác dụng phụ hơn.",
+      "Dạng nhiều liều: dùng cho đối tượng do nhà nước chi trả từ đủ 6 tháng đến 11 tuổi (mỗi liều 0,25 mL).",
+      "Vắc-xin COVID-19 Novavax (Nuvaxovid) XFG có dạng liều đơn:",
+      "Dạng liều đơn: dùng cho đối tượng do nhà nước chi trả từ đủ 12 tuổi trở lên (mỗi liều 0,5 mL)."
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.414Z"
+  },
+  "th": {
+   "title": "ข้อมูลยี่ห้อวัคซีน",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "วัคซีนไข้หวัดใหญ่"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "ปีนี้ (ปี 115 หรือ 2026) ใช้วัคซีนไข้หวัดใหญ่ชนิด 3 สายพันธุ์ วัคซีนที่รัฐสนับสนุนมีทั้งหมด 5 ยี่ห้อ (ชนิดมาตรฐานและชนิดเสริมประสิทธิภาพ) ทั้งหมดเป็นชนิดขวดเดียวต่อหนึ่งโดส (โดสละ 0.5mL) ยี่ห้อและช่วงอายุที่ใช้ได้มีดังนี้:"
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "items": [
+      "สำหรับเด็กเล็กอายุ 3 ปีขึ้นไปและผู้ใหญ่ (ชนิดมาตรฐาน)",
+      "Adimmune (國光生物科技): วัคซีนไข้หวัดใหญ่ชนิดแยกส่วนไวรัส 安定伏",
+      "Medigen (高端疫苗生物製劑): วัคซีนไข้หวัดใหญ่ 3 สายพันธุ์ 福喜健",
+      "สำหรับเด็กเล็กอายุ 6 เดือนขึ้นไปและผู้ใหญ่ (ชนิดมาตรฐาน)",
+      "Sanofi (賽諾菲): วัคซีนไข้หวัดใหญ่ 3 สายพันธุ์ 菲流達",
+      "GSK สาขาไต้หวัน (荷商葛蘭素史克藥廠): วัคซีนไข้หวัดใหญ่ 伏流感",
+      "TTY Biopharm (台灣東洋藥品工業): วัคซีนไข้หวัดใหญ่ 輔流威護",
+      "จัดสรรให้ผู้รับการดูแลอายุ 65 ปีขึ้นไปในสถานดูแลผู้สูงอายุและสถานดูแลระยะยาว รวมถึงเจ้าหน้าที่ของสถานดังกล่าวเป็นลำดับแรก (ชนิดเสริมประสิทธิภาพ)",
+      "TTY Biopharm (台灣東洋藥品工業): วัคซีนไข้หวัดใหญ่ 輔流禦",
+      "Sanofi (賽諾菲): วัคซีนไข้หวัดใหญ่ 3 สายพันธุ์ชนิดโดสสูง 菲優達"
+     ]
+    },
+    {
+     "type": "h",
+     "text": "วัคซีนโควิด-19"
+    },
+    {
+     "type": "list",
+     "items": [
+      "วัคซีนโควิด-19 ที่ให้บริการฉีดในไต้หวันขณะนี้มี 2 ชนิด คือวัคซีน mRNA และวัคซีนโปรตีนซับยูนิต ยี่ห้อคือ Moderna และ Novavax (Nuvaxovid)",
+      "วัคซีนโควิด-19 Moderna XFG มี 2 รูปแบบ คือขวดเดียวต่อโดส และขวดหลายโดส:",
+      "ขวดเดียวต่อโดส: ใช้กับผู้มีสิทธิ์ฉีดวัคซีนที่รัฐสนับสนุนอายุ 12 ปีขึ้นไป (โดสละ 0.2 mL) เป็นวัคซีนโควิด-19 รุ่นใหม่ ซึ่งมีปริมาณแอนติเจนเพียง 1/5 ของวัคซีนรุ่นก่อน ผลการวิจัยทางคลินิกแสดงว่าให้การป้องกันดีกว่า กระตุ้นภูมิคุ้มกันได้มากกว่ารุ่นก่อนเกือบ 2 เท่า และข้อมูลเชิงประจักษ์แสดงว่าอาการไข้และอาการข้างเคียงเฉพาะที่หลังฉีดลดลงประมาณครึ่งหนึ่ง ดังนั้นวัคซีนโควิด-19 รุ่นใหม่จึงเป็นวัคซีนที่ป้องกันได้ดีกว่าและมีผลข้างเคียงน้อยกว่า",
+      "ขวดหลายโดส: ใช้กับผู้มีสิทธิ์ฉีดวัคซีนที่รัฐสนับสนุนอายุ 6 เดือนถึง 11 ปี (โดสละ 0.25 mL)",
+      "วัคซีนโควิด-19 Novavax (Nuvaxovid) XFG เป็นชนิดขวดเดียวต่อโดส:",
+      "ขวดเดียวต่อโดส: ใช้กับผู้มีสิทธิ์ฉีดวัคซีนที่รัฐสนับสนุนอายุ 12 ปีขึ้นไป (โดสละ 0.5 mL)"
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.502Z"
+  },
+  "tl": {
+   "title": "Impormasyon sa mga brand ng bakuna",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "Bakuna sa trangkaso"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Ngayong taon (ROC 115), trivalent na bakuna sa trangkaso ang gagamitin. May 5 brand ng publicly funded na bakuna (standard at enhanced na uri), lahat ay single-dose (0.5 mL bawat dose). Narito ang mga brand at ang angkop na edad:"
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "items": [
+      "Para sa mga batang may edad 3 pataas at mga adult (standard)",
+      "Adimmune Corporation: 安定伏 (Adimmune) split-virion na bakuna sa trangkaso.",
+      "Medigen Vaccine Biologics Corporation: 福喜健 (Medigen) trivalent na bakuna sa trangkaso.",
+      "Para sa mga batang may edad 6 na buwan pataas at mga adult (standard)",
+      "Sanofi: 菲流達 (Sanofi) trivalent na bakuna sa trangkaso.",
+      "GlaxoSmithKline (GSK), sangay sa Taiwan: 伏流感 (GSK) na bakuna sa trangkaso.",
+      "TTY Biopharm Company Limited: 輔流威護 (TTY Biopharm) na bakuna sa trangkaso.",
+      "Inuuna para sa mga residente ng nursing home at long-term care facility na may edad 65 pataas at sa mga staff nila (enhanced)",
+      "TTY Biopharm Company Limited: 輔流禦 (TTY Biopharm) na bakuna sa trangkaso",
+      "Sanofi: 菲優達 (Sanofi) high-dose trivalent na bakuna sa trangkaso"
+     ]
+    },
+    {
+     "type": "h",
+     "text": "Bakuna sa COVID-19"
+    },
+    {
+     "type": "list",
+     "items": [
+      "Ang mga bakuna sa COVID-19 na available ngayon sa Taiwan ay mRNA vaccine at protein subunit vaccine, mula sa Moderna at Novavax (Nuvaxovid).",
+      "May single-dose at multi-dose na anyo ang Moderna XFG na bakuna sa COVID-19:",
+      "Single-dose: para sa mga publicly funded na kwalipikadong may edad 12 pataas (0.2 mL bawat dose); ito ang bagong henerasyon ng bakuna sa COVID-19. Ang dose ng antigen nito ay 1/5 lamang ng nakaraang henerasyon, ngunit ayon sa clinical studies, mas maganda ang proteksyon: halos 2 beses na mas malakas ang immune protection kumpara sa nakaraang bakuna, at halos kalahati lang ang bilang ng nagkaka-lagnat at anumang lokal na side effect pagkatapos magpabakuna. Kaya mas maganda ang proteksyon at mas mababa ang side effect ng bagong henerasyong bakunang ito.",
+      "Multi-dose: para sa mga publicly funded na kwalipikadong may edad 6 na buwan hanggang 11 taon (0.25 mL bawat dose).",
+      "Ang Novavax (Nuvaxovid) XFG na bakuna sa COVID-19 ay single-dose:",
+      "Single-dose: para sa mga publicly funded na kwalipikadong may edad 12 pataas (0.5 mL bawat dose)."
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.595Z"
+  }
+ },
+ "sha256:25b32590e074e4c4c4beefcbd7c5d7b03bba7b62a28154127b07cd98473650b2": {
+  "en": {
+   "title": "2026 (ROC year 115) \"Flu Shot in One Arm, COVID-19 in the Other\" Vaccination Page: Protect Your Lungs and Heart",
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.034Z"
+  },
+  "ja": {
+   "title": "115年度（2026年）「左流右新」肺と心臓を守るワクチン接種特設ページ",
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.125Z"
+  },
+  "ko": {
+   "title": "115년(2026) 왼팔엔 독감, 오른팔엔 코로나19 — 폐와 심장을 지키는 백신 접종 안내",
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.218Z"
+  },
+  "id": {
+   "title": "Vaksinasi Tahun 2026 (ROC 115): Flu di Satu Lengan, COVID-19 di Lengan Lain, Lindungi Paru dan Jantung",
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.312Z"
+  },
+  "vi": {
+   "title": "Khu tiêm chủng năm 115 (2026): “Một tay tiêm cúm, một tay tiêm COVID-19” – bảo vệ phổi, chăm sóc tim",
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.414Z"
+  },
+  "th": {
+   "title": "ปี 115 (2026) รณรงค์ “ฉีดไข้หวัดใหญ่แขนหนึ่ง โควิด-19 อีกแขนหนึ่ง” ปกป้องปอดและหัวใจ: ศูนย์ข้อมูลการฉีดวัคซีน",
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.502Z"
+  },
+  "tl": {
+   "title": "Pagbabakuna sa 2026 (ROC 115): “Flu Shot sa Isang Braso, COVID-19 sa Kabila” para Protektahan ang Baga at Puso",
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.595Z"
+  }
+ },
+ "sha256:35f8475469aa83c7c9001e6ca6fce5b3a900ea55f118e49beeb98977ea58478c": {
+  "ja": {
+   "title": "公費流感／新冠疫苗はどこで接種できますか？（指定された量販店の地域接種ステーションを含みます）",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "【情報は各自治体衛生局、契約医療機関、量販店の発表に基づき、随時更新されます】"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲"
+      },
+      {
+       "text": "流感・新冠・肺炎鏈球菌疫苗及び流感抗病毒藥劑マップ"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "1.公費のインフルエンザまたはCOVID-19ワクチンの接種を受ける前に、お近くの契約医療機関に事前に予約するか、お電話でお問い合わせいただき、ワクチンの有無を確認してからお出かけいただくことをお勧めします。長時間の待ち時間や無駄足を防ぐためです。"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "2.医療機関の診療情報は、中央健康保險署から提供されたものであり、あくまで参考情報です。診療時間は急遽変更される場合があるため、接種前に医療機関へ電話でご確認いただくことをお勧めします。"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "【公費インフルエンザワクチン】各自治体の契約医療機関及び診療時間の検索"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "臺北市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "新北市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "基隆市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "宜蘭縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "桃園市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "新竹市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "新竹縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "苗栗縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺中市"
+      },
+      {
+       "text": "、彰化縣、"
+      },
+      {
+       "text": "南投縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "雲林縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "嘉義市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "嘉義縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺南市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "花蓮縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺東縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "高雄市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "屏東縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "澎湖縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "連江縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "金門縣"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "【公費COVID-19ワクチン】各自治体の契約医療機関及び診療時間の検索"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "臺北市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "新北市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "基隆市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "宜蘭縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "連江縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "金門縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "桃園市"
+      },
+      {
+       "text": "、新竹市、"
+      },
+      {
+       "text": "新竹縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "苗栗縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺中市(成人"
+      },
+      {
+       "text": ")"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "臺中市(幼兒)"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "彰化縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "南投縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "雲林縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "嘉義市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "嘉義縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "台南市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "高雄市"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "屏東縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "澎湖縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "花蓮縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "台東縣"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "【2026/11/02以降 第二段階対象者の量販店接種ステーション】"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲全聯、大全聯の接種ステーション検索"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲萬家福、樂家康の接種ステーション検索"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-31T01:26:11.898Z"
+  },
+  "ko": {
+   "title": "哪裡可以接種公費流感/新冠疫苗? (含指定量販店設置社區接種站)",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "【資訊依各縣市衛生局、合約院所、量販店公告為準，持續更新】"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲"
+      },
+      {
+       "text": "流感新冠肺鏈疫苗及流感藥劑地圖"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "1.建議民眾在接種公費流感或新冠疫苗前，可先向鄰近合約院所預約，或先電話詢問，並確認有無疫苗後再前往，以免久候或白跑一趟。"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "2.醫療院所開診資訊來源為中央健康保險署，僅供參考，看診時段可能臨時異動，建議接種前電洽院所確認。"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "【公費流感疫苗】各縣市合約院所及看診時間查詢"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Taipei City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "New Taipei City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Keelung City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Yilan County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taoyuan City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Hsinchu City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Hsinchu County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Miaoli County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taichung City"
+      },
+      {
+       "text": "、彰化縣、"
+      },
+      {
+       "text": "Nantou County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Yunlin County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Chiayi City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Chiayi County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Tainan City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Hualien County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taitung County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Kaohsiung City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Pingtung County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Penghu County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Lienchiang County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Kinmen County"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "【公費新冠疫苗】各縣市合約院所及看診時間查詢"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Taipei City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "New Taipei City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Keelung City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Yilan County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Lienchiang County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Kinmen County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taoyuan City"
+      },
+      {
+       "text": "、新竹市、"
+      },
+      {
+       "text": "Hsinchu County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Miaoli County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taichung City(성인"
+      },
+      {
+       "text": ")"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taichung City(영유아)"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "彰化縣"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Nantou County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Yunlin County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Chiayi City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Chiayi County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Tainan City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Kaohsiung City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Pingtung County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Penghu County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Hualien County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taitung County"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "【2026/11/02起 第二階段對象量販店接種站】"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲PX Mart, Mega PX Mart 예방접종소 조회"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲Wan-Ja-Fu, Le-Jia-Kang 예방접종소 조회"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-31T01:26:10.878Z"
+  },
+  "id": {
+   "title": "Di mana bisa mendapatkan vaksin influenza/COVID-19 yang didanai publik? (Termasuk pos vaksinasi komunitas di hypermarket tertentu)",
+   "blocks": [
+    {
+     "type": "h",
+     "text": "[Informasi bergantung pada pengumuman dari biro kesehatan masing-masing kota/kabupaten, klinik kontrak, dan hypermarket, serta terus diperbarui]"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲"
+      },
+      {
+       "text": "Peta Vaksin Influenza, COVID-19, Pneumokokus, serta Obat Antivirus Flu"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "1.Masyarakat disarankan untuk membuat janji temu terlebih dahulu dengan klinik kontrak terdekat, atau menelepon untuk bertanya, serta mengonfirmasi ketersediaan vaksin sebelum berkunjung, guna menghindari waktu tunggu yang lama atau perjalanan yang sia-sia."
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "2.Sumber informasi jam buka fasilitas medis berasal dari National Health Insurance Administration dan hanya sebagai referensi. Jam konsultasi dapat berubah sewaktu-waktu, dan disarankan untuk menelepon klinik guna mengonfirmasi sebelum vaksinasi."
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "[Vaksin Influenza yang Didanai Publik] Pencarian Klinik Kontrak dan Jam Konsultasi di Berbagai Kota/Kabupaten"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Taipei City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "New Taipei City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Keelung City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Yilan County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taoyuan City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Hsinchu City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Hsinchu County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Miaoli County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taichung City"
+      },
+      {
+       "text": "、彰化縣、"
+      },
+      {
+       "text": "Nantou County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Yunlin County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Chiayi City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Chiayi County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Tainan City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Hualien County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taitung County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Kaohsiung City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Pingtung County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Penghu County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Lienchiang County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Kinmen County"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "[Vaksin COVID-19 yang Didanai Publik] Pencarian Klinik Kontrak dan Jam Konsultasi di Berbagai Kota/Kabupaten"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Taipei City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "New Taipei City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Keelung City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Yilan County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Lienchiang County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Kinmen County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taoyuan City"
+      },
+      {
+       "text": "、新竹市、"
+      },
+      {
+       "text": "Hsinchu County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Miaoli County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taichung City (Dewasa"
+      },
+      {
+       "text": ")"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taichung City (Anak-anak)"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Changhua County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Nantou County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Yunlin County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Chiayi City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Chiayi County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Tainan City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Kaohsiung City"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Pingtung County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Penghu County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Hualien County"
+      },
+      {
+       "text": "、"
+      },
+      {
+       "text": "Taitung County"
+      }
+     ]
+    },
+    {
+     "type": "h",
+     "text": "[Pos Vaksinasi Hypermarket Tahap Kedua Mulai 2026/11/02]"
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲Pencarian Pos Vaksinasi PX Mart dan Mega PX Mart"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "▲Pencarian Pos Vaksinasi Wan-Chia-Fu dan Le-Jia-Kang"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-30T01:35:44.798Z"
+  }
+ },
+ "sha256:45037d4f9686f8b77107cda85bb3d717578a13edb776f38d8b203d603db16061": {
+  "en": {
+   "title": "Other health education resources",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Video: Taiwan Academy of Family Physicians, with Director-General Lo Yi-chun: getting flu and COVID-19 vaccines together can effectively lower the risk of severe lung complications, heart attack and stroke"
+    },
+    {
+     "text": "Video: Taiwan Academy of Family Physicians, experts on COVID-19 vaccination myths"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.034Z"
+  },
+  "ja": {
+   "title": "その他の健康教育・啓発資料",
+   "blocks": [],
+   "links": [
+    {
+     "text": "動画：台湾家庭医学医学会：羅一鈞署長「インフルエンザと新型コロナのワクチンを同時に接種すると、肺の重症化、心筋梗塞、脳卒中のリスクを効果的に下げられます」"
+    },
+    {
+     "text": "動画：台湾家庭医学医学会：新型コロナワクチン接種の誤解 専門家編"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.125Z"
+  },
+  "ko": {
+   "title": "기타 보건 교육 홍보 자료",
+   "blocks": [],
+   "links": [
+    {
+     "text": "동영상: 대만가정의학회 — 뤄이쥔(羅一鈞) 서장: 독감과 COVID-19 백신을 함께 맞으면 폐 합병증 중증, 심근경색, 뇌졸중 위험을 효과적으로 낮출 수 있습니다"
+    },
+    {
+     "text": "동영상: 대만가정의학회 — COVID-19 백신 접종 오해 바로잡기 전문가 편"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.218Z"
+  },
+  "id": {
+   "title": "Sumber edukasi kesehatan lainnya",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Video: Taiwan Academy of Family Medicine, Dirjen Lo Yi-chun: Vaksin flu dan COVID-19 sekaligus dapat menurunkan risiko komplikasi berat paru, serangan jantung, dan stroke"
+    },
+    {
+     "text": "Video: Taiwan Academy of Family Medicine, pakar meluruskan mitos vaksin COVID-19"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.312Z"
+  },
+  "vi": {
+   "title": "Các tài liệu giáo dục sức khỏe khác",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Video: Hội Y học Gia đình Đài Loan – Cục trưởng La Nhất Quân (羅一鈞): tiêm đồng thời vắc-xin cúm và COVID-19 giúp giảm hiệu quả nguy cơ biến chứng nặng ở phổi, nhồi máu cơ tim và đột quỵ"
+    },
+    {
+     "text": "Video: Hội Y học Gia đình Đài Loan – Chuyên gia giải đáp các lầm tưởng về tiêm vắc-xin COVID-19"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.414Z"
+  },
+  "th": {
+   "title": "สื่อให้ความรู้และส่งเสริมสุขภาพอื่น ๆ",
+   "blocks": [],
+   "links": [
+    {
+     "text": "วิดีโอสั้น: สมาคมเวชศาสตร์ครอบครัวแห่งไต้หวัน — ผู้อำนวยการใหญ่ 羅一鈞: ฉีดวัคซีนไข้หวัดใหญ่และโควิด-19 พร้อมกัน ช่วยลดความเสี่ยงปอดอักเสบรุนแรง กล้ามเนื้อหัวใจตาย และโรคหลอดเลือดสมองได้อย่างมีประสิทธิภาพ"
+    },
+    {
+     "text": "วิดีโอสั้น: สมาคมเวชศาสตร์ครอบครัวแห่งไต้หวัน — ผู้เชี่ยวชาญไขความเชื่อผิด ๆ เรื่องการฉีดวัคซีนโควิด-19"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.502Z"
+  },
+  "tl": {
+   "title": "Iba pang materyales sa edukasyong pangkalusugan",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Video: Taiwan Academy of Family Physicians – Director-General Lo I-Chun: Ang sabay na pagbabakuna laban sa trangkaso at COVID-19 ay epektibong nagpapababa ng panganib ng malubhang komplikasyon sa baga, atake sa puso at stroke"
+    },
+    {
+     "text": "Video: Taiwan Academy of Family Physicians – Mga eksperto: Mga maling paniniwala tungkol sa bakuna sa COVID-19"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.595Z"
+  }
+ },
+ "sha256:4832685928d78d99402d6c05cd20d8085aa1efbbd6511ab2a511d0ed7de08821": {
+  "en": {
+   "title": "Want to know more about severe complications of flu and COVID-19?",
+   "blocks": [],
+   "links": [
+    {
+     "text": "COVID-19 severe complications page"
+    },
+    {
+     "text": "Influenza severe complications page"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.034Z"
+  },
+  "ja": {
+   "title": "インフルエンザと新型コロナの重症化・防疫情報をもっと知る",
+   "blocks": [],
+   "links": [
+    {
+     "text": "新型コロナ重症化特設ページ"
+    },
+    {
+     "text": "インフルエンザ重症化特設ページ"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.125Z"
+  },
+  "ko": {
+   "title": "독감·COVID-19 합병증 중증 방역 정보 더 알아보기",
+   "blocks": [],
+   "links": [
+    {
+     "text": "COVID-19 합병증 중증 안내"
+    },
+    {
+     "text": "독감 합병증 중증 안내"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.218Z"
+  },
+  "id": {
+   "title": "Ingin tahu lebih banyak tentang pencegahan komplikasi berat flu dan COVID-19",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Halaman khusus komplikasi berat COVID-19"
+    },
+    {
+     "text": "Halaman khusus komplikasi berat influenza"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.312Z"
+  },
+  "vi": {
+   "title": "Tìm hiểu thêm về thông tin phòng chống biến chứng nặng của cúm và COVID-19",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Chuyên trang về COVID-19 biến chứng nặng"
+    },
+    {
+     "text": "Chuyên trang về cúm biến chứng nặng"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.414Z"
+  },
+  "th": {
+   "title": "ต้องการทราบข้อมูลการป้องกันภาวะแทรกซ้อนรุนแรงจากไข้หวัดใหญ่และโควิด-19 เพิ่มเติม",
+   "blocks": [],
+   "links": [
+    {
+     "text": "ศูนย์ข้อมูลภาวะแทรกซ้อนรุนแรงจากโควิด-19"
+    },
+    {
+     "text": "ศูนย์ข้อมูลภาวะแทรกซ้อนรุนแรงจากไข้หวัดใหญ่"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.502Z"
+  },
+  "tl": {
+   "title": "Alamin ang higit pa tungkol sa pag-iwas sa malubhang komplikasyon ng trangkaso at COVID-19",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Pahina tungkol sa malubhang komplikasyon ng COVID-19"
+    },
+    {
+     "text": "Pahina tungkol sa malubhang komplikasyon ng trangkaso"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.595Z"
+  }
+ },
+ "sha256:599e0cb7ed5c361d32a4dc4ae845d76bed63c026a5b437ea048e3cbca4ffd550": {
+  "en": {
+   "title": "Frequently asked questions",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Seasonal flu vaccine Q&A"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "COVID-19 vaccine Q&A"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.034Z"
+  },
+  "ja": {
+   "title": "よくある質問",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "季節性インフルエンザワクチンQ&A"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "新型コロナワクチンQ&A"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.125Z"
+  },
+  "ko": {
+   "title": "자주 묻는 질문",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "계절 독감 백신 Q&A"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "COVID-19 백신 Q&A"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.218Z"
+  },
+  "id": {
+   "title": "Pertanyaan yang sering diajukan",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Tanya jawab vaksin flu musiman"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Tanya jawab vaksin COVID-19"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.312Z"
+  },
+  "vi": {
+   "title": "Câu hỏi thường gặp",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Hỏi đáp về vắc-xin cúm mùa"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Hỏi đáp về vắc-xin COVID-19"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.414Z"
+  },
+  "th": {
+   "title": "คำถามที่พบบ่อย",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "ถาม-ตอบเรื่องวัคซีนไข้หวัดใหญ่ตามฤดูกาล"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "ถาม-ตอบเรื่องวัคซีนโควิด-19"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.502Z"
+  },
+  "tl": {
+   "title": "Mga madalas itanong ng publiko",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Q&A tungkol sa seasonal flu vaccine"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Q&A tungkol sa bakuna sa COVID-19"
+      }
+     ]
+    }
+   ],
+   "links": [],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.595Z"
+  }
+ },
+ "sha256:6e4637228d3b6d6a83da56fa18f1e8d3dafe8321b5051cd7b625cea9af46f5aa": {
+  "en": {
+   "title": "Precautions for Vaccination",
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "Publicly Funded Influenza Vaccine Vaccination Notice (Community Edition)"
+    },
+    {
+     "text": "Moderna XFG COVID-19 Vaccine Vaccination Notice, Assessment and Consent Form_Chinese_1150707"
+    },
+    {
+     "text": "Moderna XFG COVID-19 Vaccine Vaccination Notice, Assessment and Consent Form_English_1150707"
+    },
+    {
+     "text": "Novavax (Nuvaxovid) XFG COVID-19 Vaccine Vaccination Notice, Assessment and Consent Form_Chinese_1150707"
+    },
+    {
+     "text": "Novavax (Nuvaxovid) XFG COVID-19 Vaccine Vaccination Notice, Assessment and Consent Form_English_1150707"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-15T00:18:14.734Z"
+  },
+  "ja": {
+   "title": "ワクチン接種時の注意事項",
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "公費インフルエンザワクチン接種の手引き（地域版）"
+    },
+    {
+     "text": "モデルナ XFG COVID-19ワクチン接種の手引きおよび接種評価・同意書_中国語版_1150707"
+    },
+    {
+     "text": "モデルナ XFG COVID-19ワクチン接種の手引きおよび接種評価・同意書_英語版_1150707"
+    },
+    {
+     "text": "Novavax(Nuvaxovid) XFG COVID-19ワクチン接種の手引きおよび接種評価・同意書_中国語版_1150707"
+    },
+    {
+     "text": "Novavax(Nuvaxovid) XFG COVID-19ワクチン接種の手引きおよび接種評価・同意書_英語版_1150707"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-15T00:18:14.547Z"
+  },
+  "ko": {
+   "title": "백신 접종 주의사항",
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "공공 지원 인플루엔자 백신 접종 안내(지역사회용)"
+    },
+    {
+     "text": "모더나 XFG COVID-19 백신 접종 안내 및 접종 평가·동의서_중문판_1150707"
+    },
+    {
+     "text": "모더나 XFG COVID-19 백신 접종 안내 및 접종 평가·동의서_영문판_1150707"
+    },
+    {
+     "text": "Novavax(Nuvaxovid) XFG COVID-19 백신 접종 안내 및 접종 평가·동의서_중문판_1150707"
+    },
+    {
+     "text": "Novavax(Nuvaxovid) XFG COVID-19 백신 접종 안내 및 접종 평가·동의서_영문판_1150707"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-15T00:18:14.476Z"
+  },
+  "id": {
+   "title": "Catatan Pengingat Vaksinasi",
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "Panduan Vaksinasi Influenza yang Didanai Pemerintah (Versi Komunitas)"
+    },
+    {
+     "text": "Panduan Vaksinasi, Lembar Penilaian, dan Persetujuan Vaksin COVID-19 Moderna XFG_Bahasa Mandarin_1150707"
+    },
+    {
+     "text": "Panduan Vaksinasi, Lembar Penilaian, dan Persetujuan Vaksin COVID-19 Moderna XFG_Bahasa Inggris_1150707"
+    },
+    {
+     "text": "Panduan Vaksinasi, Lembar Penilaian, dan Persetujuan Vaksin COVID-19 Novavax (Nuvaxovid) XFG_Bahasa Mandarin_1150707"
+    },
+    {
+     "text": "Panduan Vaksinasi, Lembar Penilaian, dan Persetujuan Vaksin COVID-19 Novavax (Nuvaxovid) XFG_Bahasa Inggris_1150707"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-15T00:18:15.467Z"
+  },
+  "vi": {
+   "title": "Lưu ý khi tiêm chủng vaccine",
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "Hướng dẫn tiêm chủng vaccine cúm công công (Bản cộng đồng)"
+    },
+    {
+     "text": "Hướng dẫn tiêm chủng, đánh giá tiêm chủng và biểu mẫu đồng ý tiêm vaccine COVID-19 Moderna XFG_Bản tiếng Trung_1150707"
+    },
+    {
+     "text": "Hướng dẫn tiêm chủng, đánh giá tiêm chủng và biểu mẫu đồng ý tiêm vaccine COVID-19 Moderna XFG_Bản tiếng Anh_1150707"
+    },
+    {
+     "text": "Hướng dẫn tiêm chủng, đánh giá tiêm chủng và biểu mẫu đồng ý tiêm vaccine COVID-19 Novavax (Nuvaxovid) XFG_Bản tiếng Trung_1150707"
+    },
+    {
+     "text": "Hướng dẫn tiêm chủng, đánh giá tiêm chủng và biểu mẫu đồng ý tiêm vaccine COVID-19 Novavax (Nuvaxovid) XFG_Bản tiếng Anh_1150707"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-15T00:18:25.614Z"
+  },
+  "th": {
+   "title": "ข้อควรระวังในการฉีดวัคซีน",
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "ข้อควรระวังในการฉีดวัคซีนไข้หวัดใหญ่ที่ได้รับทุนสนับสนุนจากรัฐบาล (ฉบับชุมชน)"
+    },
+    {
+     "text": "คู่มือการฉีดวัคซีน COVID-19 ของ Moderna XFG การประเมินการฉีด และใบแสดงความจำนง_ฉบับภาษาจีน_1150707"
+    },
+    {
+     "text": "คู่มือการฉีดวัคซีน COVID-19 ของ Moderna XFG การประเมินการฉีด และใบแสดงความจำนง_ฉบับภาษาอังกฤษ_1150707"
+    },
+    {
+     "text": "คู่มือการฉีดวัคซีน COVID-19 ของ Novavax (Nuvaxovid) XFG การประเมินการฉีด และใบแสดงความจำนง_ฉบับภาษาจีน_1150707"
+    },
+    {
+     "text": "คู่มือการฉีดวัคซีน COVID-19 ของ Novavax (Nuvaxovid) XFG การประเมินการฉีด และใบแสดงความจำนง_ฉบับภาษาอังกฤษ_1150707"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-15T00:18:16.235Z"
+  },
+  "tl": {
+   "title": "Mga Pag-iingat sa Pagpapabakuna",
+   "blocks": [],
+   "links": [],
+   "files": [
+    {
+     "text": "Gabay sa Pagpapabakuna ng Pampublikong Bakuna sa Influenza (Bersyon sa Komunidad)"
+    },
+    {
+     "text": "Gabay sa Pagpapabakuna ng Moderna XFG COVID-19 Vaccine at Pormularyo ng Pagtatasa at Pahintulot sa Pagpapabakuna_Bersyon sa Wikang Tsino_1150707 (2026/07/07)"
+    },
+    {
+     "text": "Gabay sa Pagpapabakuna ng Moderna XFG COVID-19 Vaccine at Pormularyo ng Pagtatasa at Pahintulot sa Pagpapabakuna_Bersyon sa Wikang Ingles_1150707 (2026/07/07)"
+    },
+    {
+     "text": "Gabay sa Pagpapabakuna ng Novavax (Nuvaxovid) XFG COVID-19 Vaccine at Pormularyo ng Pagtatasa at Pahintulot sa Pagpapabakuna_Bersyon sa Wikang Tsino_1150707 (2026/07/07)"
+    },
+    {
+     "text": "Gabay sa Pagpapabakuna ng Novavax (Nuvaxovid) XFG COVID-19 Vaccine at Pormularyo ng Pagtatasa at Pahintulot sa Pagpapabakuna_Bersyon sa Wikang Ingles_1150707 (2026/07/07)"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-15T00:18:16.886Z"
+  }
+ },
+ "sha256:b62c80491ff3ae2219861c065c8e403e7b162df0dea1d1310313eae301d9be1e": {
+  "en": {
+   "title": "Get vaccinated and earn Health Coins",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "From October 1, 2026, people aged 18 and over can earn Health Coins by completing designated health tasks such as health checkups, cancer screenings and vaccinations. From December 1, the coins can be exchanged for health products, to encourage everyone to take an active role in managing their health."
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "A flu vaccine earns 450 coins, a COVID-19 vaccine 900 coins and a pneumococcal vaccine 600 coins. Getting vaccinated protects your health, and you earn Health Coins as a reward too!"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "For more details, see the "
+      },
+      {
+       "text": "[Health Coins website of the Health Promotion Administration, Ministry of Health and Welfare]"
+      }
+     ]
+    }
+   ],
+   "links": [
+    {
+     "text": "\"Take care of your health, earn coins\": launching in October! Earn Health Coins for health checkups, cancer screening and vaccination, with exchange of rewards from December"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.034Z"
+  },
+  "ja": {
+   "title": "ワクチンを接種して健康コインを貯めよう",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "2026年10月1日から、18歳以上の方が健康診断、がん検診、ワクチン接種などの指定された健康タスクを完了すると「健康コイン（Health Coins）」が貯まります。12月1日からは、貯めた健康コインを健康グッズと交換できるようになり、みなさんの主体的な健康管理を後押しします。"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "なかでも、インフルエンザワクチンの接種で450コイン、新型コロナワクチンで900コイン、肺炎球菌ワクチンで600コインがもらえます。ワクチンで健康を守りながら、健康コインも貯めてお得に過ごしましょう。"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "詳しくは次のサイトをご覧ください："
+      },
+      {
+       "text": "【衛生福利部国民健康署 健康コインのウェブサイト】"
+      }
+     ]
+    }
+   ],
+   "links": [
+    {
+     "text": "「健康を守って、コインをゲット」10月に正式スタート。健診・がん検診・ワクチン接種で健康コインが貯まり、12月から交換開始"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.125Z"
+  },
+  "ko": {
+   "title": "백신 맞고 건강 코인(Health Coins) 모으기",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "2026년 10월 1일부터 만 18세 이상 국민이 건강검진, 암 검진, 백신 접종 등 지정된 건강 미션을 완료하면 \"건강 코인(Health Coins)\"을 모을 수 있습니다. 12월 1일부터는 건강 코인으로 건강 상품을 교환할 수 있어, 스스로 건강을 챙기는 분들께 도움이 됩니다."
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "독감 백신을 맞으면 450코인, 코로나19 백신은 900코인, 폐렴구균 백신은 600코인을 받습니다. 백신으로 건강을 지키고 코인 혜택도 받으세요!"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "자세한 내용은 다음 웹사이트를 확인해 주세요. "
+      },
+      {
+       "text": "【보건복지부 국민건강서비스 건강 코인 웹사이트】"
+      }
+     ]
+    }
+   ],
+   "links": [
+    {
+     "text": "\"건강 챙기고 코인 벌자\" 10월 정식 시작! 건강검진·암 검진·백신 접종으로 건강 코인 적립, 12월부터 교환 혜택"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.218Z"
+  },
+  "id": {
+   "title": "Vaksinasi untuk mengumpulkan Koin Kesehatan",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Mulai 1 Oktober 2026, warga berusia 18 tahun ke atas yang menyelesaikan tugas kesehatan tertentu, seperti pemeriksaan kesehatan, skrining kanker, dan vaksinasi, dapat mengumpulkan Koin Kesehatan (Health Coins). Mulai 1 Desember, koin dapat ditukar dengan produk kesehatan, untuk mendorong semua orang menjaga kesehatannya secara aktif."
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Vaksin influenza memberi 450 koin, vaksin COVID-19 memberi 900 koin, dan vaksin pneumokokus memberi 600 koin. Vaksinasi menjaga kesehatan Anda, dan Anda juga mendapat hadiah dari koin yang terkumpul!"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Info lebih lanjut: "
+      },
+      {
+       "text": "[Situs Koin Kesehatan, Health Promotion Administration, Kementerian Kesehatan dan Kesejahteraan]"
+      }
+     ]
+    }
+   ],
+   "links": [
+    {
+     "text": "Program \"Jaga Kesehatan, Raih Koin\" dimulai Oktober! Kumpulkan Koin Kesehatan lewat pemeriksaan kesehatan, skrining kanker, dan vaksinasi; penukaran hadiah dibuka mulai Desember"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.312Z"
+  },
+  "vi": {
+   "title": "Tiêm vắc-xin, tích lũy Xu Sức khỏe (Health Coins)",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Từ ngày 01/10/2026, người từ đủ 18 tuổi hoàn thành các nhiệm vụ sức khỏe được chỉ định như khám sức khỏe, tầm soát ung thư, tiêm vắc-xin sẽ tích lũy được “Xu Sức khỏe”; từ ngày 1 tháng 12, có thể dùng Xu Sức khỏe để đổi lấy sản phẩm chăm sóc sức khỏe, nhằm khuyến khích mọi người chủ động chăm sóc sức khỏe."
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Trong đó, tiêm vắc-xin cúm nhận được 450 xu, vắc-xin COVID-19 900 xu, vắc-xin phế cầu 600 xu. Tiêm vắc-xin để bảo vệ sức khỏe, bạn còn tích lũy được Xu Sức khỏe để nhận quà!"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Để biết thêm chi tiết, vui lòng xem "
+      },
+      {
+       "text": "Trang web Xu Sức khỏe của Cơ quan Y tế Quốc dân, Bộ Y tế và Phúc lợi"
+      }
+     ]
+    }
+   ],
+   "links": [
+    {
+     "text": "Chương trình “Chăm sóc sức khỏe, kiếm xu” chính thức bắt đầu từ tháng 10: khám sức khỏe, tầm soát ung thư, tiêm vắc-xin để kiếm Xu Sức khỏe, từ tháng 12 có thể đổi quà hấp dẫn"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.414Z"
+  },
+  "th": {
+   "title": "ฉีดวัคซีน สะสมเหรียญสุขภาพ (Health Coins) ของคุณ",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "ตั้งแต่วันที่ 1 ตุลาคม 2026 ประชาชนอายุ 18 ปีขึ้นไปที่ทำภารกิจสุขภาพตามที่กำหนด เช่น ตรวจสุขภาพ ตรวจคัดกรองมะเร็ง และฉีดวัคซีน จะได้สะสม “เหรียญสุขภาพ (Health Coins)” และตั้งแต่วันที่ 1 ธันวาคม สามารถนำเหรียญสุขภาพไปแลกสินค้าเพื่อสุขภาพได้ เพื่อส่งเสริมให้ทุกคนดูแลสุขภาพของตนเองอย่างจริงจัง"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "โดยการฉีดวัคซีนไข้หวัดใหญ่จะได้รับ 450 เหรียญ วัคซีนโควิด-19 ได้ 900 เหรียญ และวัคซีนนิวโมคอคคัส ได้ 600 เหรียญ ฉีดวัคซีนเพื่อดูแลสุขภาพ พร้อมสะสมเหรียญสุขภาพรับของรางวัล!"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "ดูรายละเอียดเพิ่มเติมได้ที่ "
+      },
+      {
+       "text": "【เว็บไซต์เหรียญสุขภาพของสำนักส่งเสริมสุขภาพ กระทรวงสาธารณสุขและสวัสดิการ】"
+      }
+     ]
+    }
+   ],
+   "links": [
+    {
+     "text": "“ดูแลสุขภาพ สะสมเหรียญเพียบ” เริ่มอย่างเป็นทางการเดือนตุลาคม! ตรวจสุขภาพ ตรวจคัดกรองมะเร็ง ฉีดวัคซีน รับเหรียญสุขภาพ แลกของดีได้ตั้งแต่เดือนธันวาคม"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.502Z"
+  },
+  "tl": {
+   "title": "Magpabakuna at mag-ipon ng iyong Health Coins",
+   "blocks": [
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Simula Oktubre 1, 2026, ang mga may edad 18 pataas na makakakumpleto ng mga itinakdang gawain sa kalusugan, tulad ng health checkup, cancer screening at pagbabakuna, ay makaka-ipon ng “Health Coins”. Simula Disyembre 1, puwede nang ipalit ang Health Coins sa mga produktong pangkalusugan, para hikayatin ang bawat isa na alagaan ang sariling kalusugan."
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Makakakuha ng 450 coins sa bakuna sa trangkaso, 900 coins sa bakuna sa COVID-19, at 600 coins sa bakuna sa pneumococcal. Magpabakuna para sa kalusugan, at may gantimpala pa sa Health Coins!"
+      }
+     ]
+    },
+    {
+     "type": "p",
+     "runs": [
+      {
+       "text": "Para sa higit pang detalye, bisitahin ang "
+      },
+      {
+       "text": "[Website ng Health Coins ng Health Promotion Administration, Ministry of Health and Welfare]"
+      }
+     ]
+    }
+   ],
+   "links": [
+    {
+     "text": "Magsisimula na ang “Alagaan ang Kalusugan, Mag-ipon ng Coins” ngayong Oktubre! Mag-ipon ng Health Coins sa health checkup, cancer screening at pagbabakuna; puwede nang ipapalit simula Disyembre"
+    }
+   ],
+   "files": [],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.595Z"
+  }
+ },
+ "sha256:c145a0148f3f0a2fec7a2a9bd988fce24bfd9b0258750164e1fe48376e22ec71": {
+  "en": {
+   "title": "最新新聞稿資訊",
+   "blocks": [],
+   "links": [
+    {
+     "text": "2026年度公費流感及新冠疫苗第一階段將於10月1日開打 接種左流右新疫苗還可獲得1350健康幣"
+    },
+    {
+     "text": "「左流右新 護肺顧心」10月1日公費流感及新冠疫苗同步開打"
+    },
+    {
+     "text": "公費流感及新冠疫苗接種踴躍 請符合資格民眾儘速接種 及早獲得保護力"
+    },
+    {
+     "text": "115年度公費流感及新冠疫苗接種踴躍 提醒符合資格民眾儘早接種 還可獲得健康幣 另10月19日起新增提供不同製程之Novavax公費新冠疫苗"
+    },
+    {
+     "text": "連假將至 籲請符合流感及新冠疫苗公費接種資格民眾儘早接種 增加保護力 還可獲得健康幣"
+    },
+    {
+     "text": "因應流感疫情仍處流行期，公費流感抗病毒藥劑擴大用藥條件將延長至2026年11月15日止"
+    },
+    {
+     "text": "目前流感疫情持續上升 公費流感抗病毒藥劑擴大用藥條件將延長至今(115)年10月31日止"
+    },
+    {
+     "text": "流感及新冠於仍處流行期且流感疫情持續上升 呼籲民眾連假期間加強自主防疫 出現重症危險徵兆儘速就醫"
+    },
+    {
+     "text": "流感及新冠疫情持續 呼籲民眾留意個人衛生習慣 出現重症危險徵兆應儘速就醫治療"
+    },
+    {
+     "text": "流感及新冠仍有傳播風險 呼籲民眾出現症狀戴口罩就醫並在家休息 且留意重症危險徵兆"
+    },
+    {
+     "text": "流感及新冠疫情均處流行期且流感疫情持續上升 呼籲民眾落實勤洗手 戴口罩等自我防護措施 並留意重症危險徵兆"
+    },
+    {
+     "text": "115年秋冬公費首度導入加強型流感及新世代新冠疫苗 疫苗株全更新精準防護 疾管署呼籲流感新冠同時打「左流右新 護肺顧心」"
+    }
+   ],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-23T00:24:42.223Z"
+  },
+  "ja": {
+   "title": "最新プレスリリース情報",
+   "blocks": [],
+   "links": [
+    {
+     "text": "2026年度公費インフルエンザおよびCOVID-19ワクチンの第1段階接種を10月1日より開始、「flu shot in the left arm, COVID-19 in the right」の同時接種で1350 Health Coinsを獲得可能"
+    },
+    {
+     "text": "「flu shot in the left arm, COVID-19 in the right, protect your lungs and heart」10月1日より公費インフルエンザおよびCOVID-19ワクチン同時接種開始"
+    },
+    {
+     "text": "公費インフルエンザおよびCOVID-19ワクチンの接種が盛況、対象者は速やかに接種し早期の免疫獲得を"
+    },
+    {
+     "text": "115年度（2026年度）公費インフルエンザおよびCOVID-19ワクチンの接種が盛況、対象者は早めの接種でHealth Coinsを獲得しよう。さらに10月19日より異なる製造プロセスのNovavax公費COVID-19ワクチンを追加提供"
+    },
+    {
+     "text": "連休が近づいています。インフルエンザおよびCOVID-19ワクチンの公費接種対象者は早めに接種し免疫力を高め、Health Coinsも獲得しましょう"
+    },
+    {
+     "text": "インフルエンザの流行期が継続していることに伴い、公費インフルエンザ抗病毒薬（flu antivirals）の適応拡大条件を2026年11月15日まで延長"
+    },
+    {
+     "text": "インフルエンザの流行が継続して上昇しているため、公費インフルエンザ抗病毒薬（flu antivirals）の適応拡大条件を今年（115年/2026年）10月31日まで延長"
+    },
+    {
+     "text": "インフルエンザとCOVID-19が依然として流行期にあり、インフルエンザの流行が上昇中であるため、連休期間中の自主防疫強化、重症化の危険兆候が現れた場合の速やかな受診を呼びかけ"
+    },
+    {
+     "text": "インフルエンザとCOVID-19の流行が継続中、個人の衛生習慣への留意および重症化の危険兆候が現れた場合の速やかな受診と治療を呼びかけ"
+    },
+    {
+     "text": "インフルエンザとCOVID-19には依然として感染リスクがあり、症状が現れた場合のマスク着用での受診と自宅療養、および重症化の危険兆候への留意を呼びかけ"
+    },
+    {
+     "text": "インフルエンザとCOVID-19の双方が流行期にあり、インフルエンザの流行が上昇中であるため、手洗いやマスク着用などの自己防護措置の徹底および重症化の危険兆候への留意を呼びかけ"
+    },
+    {
+     "text": "115年（2026年）秋冬の公費として初となるenhanced influenza vaccineおよびnext-generation COVID-19ワクチンを導入、ワクチン株を全面更新し精密な防御を実現。Taiwan CDCはインフルエンザとCOVID-19の同時接種「flu shot in the left arm, COVID-19 in the right」を呼びかけ"
+    }
+   ],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-23T00:24:41.229Z"
+  },
+  "ko": {
+   "title": "최신 보도자료 정보",
+   "blocks": [],
+   "links": [
+    {
+     "text": "2026년도 공공 지원 인플루엔자 및 코로나19 백신 1단계 접종이 10월 1일 시작되며, '왼쪽 팔에 인플루엔자, 오른쪽 팔에 코로나19' 백신을 함께 접종하면 1350 Health Coins(건강주화)를 받을 수 있습니다."
+    },
+    {
+     "text": "'왼쪽 팔에 인플루엔자, 오른쪽 팔에 코로나19, 폐와 심장 보호' 10월 1일 공공 지원 인플루엔자 및 코로나19 백신 동시 접종 시작"
+    },
+    {
+     "text": "공공 지원 인플루엔자 및 코로나19 백신 접종이 활발히 진행 중이오니 자격을 갖춘 시민 여러분께서는 조속히 접종하여 조기에 보호력을 획득하시기 바랍니다."
+    },
+    {
+     "text": "115년(2026년)도 공공 지원 인플루엔자 및 코로나19 백신 접종이 활발하므로 자격을 갖춘 시민 여러분께서는 조속히 접종하시어 Health Coins를 받으시기 바랍니다. 또한 10월 19일부터는 다른 제조 공정의 Novavax 공공 지원 코로나19 백신이 추가로 제공됩니다."
+    },
+    {
+     "text": "연휴를 앞두고 인플루엔자 및 코로나19 백신 공공 지원 접종 자격을 갖춘 시민 여러분께서는 보호력을 높이기 위해 조속히 접종하시고 Health Coins도 받으실 것을 권장합니다."
+    },
+    {
+     "text": "인플루엔자 유행이 여전히 유행 기간 중에 있음에 따라, 공공 지원 인플루엔자 항바이러스제 투여 기준 확대 조치가 2026년 11월 15일까지 연장됩니다."
+    },
+    {
+     "text": "현재 인플루엔자 유행이 지속적으로 증가하고 있으므로 공공 지원 인플루엔자 항바이러스제 투여 기준 확대 조치가 금년(115년(2026년)) 10월 31일까지 연장됩니다."
+    },
+    {
+     "text": "인플루엔자와 코로나19가 여전히 유행 기간에 속하고 인플루엔자 유행이 지속 증가하고 있으므로, 시민 여러분께서는 연휴 기간 동안 자율 방역을 강화하고 중증 위험 징후 발생 시 신속히 병원을 방문하시기 바랍니다."
+    },
+    {
+     "text": "인플루엔자 및 코로나19 유행이 지속되고 있으므로 시민 여러분께서는 개인위생 습관에 유의하시고 중증 위험 징후가 나타나면 신속히 내원하여 치료를 받으시기 바랍니다."
+    },
+    {
+     "text": "인플루엔자 및 코로나19가 여전히 전파 위험이 있으므로, 증상이 나타나면 마스크를 착용하고 병원에 방문하여 집에서 휴식을 취하시고 중증 위험 징후에 유의하시기 바랍니다."
+    },
+    {
+     "text": "인플루엔자 및 코로나19 유행이 모두 유행 기간에 속하고 인플루엔자 유행이 지속 증가하고 있으므로, 시민 여러분께서는 손 씻기 생활화, 마스크 착용 등 개인 방호 수칙을 철저히 지키시고 중증 위험 징후에 유의하시기 바랍니다."
+    },
+    {
+     "text": "115년(2026년) 가을·겨울철 공공 지원으로 처음 도입되는 강화형 인플루엔자 및 차세대 코로나19 백신은 백신 주조가 전면 갱신되어 정밀 방어가 가능합니다. Taiwan CDC는 인플루엔자와 코로나19 백신 동시 접종을 권고합니다."
+    }
+   ],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-23T00:24:40.597Z"
+  },
+  "id": {
+   "title": "Informasi Siaran Pers Terbaru",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Tahap pertama vaksin influenza dan COVID-19 yang didanai publik untuk tahun 2026 akan mulai diberikan pada tanggal 1 Oktober. Menerima vaksin flu shot di lengan kiri, COVID-19 di kanan secara bersamaan juga dapat menghasilkan 1350 Health Coins"
+    },
+    {
+     "text": "\"Flu shot di lengan kiri, COVID-19 di kanan, lindungi paru-paru dan jaga jantung Anda\" Vaksin influenza dan COVID-19 yang didanai publik akan mulai diberikan secara serentak pada tanggal 1 Oktober"
+    },
+    {
+     "text": "Antusiasme yang tinggi terhadap vaksinasi influenza dan COVID-19 yang didanai publik. Masyarakat yang memenuhi syarat diimbau untuk segera mendapatkan vaksinasi guna memperoleh perlindungan sedini mungkin"
+    },
+    {
+     "text": "Antusiasme vaksinasi influenza dan COVID-19 yang didanai publik tahun 115 (2026) sangat tinggi. Masyarakat yang memenuhi syarat diingatkan untuk segera melakukan vaksinasi dan juga bisa mendapatkan Health Coins. Selain itu, mulai tanggal 19 Oktober, vaksin COVID-19 Novavax yang didanai publik dengan proses pembuatan yang berbeda akan disediakan tambahan"
+    },
+    {
+     "text": "Menjelang liburan panjang, masyarakat yang memenuhi syarat untuk vaksinasi influenza dan COVID-19 yang didanai publik diimbau untuk segera mendapatkan vaksinasi guna meningkatkan daya perlindungan dan juga mendapatkan Health Coins"
+    },
+    {
+     "text": "Sebagai respons terhadap epidemi influenza yang masih berada dalam periode endemi, ketentuan perluasan penggunaan obat antivirus flu yang didanai publik akan diperpanjang hingga tanggal 15 November 2026"
+    },
+    {
+     "text": "Epidemi influenza saat ini terus meningkat, ketentuan perluasan penggunaan obat antivirus flu yang didanai publik akan diperpanjang hingga tanggal 31 Oktober tahun ini (115)"
+    },
+    {
+     "text": "Influenza dan COVID-19 masih berada dalam periode endemi dan epidemi influenza terus meningkat. Masyarakat diimbau untuk memperkuat pencegahan mandiri selama liburan panjang dan segera berobat jika muncul tanda-tanda bahaya keparahan"
+    },
+    {
+     "text": "Epidemi influenza dan COVID-19 terus berlanjut. Masyarakat diimbau untuk memperhatikan kebiasaan kebersihan pribadi dan segera mencari pengobatan medis jika muncul tanda-tanda bahaya keparahan"
+    },
+    {
+     "text": "Influenza dan COVID-19 masih memiliki risiko penularan. Masyarakat diimbau untuk mengenakan masker saat berobat ketika muncul gejala, beristirahat di rumah, serta memperhatikan tanda-tanda bahaya keparahan"
+    },
+    {
+     "text": "Epidemi influenza dan COVID-19 keduanya berada dalam periode endemi dan epidemi influenza terus meningkat. Masyarakat diimbau untuk menerapkan langkah-langkah perlindungan diri seperti sering mencuci tangan dan mengenakan masker, serta memperhatikan tanda-tanda bahaya keparahan"
+    },
+    {
+     "text": "Musim gugur dan dingin tahun 115 (2026) untuk pertama kalinya memperkenalkan vaksin influenza yang ditingkatkan dan vaksin COVID-19 generasi baru. Strain vaksin diperbarui sepenuhnya untuk perlindungan yang tepat. Taiwan CDC mengimbau agar vaksin influenza dan COVID-19 disuntikkan secara bersamaan: \"flu shot di lengan kiri, COVID-19 di kanan, lindungi paru-paru dan jaga jantung Anda\""
+    }
+   ],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-23T00:24:42.979Z"
+  },
+  "vi": {
+   "title": "Thông tin thông cáo báo chí mới nhất",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Giai đoạn 1 vaccine cúm và COVID-19 công quỹ năm 2026 sẽ bắt đầu tiêm từ ngày 1 tháng 10, tiêm đồng thời vaccine cúm và COVID-19 còn có thể nhận được 1350 Health Coins"
+    },
+    {
+     "text": "\"Tiêm cúm và COVID-19 đồng thời, bảo vệ phổi và tim\" vaccine cúm và COVID-19 công quỹ sẽ bắt đầu tiêm đồng thời vào ngày 1 tháng 10"
+    },
+    {
+     "text": "Việc tiêm chủng vaccine cúm và COVID-19 công quỹ diễn ra sôi nổi, xin nhắc nhở người dân đủ điều kiện hãy nhanh chóng đi tiêm để sớm nhận được khả năng bảo vệ"
+    },
+    {
+     "text": "Việc tiêm chủng vaccine cúm và COVID-19 công quỹ năm 115 (2026) diễn ra sôi nổi, xin nhắc nhở người dân đủ điều kiện hãy nhanh chóng đi tiêm và còn có thể nhận được Health Coins, ngoài ra từ ngày 19 tháng 10 sẽ bổ sung cung cấp vaccine COVID-19 công quỹ của Novavax với quy trình sản xuất khác"
+    },
+    {
+     "text": "Sắp đến kỳ nghỉ lễ dài ngày, kêu gọi người dân đủ điều kiện tiêm chủng vaccine cúm và COVID-19 công quỹ hãy nhanh chóng đi tiêm để tăng cường khả năng bảo vệ, đồng thời có thể nhận được Health Coins"
+    },
+    {
+     "text": "Nhằm ứng phó với dịch cúm vẫn đang trong mùa dịch, điều kiện mở rộng sử dụng thuốc kháng virus cúm công quỹ sẽ được kéo dài đến hết ngày 15 tháng 11 năm 2026"
+    },
+    {
+     "text": "Hiện dịch cúm tiếp tục gia tăng, điều kiện mở rộng sử dụng thuốc kháng virus cúm công quỹ sẽ được kéo dài đến hết ngày 31 tháng 10 năm nay (115)"
+    },
+    {
+     "text": "Cúm và COVID-19 vẫn đang trong mùa dịch và dịch cúm tiếp tục gia tăng, kêu gọi người dân tăng cường tự phòng dịch trong kỳ nghỉ lễ, xuất hiện các dấu hiệu nguy hiểm của bệnh nặng hãy nhanh chóng đi khám bác sĩ"
+    },
+    {
+     "text": "Dịch cúm và COVID-19 vẫn tiếp diễn, kêu gọi người dân chú ý thói quen vệ sinh cá nhân, xuất hiện các dấu hiệu nguy hiểm của bệnh nặng nên nhanh chóng đi khám và điều trị"
+    },
+    {
+     "text": "Cúm và COVID-19 vẫn có nguy cơ lây truyền, kêu gọi người dân khi xuất hiện triệu chứng hãy đeo khẩu trang khi đi khám và nghỉ ngơi ở nhà, đồng thời chú ý các dấu hiệu nguy hiểm của bệnh nặng"
+    },
+    {
+     "text": "Dịch cúm và COVID-19 đều đang trong mùa dịch và dịch cúm tiếp tục gia tăng, kêu gọi người dân thực hiện các biện pháp tự phòng hộ như rửa tay thường xuyên, đeo khẩu trang và chú ý các dấu hiệu nguy hiểm của bệnh nặng"
+    },
+    {
+     "text": "Mùa thu đông năm 115 (2026) lần đầu tiên đưa vào sử dụng vaccine cúm tăng cường và vaccine COVID-19 thế hệ mới, các chủng vaccine được cập nhật toàn bộ để phòng ngừa chính xác, Taiwan CDC kêu gọi tiêm đồng thời vaccine cúm và COVID-19 \"tiêm cúm ở tay trái, COVID-19 ở tay phải, bảo vệ phổi và tim\""
+    }
+   ],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-23T00:24:44.080Z"
+  },
+  "th": {
+   "title": "ข่าวประชาสัมพันธ์ล่าสุด",
+   "blocks": [],
+   "links": [
+    {
+     "text": "การฉีดวัคซีนไข้หวัดใหญ่และวัคซีน COVID-19 ระยะที่ 1 ที่ได้รับทุนสนับสนุนจากรัฐบาลประจำปี 2026 จะเริ่มในวันที่ 1 ตุลาคม ฉีดวัคซีน flu shot in the left arm, COVID-19 in the right พร้อมกันจะได้รับ Health Coins 1350 เหรียญ"
+    },
+    {
+     "text": "\"flu shot in the left arm, COVID-19 in the right protect your lungs and heart\" วัคซีนไข้หวัดใหญ่และวัคซีน COVID-19 ที่ได้รับทุนสนับสนุนจากรัฐบาลเริ่มฉีดพร้อมกัน 1 ตุลาคม"
+    },
+    {
+     "text": "การฉีดวัคซีนไข้หวัดใหญ่และวัคซีน COVID-19 ที่ได้รับทุนสนับสนุนจากรัฐบาลเป็นไปอย่างคึกคัก ขอให้ประชาชนที่มีคุณสมบัติครบถ้วนรีบมารับการฉีดเพื่อสร้างภูมิคุ้มกันโดยเร็ว"
+    },
+    {
+     "text": "การฉีดวัคซีนไข้หวัดใหญ่และวัคซีน COVID-19 ที่ได้รับทุนสนับสนุนจากรัฐบาลประจำปี 115 (2026) เป็นไปอย่างคึกคัก เตือนประชาชนที่มีคุณสมบัติครบถ้วนรีบมารับการฉีดโดยเร็ว พร้อมทั้งจะได้รับ Health Coins ด้วย นอกจากนี้ ตั้งแต่วันที่ 19 ตุลาคมเป็นต้นไป จะมีการจัดหาวัคซีน COVID-19 Novavax แบบ publicly funded ที่มีกระบวนการผลิตแตกต่างกันเพิ่มเติม"
+    },
+    {
+     "text": "วันหยุดยาวกำลังจะมาถึง ขอความร่วมมือประชาชนที่มีคุณสมบัติรับวัคซีนไข้หวัดใหญ่และ COVID-19 แบบ publicly funded รีบมารับการฉีดโดยเร็วเพื่อเพิ่มภูมิคุ้มกัน และยังสามารถได้รับ Health Coins อีกด้วย"
+    },
+    {
+     "text": "เพื่อรับมือกับสถานการณ์การแพร่ระบาดของโรคไข้หวัดใหญ่ที่ยังอยู่ในช่วงระบาด เงื่อนไขการขยายการใช้ยาต้านไวรัสไข้หวัดใหญ่แบบ publicly funded จะขยายเวลาออกไปจนถึงวันที่ 15 พฤศจิกายน 2026"
+    },
+    {
+     "text": "ปัจจุบันสถานการณ์การแพร่ระบาดของโรคไข้หวัดใหญ่ยังคงเพิ่มขึ้น เงื่อนไขการขยายการใช้ยาต้านไวรัสไข้หวัดใหญ่แบบ publicly funded จะขยายเวลาออกไปจนถึงวันที่ 31 ตุลาคม ปี 115 (2026) นี้"
+    },
+    {
+     "text": "ไข้หวัดใหญ่และ COVID-19 ยังคงอยู่ในช่วงการแพร่ระบาดและโรคไข้หวัดใหญ่ยังคงเพิ่มขึ้น ขอให้ประชาชนเสริมสร้างการป้องกันโรคด้วยตนเองในช่วงวันหยุดยาว และรีบไปพบแพทย์ทันทีหากมีอาการเตือนของอาการป่วยรุนแรง"
+    },
+    {
+     "text": "การแพร่ระบาดของไข้หวัดใหญ่และ COVID-19 ยังคงดำเนินต่อไป ขอให้ประชาชนใส่ใจสุขอนามัยส่วนบุคคล และรีบไปรับการรักษาพยาบาลทันทีหากมีอาการเตือนของอาการป่วยรุนแรง"
+    },
+    {
+     "text": "ไข้หวัดใหญ่และ COVID-19 ยังคงมีความเสี่ยงในการแพร่กระจาย ขอให้ประชาชนสวมหน้ากากอนามัยไปพบแพทย์เมื่อมีอาการและพักผ่อนอยู่ที่บ้าน พร้อมทั้งสังเกตอาการเตือนของอาการป่วยรุนแรง"
+    },
+    {
+     "text": "การแพร่ระบาดของไข้หวัดใหญ่และ COVID-19 อยู่ในช่วงการแพร่ระบาดและไข้หวัดใหญ่ยังคงเพิ่มขึ้น ขอให้ประชาชนปฏิบัติ 3 มาตรการป้องกันตนเอง เช่น ล้างมือบ่อย ๆ และสวมหน้ากากอนามัย พร้อมทั้งสังเกตอาการเตือนของอาการป่วยรุนแรง"
+    },
+    {
+     "text": "ฤดูใบไม้ร่วงและฤดูหนาวปี 115 (2026) เป็นครั้งแรกที่มีการนำวัคซีนไข้หวัดใหญ่ชนิดเสริมฤทธิ์และวัคซีน COVID-19 รุ่นใหม่มาใช้ สายพันธุ์วัคซีนได้รับการปรับปรุงใหม่ทั้งหมดเพื่อการป้องกันที่แม่นยำ Taiwan CDC ขอแนะนำให้ฉีดวัคซีนไข้หวัดใหญ่และ COVID-19 พร้อมกัน \"flu shot in the left arm, COVID-19 in the right protect your lungs and heart\""
+    }
+   ],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-23T00:24:45.231Z"
+  },
+  "tl": {
+   "title": "Pinakabagong Impormasyon sa Press Release",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Ang unang yugto ng publicly funded influenza at COVID-19 vaccine para sa taong 2026 ay magsisimula sa Oktubre 1. Makakakuha rin ng 1350 Health Coins sa pagpapabakuna ng flu shot sa kaliwang braso, COVID-19 sa kanang braso"
+    },
+    {
+     "text": "\"Flu shot sa kaliwang braso, COVID-19 sa kanang braso, protektahan ang iyong mga baga at puso\" Sabay na magsisimula ang publicly funded influenza at COVID-19 vaccine sa Oktubre 1"
+    },
+    {
+     "text": "Mataas ang sigla sa pagpapabakuna ng publicly funded influenza at COVID-19 vaccine. Hinihikayat ang mga kwalipikadong mamamayan na magbakuna sa lalong madaling panahon upang makamit ang proteksyon nang mas maaga"
+    },
+    {
+     "text": "Mataas ang sigla sa pagpapabakuna ng publicly funded influenza at COVID-19 vaccine para sa taong 115 (2026). Pinapaalalahanan ang mga kwalipikadong mamamayan na magbakuna nang maaga at makakuha ng Health Coins. Bukod dito, simula Oktubre 19, magdaragdag ng pagbibigay ng iba't ibang proseso ng paggawa ng Novavax publicly funded COVID-19 vaccine"
+    },
+    {
+     "text": "Parating na ang long weekend, nananawagan sa mga kwalipikado para sa publicly funded influenza at COVID-19 vaccine na magbakuna nang maaga upang madagdagan ang proteksyon at makakuha rin ng Health Coins"
+    },
+    {
+     "text": "Bilang pagtugon sa patuloy na pagkalat ng epidemya ng trangkaso, ang pinalawak na kondisyon sa paggamit ng publicly funded flu antivirals ay palawigin hanggang Nobyembre 15, 2026"
+    },
+    {
+     "text": "Kasalukuyang patuloy na tumataas ang epidemya ng trangkaso, ang pinalawak na kondisyon sa paggamit ng publicly funded flu antivirals ay palawigin hanggang Oktubre 31 ng taong ito 115 (2026)"
+    },
+    {
+     "text": "Ang influenza at COVID-19 ay nasa panahon pa rin ng pagkalat at patuloy na tumataas ang epidemya ng trangkaso. Nananawagan sa mga mamamayan na palakasin ang sariling pag-iingat sa kalusugan sa panahon ng long weekend at agad na magpatingin sa doktor kapag lumitaw ang mga mapanganib na senyales ng malubhang sakit"
+    },
+    {
+     "text": "Patuloy ang epidemya ng influenza at COVID-19. Nananawagan sa mga mamamayan na mag-ingat sa personal na kalinisan at agad na magpatingin at magpagamot sa doktor kapag lumitaw ang mga mapanganib na senyales ng malubhang sakit"
+    },
+    {
+     "text": "Mayroon pa ring panganib ng pagkahawa ang influenza at COVID-19. Nananawagan sa mga mamamayan na magsuot ng maskara at magpatingin sa doktor kapag may mga sintomas at magpahinga sa bahay, pati na rin ang mag-ingat sa mga mapanganib na senyales ng malubhang sakit"
+    },
+    {
+     "text": "Ang mga epidemya ng influenza at COVID-19 ay parehong nasa panahon ng pagkalat at patuloy na tumataas ang epidemya ng trangkaso. Nananawagan sa mga mamamayan na isagawa ang madalas na paghuhugas ng kamay, pagsusuot ng maskara at iba pang hakbang sa pansariling proteksyon, at mag-ingat sa mga mapanganib na senyales ng malubhang sakit"
+    },
+    {
+     "text": "Sa taglagas at taglamig ng taong 115 (2026), sa kauna-unahang pagkakataon ay ipinakilala ang enhanced influenza vaccine at ang next-generation COVID-19 vaccine. Ganap na na-update ang mga strain ng bakuna para sa tumpak na proteksyon. Nanawagan ang Taiwan CDC na sabay na magbakuna ng flu shot sa kaliwang braso, COVID-19 sa kanang braso, protektahan ang iyong mga baga at puso"
+    }
+   ],
+   "files": [],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-23T00:24:48.944Z"
+  }
+ },
+ "sha256:ded463ed7b9cc8be5b4e21cf52f8c8412096a2d65d03431399cfbe4dc53407ea": {
+  "en": {
+   "title": "Health Education Resources",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Short Film - flu shot in the left arm, COVID-19 in the right: Children's Care Edition"
+    },
+    {
+     "text": "Short Film - Getting both doses for the best protection: Good Morning Image Edition"
+    }
+   ],
+   "files": [
+    {
+     "text": "115 (2026) Influenza and COVID-19 Vaccination Protect Your Lungs and Heart Poster"
+    },
+    {
+     "text": "Infographic - 115 (2026) Publicly Funded Influenza and COVID-19 Vaccines - Protecting Babies Edition"
+    },
+    {
+     "text": "Infographic - 115 (2026) Publicly Funded Influenza and COVID-19 Vaccines - Older Adults Edition"
+    },
+    {
+     "text": "Infographic - 115 (2026) Publicly Funded Influenza and COVID-19 Vaccines - Long-Term Care Facilities Edition"
+    },
+    {
+     "text": "Infographic - 115 (2026) Publicly Funded Influenza Vaccine - Students Edition"
+    },
+    {
+     "text": "Preventing Respiratory Infectious Diseases Starts with Daily Hygiene"
+    },
+    {
+     "text": "Remember Good Hygiene Habits When Traveling or Attending Large Events"
+    },
+    {
+     "text": "Confessions of the COVID-19 Virus"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-01T01:05:16.198Z"
+  },
+  "ja": {
+   "title": "衛生教育リソース",
+   "blocks": [],
+   "links": [
+    {
+     "text": "ショート動画：左腕にインフルエンザ、右腕にCOVID-19の子どもケア編"
+    },
+    {
+     "text": "ショート動画：2回とも接種すれば最も安全 - おはよう画像編"
+    }
+   ],
+   "files": [
+    {
+     "text": "115年（2026年）インフルエンザ・COVID-19ワクチン接種による肺と心臓の保護ポスター"
+    },
+    {
+     "text": "早わかりガイド：115年（2026年）インフルエンザ・COVID-19公費ワクチン - 赤ちゃん守り編"
+    },
+    {
+     "text": "早わかりガイド：115年（2026年）インフルエンザ・COVID-19公費ワクチン - 高齢者編"
+    },
+    {
+     "text": "早わかりガイド：115年（2026年）インフルエンザ・COVID-19公費ワクチン - 長期ケア施設編"
+    },
+    {
+     "text": "早わかりガイド：115年（2026年）公費インフルエンザワクチン - 学生編"
+    },
+    {
+     "text": "呼吸器感染症の予防は日々の衛生習慣から"
+    },
+    {
+     "text": "旅行や大規模イベントへの参加時も衛生的な良い習慣の実践を忘れずに"
+    },
+    {
+     "text": "新型コロナウイルスの告白"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-01T01:05:16.167Z"
+  },
+  "ko": {
+   "title": "보건 교육 자료",
+   "blocks": [],
+   "links": [
+    {
+     "text": "단편 영상 - flu shot in the left arm, COVID-19 in the right: 자녀 돌봄 편"
+    },
+    {
+     "text": "단편 영상 - 두 백신 모두 접종해야 가장 안전합니다 - 굿모닝 이미지 편"
+    }
+   ],
+   "files": [
+    {
+     "text": "115년(2026년) 인플루엔자 및 코로나19 백신 접종 폐 건강 및 심장 보호 포스터"
+    },
+    {
+     "text": "요약본 - 115년(2026년)도 인플루엔자·코로나19 publicly funded 백신 - 아기 보호 편"
+    },
+    {
+     "text": "요약본 - 115년(2026년)도 인플루엔자·코로나19 publicly funded 백신 - 어르신 편"
+    },
+    {
+     "text": "요약본 - 115년(2026년)도 인플루엔자·코로나19 publicly funded 백신 - 장기요양 시설 편"
+    },
+    {
+     "text": "요약본 - 115년(2026년)도 publicly funded 인플루엔자 백신 - 학생 편"
+    },
+    {
+     "text": "호흡기 감염병 예방, 일상 위생에서부터 시작하세요"
+    },
+    {
+     "text": "여행이나 대규모 행사 참여 시 좋은 위생 습관을 실천하는 것을 잊지 마세요"
+    },
+    {
+     "text": "코로나19 바이러스의 고백"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-01T01:05:16.347Z"
+  },
+  "id": {
+   "title": "Sumber Edukasi Kesehatan",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Video pendek - flu shot in the left arm, COVID-19 in the right: Perhatian untuk Anak-Anak"
+    },
+    {
+     "text": "Video pendek - Menerima kedua dosis adalah yang paling aman - Edisi Gambar Selamat Pagi"
+    }
+   ],
+   "files": [
+    {
+     "text": "Poster Lindungi Paru-Paru dan Jantung Vaksin Influenza dan COVID-19 115 (2026)"
+    },
+    {
+     "text": "Panduan Praktis - Vaksin Influenza dan COVID-19 yang Didanai Pemerintah 115 (2026) - Edisi Melindungi Bayi"
+    },
+    {
+     "text": "Panduan Praktis - Vaksin Influenza dan COVID-19 yang Didanai Pemerintah 115 (2026) - Edisi Lansia"
+    },
+    {
+     "text": "Panduan Praktis - Vaksin Influenza dan COVID-19 yang Didanai Pemerintah 115 (2026) - Edisi Lembaga Perawatan Jangka Panjang"
+    },
+    {
+     "text": "Panduan Praktis - Vaksin Influenza yang Didanai Pemerintah 115 (2026) - Edisi Pelajar"
+    },
+    {
+     "text": "Mencegah Penyakit Menular Pernapasan Dimulai dari Kebiasaan Higienis Sehari-hari"
+    },
+    {
+     "text": "Ingat untuk Menerapkan Kebiasaan Higienis yang Baik Saat Bepergian atau Menghadiri Acara Besar"
+    },
+    {
+     "text": "Pengakuan dari Virus COVID-19"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-01T01:05:17.737Z"
+  },
+  "vi": {
+   "title": "Tài liệu giáo dục sức khỏe",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Video ngắn - Tiêm flu shot in the left arm, COVID-19 in the right: Phần quan tâm đến con cái"
+    },
+    {
+     "text": "Video ngắn - Tiêm cả 2 liều an toàn nhất - Mẫu hình ảnh chào buổi sáng"
+    }
+   ],
+   "files": [
+    {
+     "text": "Áp phích bảo vệ phổi và tim qua tiêm vaccine cúm và COVID-19 năm 115 (2026)"
+    },
+    {
+     "text": "Cẩm nang - Vaccine cúm và COVID-19 công quỹ năm 115 (2026) - Phần bảo vệ trẻ sơ sinh"
+    },
+    {
+     "text": "Cẩm nang - Vaccine cúm và COVID-19 công quỹ năm 115 (2026) - Phần người cao tuổi"
+    },
+    {
+     "text": "Cẩm nang - Vaccine cúm và COVID-19 công quỹ năm 115 (2026) - Phần cơ sở chăm sóc dài hạn"
+    },
+    {
+     "text": "Cẩm nang - Vaccine cúm công quỹ năm 115 (2026) - Phần học sinh"
+    },
+    {
+     "text": "Phòng ngừa bệnh truyền nhiễm đường hô hấp Bắt đầu từ vệ sinh hàng ngày"
+    },
+    {
+     "text": "Đừng quên thực ⼋thói quen vệ sinh tốt khi đi du lịch hoặc tham gia các sự kiện lớn"
+    },
+    {
+     "text": "Lời bộc bạch của virus COVID-19"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-01T01:05:17.732Z"
+  },
+  "th": {
+   "title": "สื่อความรู้ด้านสุขภาพ",
+   "blocks": [],
+   "links": [
+    {
+     "text": "คลิปสั้น - ฉีดวัคซีนไข้หวัดใหญ่ซ้ายและโควิด-19 ขวา ตอนห่วงใยบุตรหลาน"
+    },
+    {
+     "text": "คลิปสั้น - ฉีดครบสองโดสปลอดภัยที่สุด ตอนภาพอรุณสวัสดิ์"
+    }
+   ],
+   "files": [
+    {
+     "text": "โปสเตอร์ปกป้องปอดและหัวใจ วัคซีนไข้หวัดใหญ่และโควิด-19 ปี 115 (2026)"
+    },
+    {
+     "text": "ชุดข้อมูลสรุป - วัคซีนไข้หวัดใหญ่และโควิด-19 ชนิดสาธารณะ ปี 115 (2026) ตอนปกป้องทารก"
+    },
+    {
+     "text": "ชุดข้อมูลสรุป - วัคซีนไข้หวัดใหญ่และโควิด-19 ชนิดสาธารณะ ปี 115 (2026) ตอนผู้สูงอายุ"
+    },
+    {
+     "text": "ชุดข้อมูลสรุป - วัคซีนไข้หวัดใหญ่และโควิด-19 ชนิดสาธารณะ ปี 115 (2026) ตอนสถานดูแลระยะยาว"
+    },
+    {
+     "text": "ชุดข้อมูลสรุป - วัคซีนไข้หวัดใหญ่ชนิดสาธารณะ ปี 115 (2026) ตอนนักเรียน"
+    },
+    {
+     "text": "การป้องกันโรคติดเชื้อทางเดินหายใจ เริ่มต้นจากสุขอนามัยประจำวัน"
+    },
+    {
+     "text": "ท่องเที่ยวหรือเข้าร่วมงานขนาดใหญ่ อย่าลืมปฏิบัติตามสุขลักษณะที่ดี"
+    },
+    {
+     "text": "บันทึกจากไวรัสโควิด-19"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-01T01:05:18.208Z"
+  },
+  "tl": {
+   "title": "Mga Mapagkukunan ng Edukasyong Pangkalusugan",
+   "blocks": [],
+   "links": [
+    {
+     "text": "Maikling pelikula - Flu shot in the left arm, COVID-19 in the right: Pangangalaga sa mga anak"
+    },
+    {
+     "text": "Maikling pelikula - Mas ligtas kapag parehong dose ang tinanggap - Magandang umagang larawan"
+    }
+   ],
+   "files": [
+    {
+     "text": "Poster para sa 115 (2026) na pagbabakuna laban sa trangkaso at COVID-19 upang maprotektahan ang mga baga at puso"
+    },
+    {
+     "text": "Gabay - 115 (2026) pampublikong pondo na bakuna sa trangkaso at COVID-19 - Seksyon ng pagprotekta sa mga sanggol"
+    },
+    {
+     "text": "Gabay - 115 (2026) pampublikong pondo na bakuna sa trangkaso at COVID-19 - Seksyon ng mga nakatatanda"
+    },
+    {
+     "text": "Gabay - 115 (2026) pampublikong pondo na bakuna sa trangkaso at COVID-19 - Seksyon ng mga institusyon para sa pangmatagalang pangangalaga"
+    },
+    {
+     "text": "Gabay - 115 (2026) pampublikong pondo na bakuna sa trangkaso - Seksyon ng mga mag-aaral"
+    },
+    {
+     "text": "Pag-iwas sa mga sakit sa paghinga na nagsisimula sa pang-araw-araw na kalinisan"
+    },
+    {
+     "text": "Huwag kalimutang isabuhay ang magagandang gawi sa kalinisan kapag naglalakbay o dumadalo sa mga malalaking kaganapan"
+    },
+    {
+     "text": "Ang Paglalahad ng COVID-19"
+    }
+   ],
+   "model": "gemini-3.5-flash-lite",
+   "at": "2026-10-01T01:05:19.570Z"
+  }
+ },
+ "sha256:ec6b69b9d3bd33c84ed8d429b02d6c9afdbe429b45dc5509609d0272c6332396": {
+  "en": {
+   "title": "Who can get publicly funded vaccines",
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "Phase 1 groups, from 2026/10/01",
+     "head": [
+      "Publicly funded group",
+      "Flu vaccine",
+      "COVID-19 vaccine"
+     ],
+     "rows": [
+      [
+       "Health care workers and public health / disease prevention personnel",
+       "✓",
+       "✓"
+      ],
+      [
+       "Adults aged 65 and over",
+       "✓",
+       "✓"
+      ],
+      [
+       "Indigenous people aged 55-64",
+       "✓",
+       "✓"
+      ],
+      [
+       "Residents of elderly care / long-term care facilities and the staff who work there",
+       "✓",
+       "✓"
+      ],
+      [
+       "Children aged 6 months up to school entry age (before elementary school)",
+       "✓",
+       "✓ (under age 6 and never vaccinated against COVID-19)"
+      ],
+      [
+       "Pregnant women",
+       "✓",
+       "✓"
+      ],
+      [
+       "People aged 6 months and over with underlying conditions or at high risk (including high-risk chronic diseases, BMI ≧ 30, rare diseases and catastrophic illnesses)",
+       "✓",
+       "✓ Also includes people with tuberculosis, disability, mental illness or dementia"
+      ],
+      [
+       "Parents or actual caregivers of infants under 6 months",
+       "✓",
+       "✓"
+      ],
+      [
+       "Staff of kindergartens and child care centers, and home-based child care providers (nannies)",
+       "✓",
+       "✓"
+      ],
+      [
+       "Students in elementary school, junior high, senior high, vocational high school, and years 1 to 3 of five-year junior college",
+       "✓",
+       "✗"
+      ],
+      [
+       "Poultry, livestock and animal disease control workers",
+       "✓",
+       "✗"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "Phase 2 groups, from 2026/11/02",
+     "head": [
+      "Publicly funded group",
+      "Flu vaccine",
+      "COVID-19 vaccine"
+     ],
+     "rows": [
+      [
+       "Healthy adults aged 50-64 without high-risk chronic conditions",
+       "✓",
+       "✓"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "2026 publicly funded flu and COVID-19 vaccine eligibility poster"
+    }
+   ],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.034Z"
+  },
+  "ja": {
+   "title": "公費ワクチンの接種対象者",
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "2026/10/01から 第1段階の対象者",
+     "head": [
+      "公費接種の対象者区分",
+      "インフルエンザワクチン",
+      "新型コロナワクチン"
+     ],
+     "rows": [
+      [
+       "医療従事者および防疫関連の職員",
+       "✓",
+       "✓"
+      ],
+      [
+       "65歳以上の高齢者",
+       "✓",
+       "✓"
+      ],
+      [
+       "55〜64歳の先住民",
+       "✓",
+       "✓"
+      ],
+      [
+       "高齢者施設・長期ケア（サービス）施設などの入所者・利用者およびその施設の職員",
+       "✓",
+       "✓"
+      ],
+      [
+       "生後6か月以上、小学校入学前の幼児",
+       "✓",
+       "✓ （6歳未満で、これまで新型コロナワクチンを接種したことがない方）"
+      ],
+      [
+       "妊婦",
+       "✓",
+       "✓"
+      ],
+      [
+       "生後6か月以上で基礎疾患のある方・高リスクの方（高リスクの慢性疾患のある方、BMI 30以上の方、希少疾患・重大傷病の患者を含む）",
+       "✓",
+       "✓ 結核、身体機能障害、精神疾患、認知症の患者も対象に追加"
+      ],
+      [
+       "生後6か月未満の乳児の両親または実際の養育者",
+       "✓",
+       "✓"
+      ],
+      [
+       "幼稚園・保育施設の職員、居宅保育者（保育ママ）",
+       "✓",
+       "✓"
+      ],
+      [
+       "小学校・中学校・高校・高等職業学校・五年制専門学校（1〜3年生）の児童・生徒・学生",
+       "✓",
+       "✗"
+      ],
+      [
+       "家禽・家畜および動物防疫の従事者",
+       "✓",
+       "✗"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "2026/11/02から 第2段階の対象者",
+     "head": [
+      "公費接種の対象者区分",
+      "インフルエンザワクチン",
+      "新型コロナワクチン"
+     ],
+     "rows": [
+      [
+       "50〜64歳で、高リスクの慢性疾患のない成人",
+       "✓",
+       "✓"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "2026年 公費インフルエンザ・新型コロナワクチン接種対象者ポスター"
+    }
+   ],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.125Z"
+  },
+  "ko": {
+   "title": "공비 지원 백신 접종 대상",
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "2026/10/01부터 1단계 대상",
+     "head": [
+      "공비 지원 접종 대상 분류",
+      "독감 백신",
+      "COVID-19 백신"
+     ],
+     "rows": [
+      [
+       "의료 및 방역 관련 종사자",
+       "✓",
+       "✓"
+      ],
+      [
+       "만 65세 이상 어르신",
+       "✓",
+       "✓"
+      ],
+      [
+       "55~64세 원주민",
+       "✓",
+       "✓"
+      ],
+      [
+       "요양·장기요양(서비스) 등 시설의 입소자 및 소속 직원",
+       "✓",
+       "✓"
+      ],
+      [
+       "생후 6개월 이상 초등학교 입학 전 영유아",
+       "✓",
+       "✓ (만 6세 미만이며 코로나19 백신을 한 번도 맞지 않은 경우)"
+      ],
+      [
+       "임신부",
+       "✓",
+       "✓"
+      ],
+      [
+       "생후 6개월 이상 기저질환자·고위험 대상 (고위험 만성질환자, BMI 30 이상, 희귀질환자 및 중증질환자 포함)",
+       "✓",
+       "✓ 결핵, 장애, 정신질환, 치매 환자도 추가 포함"
+      ],
+      [
+       "생후 6개월 미만 영아의 부모 또는 실제 양육자",
+       "✓",
+       "✓"
+      ],
+      [
+       "유치원 및 보육시설 종사자, 가정 보육 종사자(보모)",
+       "✓",
+       "✓"
+      ],
+      [
+       "초등학생, 중학생, 고등학생, 직업계 고등학교, 5년제 전문대 1~3학년 학생",
+       "✓",
+       "✗"
+      ],
+      [
+       "가금류·가축 및 동물 방역 종사자",
+       "✓",
+       "✗"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "2026/11/02부터 2단계 대상",
+     "head": [
+      "공비 지원 접종 대상 분류",
+      "독감 백신",
+      "COVID-19 백신"
+     ],
+     "rows": [
+      [
+       "고위험 만성질환이 없는 50~64세 성인",
+       "✓",
+       "✓"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "2026 공비 독감·COVID-19 백신 접종 대상 포스터"
+    }
+   ],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.218Z"
+  },
+  "id": {
+   "title": "Siapa yang berhak vaksin bersubsidi pemerintah",
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "Tahap 1, mulai 2026/10/01",
+     "head": [
+      "Kelompok penerima vaksin publicly funded",
+      "Vaksin influenza",
+      "Vaksin COVID-19"
+     ],
+     "rows": [
+      [
+       "Tenaga medis dan petugas kesehatan/pencegahan penyakit",
+       "✓",
+       "✓"
+      ],
+      [
+       "Lansia usia 65 tahun ke atas",
+       "✓",
+       "✓"
+      ],
+      [
+       "Penduduk asli (Masyarakat Adat) usia 55-64 tahun ke atas",
+       "✓",
+       "✓"
+      ],
+      [
+       "Penghuni panti jompo/perawatan jangka panjang dan staf lembaga tersebut",
+       "✓",
+       "✓"
+      ],
+      [
+       "Anak usia 6 bulan ke atas hingga sebelum masuk SD",
+       "✓",
+       "✓ (di bawah 6 tahun dan belum pernah divaksin COVID-19)"
+      ],
+      [
+       "Ibu hamil",
+       "✓",
+       "✓"
+      ],
+      [
+       "Usia 6 bulan ke atas dengan penyakit penyerta/kelompok berisiko tinggi (termasuk penderita penyakit kronis berisiko tinggi, BMI ≧ 30, penyakit langka, dan penyakit berat/katastropik)",
+       "✓",
+       "✓ Juga mencakup penderita tuberkulosis, disabilitas, gangguan jiwa, dan demensia"
+      ],
+      [
+       "Orang tua atau pengasuh bayi di bawah 6 bulan",
+       "✓",
+       "✓"
+      ],
+      [
+       "Staf taman kanak-kanak dan tempat penitipan anak, serta pengasuh anak di rumah",
+       "✓",
+       "✓"
+      ],
+      [
+       "Siswa SD, SMP, SMA, SMK, dan kelas 1-3 sekolah kejuruan lima tahun (wuzhuan)",
+       "✓",
+       "✗"
+      ],
+      [
+       "Petugas pencegahan penyakit unggas, ternak, dan hewan",
+       "✓",
+       "✗"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "Tahap 2, mulai 2026/11/02",
+     "head": [
+      "Kelompok penerima vaksin publicly funded",
+      "Vaksin influenza",
+      "Vaksin COVID-19"
+     ],
+     "rows": [
+      [
+       "Dewasa usia 50-64 tahun tanpa penyakit kronis berisiko tinggi",
+       "✓",
+       "✓"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "Poster penerima vaksin flu dan COVID-19 publicly funded 2026"
+    }
+   ],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.312Z"
+  },
+  "vi": {
+   "title": "Đối tượng được tiêm vắc-xin do nhà nước chi trả",
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "Đối tượng giai đoạn 1 từ 2026/10/01",
+     "head": [
+      "Nhóm đối tượng được tiêm do nhà nước chi trả",
+      "Vắc-xin cúm",
+      "Vắc-xin COVID-19"
+     ],
+     "rows": [
+      [
+       "Nhân viên y tế và nhân viên phòng chống dịch",
+       "✓",
+       "✓"
+      ],
+      [
+       "Người cao tuổi từ 65 tuổi trở lên",
+       "✓",
+       "✓"
+      ],
+      [
+       "Người bản địa từ 55–64 tuổi",
+       "✓",
+       "✓"
+      ],
+      [
+       "Người được chăm sóc và nhân viên của các cơ sở dưỡng lão/chăm sóc dài hạn",
+       "✓",
+       "✓"
+      ],
+      [
+       "Trẻ từ đủ 6 tháng tuổi đến trước khi vào tiểu học",
+       "✓",
+       "✓ (dưới 6 tuổi và chưa từng tiêm vắc-xin COVID-19)"
+      ],
+      [
+       "Phụ nữ mang thai",
+       "✓",
+       "✓"
+      ],
+      [
+       "Người từ đủ 6 tháng tuổi trở lên có bệnh nền/thuộc nhóm nguy cơ cao (gồm người mắc bệnh mạn tính nguy cơ cao, người có BMI ≥ 30, bệnh nhân bệnh hiếm và bệnh nặng)",
+       "✓",
+       "✓ Bao gồm thêm bệnh nhân lao, người khuyết tật, người có bệnh tâm thần và người bị sa sút trí tuệ"
+      ],
+      [
+       "Cha mẹ hoặc người trực tiếp nuôi dưỡng trẻ dưới 6 tháng tuổi",
+       "✓",
+       "✓"
+      ],
+      [
+       "Nhân viên nhà trẻ, trường mầm non và cơ sở giữ trẻ, người giữ trẻ tại nhà",
+       "✓",
+       "✓"
+      ],
+      [
+       "Học sinh tiểu học, trung học cơ sở, trung học phổ thông, trung cấp nghề và năm 1–3 của hệ cao đẳng 5 năm",
+       "✓",
+       "✗"
+      ],
+      [
+       "Nhân viên phòng dịch gia cầm, gia súc và động vật",
+       "✓",
+       "✗"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "Đối tượng giai đoạn 2 từ 2026/11/02",
+     "head": [
+      "Nhóm đối tượng được tiêm do nhà nước chi trả",
+      "Vắc-xin cúm",
+      "Vắc-xin COVID-19"
+     ],
+     "rows": [
+      [
+       "Người trưởng thành từ 50–64 tuổi không có bệnh mạn tính nguy cơ cao",
+       "✓",
+       "✓"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "Áp phích đối tượng tiêm vắc-xin cúm và COVID-19 do nhà nước chi trả năm 2026"
+    }
+   ],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.414Z"
+  },
+  "th": {
+   "title": "กลุ่มผู้มีสิทธิ์ฉีดวัคซีนที่รัฐสนับสนุน",
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "ตั้งแต่ 2026/10/01 กลุ่มเป้าหมายระยะที่ 1",
+     "head": [
+      "กลุ่มผู้มีสิทธิ์ฉีดวัคซีนที่รัฐสนับสนุน",
+      "วัคซีนไข้หวัดใหญ่",
+      "วัคซีนโควิด-19"
+     ],
+     "rows": [
+      [
+       "บุคลากรทางการแพทย์และผู้ปฏิบัติงานด้านสาธารณสุขและการป้องกันโรค",
+       "✓",
+       "✓"
+      ],
+      [
+       "ผู้สูงอายุ 65 ปีขึ้นไป",
+       "✓",
+       "✓"
+      ],
+      [
+       "ชนพื้นเมืองอายุ 55-64 ปี",
+       "✓",
+       "✓"
+      ],
+      [
+       "ผู้รับการดูแลในสถานดูแลผู้สูงอายุและสถานดูแลระยะยาว รวมถึงเจ้าหน้าที่ของสถานดังกล่าว",
+       "✓",
+       "✓"
+      ],
+      [
+       "เด็กเล็กอายุ 6 เดือนขึ้นไปจนถึงก่อนเข้าเรียนชั้นประถมศึกษา",
+       "✓",
+       "✓ (อายุต่ำกว่า 6 ปีและไม่เคยฉีดวัคซีนโควิด-19)"
+      ],
+      [
+       "สตรีมีครรภ์",
+       "✓",
+       "✓"
+      ],
+      [
+       "ผู้ที่มีโรคประจำตัวหรือกลุ่มเสี่ยงสูงอายุ 6 เดือนขึ้นไป (รวมผู้ป่วยโรคเรื้อรังกลุ่มเสี่ยงสูง ผู้ที่มี BMI ตั้งแต่ 30 ขึ้นไป ผู้ป่วยโรคหายาก และผู้ป่วยโรคร้ายแรง)",
+       "✓",
+       "✓ รวมถึงผู้ป่วยวัณโรค ผู้พิการหรือทุพพลภาพ ผู้ป่วยโรคทางจิตเวช และผู้ป่วยภาวะสมองเสื่อม"
+      ],
+      [
+       "บิดามารดาหรือผู้เลี้ยงดูจริงของทารกอายุไม่เกิน 6 เดือน",
+       "✓",
+       "✓"
+      ],
+      [
+       "บุคลากรของโรงเรียนอนุบาลและสถานรับเลี้ยงเด็ก รวมถึงผู้รับเลี้ยงเด็กที่บ้าน (พี่เลี้ยงเด็ก)",
+       "✓",
+       "✓"
+      ],
+      [
+       "นักเรียนระดับประถมศึกษา มัธยมศึกษาตอนต้น มัธยมศึกษาตอนปลาย อาชีวศึกษา และนักศึกษาวิทยาลัยหลักสูตร 5 ปี ปีที่ 1-3",
+       "✓",
+       "✗"
+      ],
+      [
+       "เจ้าหน้าที่ควบคุมและป้องกันโรคในสัตว์ปีก ปศุสัตว์ และสัตว์อื่น ๆ",
+       "✓",
+       "✗"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "ตั้งแต่ 2026/11/02 กลุ่มเป้าหมายระยะที่ 2",
+     "head": [
+      "กลุ่มผู้มีสิทธิ์ฉีดวัคซีนที่รัฐสนับสนุน",
+      "วัคซีนไข้หวัดใหญ่",
+      "วัคซีนโควิด-19"
+     ],
+     "rows": [
+      [
+       "ผู้ใหญ่อายุ 50-64 ปีที่ไม่มีโรคเรื้อรังกลุ่มเสี่ยงสูง",
+       "✓",
+       "✓"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "โปสเตอร์กลุ่มผู้มีสิทธิ์ฉีดวัคซีนไข้หวัดใหญ่และโควิด-19 ที่รัฐสนับสนุน ปี 2026"
+    }
+   ],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.502Z"
+  },
+  "tl": {
+   "title": "Sino ang kwalipikado sa publicly funded na bakuna",
+   "blocks": [
+    {
+     "type": "table",
+     "caption": "Mula 2026/10/01: Unang yugto ng mga kwalipikado",
+     "head": [
+      "Kategorya ng kwalipikado sa publicly funded na bakuna",
+      "Bakuna sa trangkaso",
+      "Bakuna sa COVID-19"
+     ],
+     "rows": [
+      [
+       "Mga medical at public health worker",
+       "✓",
+       "✓"
+      ],
+      [
+       "Mga nakatatandang may edad 65 pataas",
+       "✓",
+       "✓"
+      ],
+      [
+       "Mga katutubo (Indigenous) na may edad 55-64",
+       "✓",
+       "✓"
+      ],
+      [
+       "Mga residente ng nursing home at long-term care facility, at ang mga staff nila",
+       "✓",
+       "✓"
+      ],
+      [
+       "Mga batang may edad 6 na buwan pataas hanggang bago pumasok sa elementarya",
+       "✓",
+       "✓ (wala pang 6 taong gulang at hindi pa nakatanggap ng bakuna sa COVID-19)"
+      ],
+      [
+       "Mga buntis",
+       "✓",
+       "✓"
+      ],
+      [
+       "Mga may edad 6 na buwan pataas na may pinagbabatayang sakit o mataas ang panganib (kasama ang may high-risk na chronic disease, BMI ≧ 30, rare disease at malubhang karamdaman)",
+       "✓",
+       "✓ Kasama rin ang mga may tuberculosis, kapansanan, mental illness at dementia"
+      ],
+      [
+       "Mga magulang o tagapag-alaga ng sanggol na wala pang 6 na buwan",
+       "✓",
+       "✓"
+      ],
+      [
+       "Mga staff ng kindergarten at child care center, at mga home-based na tagapag-alaga (nanny)",
+       "✓",
+       "✓"
+      ],
+      [
+       "Mga estudyante ng elementarya, junior high, senior high, vocational high school at 5-year junior college (unang hanggang ikatlong taon)",
+       "✓",
+       "✗"
+      ],
+      [
+       "Mga manggagawa sa pagkontrol ng sakit ng manok, hayop at alagang hayop",
+       "✓",
+       "✗"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "caption": "Mula 2026/11/02: Ikalawang yugto ng mga kwalipikado",
+     "head": [
+      "Kategorya ng kwalipikado sa publicly funded na bakuna",
+      "Bakuna sa trangkaso",
+      "Bakuna sa COVID-19"
+     ],
+     "rows": [
+      [
+       "Mga adult na may edad 50-64 na walang high-risk na chronic disease",
+       "✓",
+       "✓"
+      ]
+     ]
+    }
+   ],
+   "links": [],
+   "files": [
+    {
+     "text": "Poster ng mga kwalipikado sa publicly funded na bakuna sa trangkaso at COVID-19 (2026)"
+    }
+   ],
+   "source": "manual",
+   "at": "2026-09-29T05:42:25.595Z"
+  }
+ }
+}
