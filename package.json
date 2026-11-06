@@ -25,6 +25,6 @@
   "devDependencies": {
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
-    "pinyin-pro": "^3.29.4"
+    "pinyin-pro": "^3.29.5"
   }
 }
